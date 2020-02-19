@@ -1,38 +1,100 @@
-.App {
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-size: 16px;
+	line-height: 1.4em;
+  font-weight: 300;
+}
+
+.container {
+  max-width: 700px;
+  min-width: 270px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
+.header {
+  padding: 50px 0;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.header__title {
+  font-size: 60px;
+  letter-spacing: 0.1em;
+  -webkit-text-rendering: optimizeLegibility;
+	-moz-text-rendering: optimizeLegibility;
+	text-rendering: optimizeLegibility;
+  color: darkgrey;
+  font-family: monospace;
+  font-weight: 200;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.note {
+  min-height: 400px;
+  height: 60vh;
+  overflow-y: scroll;
+  padding: 0 8px;
+  border: 2px solid lightgrey;
+  border-radius: 12px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
+.note__line {
+  display: block;
+  width: 100%;
 }
 
-.App-link {
-  color: #61dafb;
+.note__paragraph {
+  color: grey;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.note__header1 {
+  color: grey;
+  font-size: 28px;
+  line-height: 2.5;
+}
+
+.note__header2 {
+  color: grey;
+  font-size: 26px;
+  line-height: 2.5;
+}
+
+.note__header3 {
+  color: grey;
+  font-size: 24px;
+  line-height: 2.5;
+}
+
+.note__header4 {
+  color: grey;
+  font-size: 22px;
+  line-height: 2.5;
+}
+
+.note__header5 {
+  color: grey;
+  font-size: 20px;
+  line-height: 2.5;
+}
+
+.note__header6 {
+  color: grey;
+  font-size: 18px;
+  line-height: 2.5;
+}
+
+.footer {
+  color: grey;
+  font-size: 16px;
+  letter-spacing: 0.02em;
+  margin: 80px;
+  text-align: center;
+}
+
+.footer a:visited {
+  color: darkblue;
 }
