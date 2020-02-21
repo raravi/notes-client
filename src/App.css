@@ -87,6 +87,30 @@ body {
   line-height: 2.5;
 }
 
+.note__unorderedlist {
+  color: grey;
+  padding-left: 25px;
+}
+
+.note__orderedlist {
+  color: grey;
+  padding-left: 25px;
+}
+
+.note__blockquote {
+  color: grey;
+  border-left: 2px solid grey;
+  padding-left: 15px;
+}
+
+.note__text {
+  font-weight: normal;
+}
+
+.note__bold {
+  font-weight: bold;
+}
+
 .footer {
   color: grey;
   font-size: 16px;
