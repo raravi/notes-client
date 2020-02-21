@@ -55,7 +55,10 @@ function App() {
               //newSpanText += "<span class='note__star'>" + value;
               newSpanText += "</span><span class='note__bold'>" + value;
             } else {
-              newSpanText += value + "</span><span class='note__text'>";
+              if (index === array.length-1)
+                newSpanText += value;
+              else
+                newSpanText += value + "</span><span class='note__text'>";
               //boldEnded = true;
             }
           } else {
@@ -64,6 +67,8 @@ function App() {
         }
       });
       newSpanText += "\xa0</span>";
+      while (newSpanText.indexOf("<span class='note__text'></span>") !== -1)
+        newSpanText = newSpanText.replace("<span class='note__text'></span>", "");
       console.log("New Span: '" + newSpanText + "'");
       console.log("Offset: ", offset);
       let pNode = el.parentNode;
