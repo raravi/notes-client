@@ -111,6 +111,22 @@ body {
   font-weight: bold;
 }
 
+.note__italic {
+  font-style: italic;
+}
+
+.note__underline {
+  text-decoration: underline;
+}
+
+.note__code {
+  border: 1px solid black;
+}
+
+.note__strikethrough {
+  text-decoration: line-through;
+}
+
 .footer {
   color: grey;
   font-size: 16px;

@@ -1,4 +1,6 @@
 import React from 'react';
+import { Pairs } from './Pairs';
+import { Headers } from './Headers';
 import './App.css';
 
 function App() {
@@ -25,66 +27,20 @@ function App() {
     }
   }
 
-  function checkForPairs(el, newText, length, offset, e) {
-    // Not paragraph
+  function checkForPairs(parentNode, newText, length, offset, e) {
+    let pairs = new Pairs();
     let text = newText.slice(length);
     console.log("text : '" + text + "'");
-    let countOfStars = (text.match(new RegExp("\\*", "g")) || []).length;
-    console.log("Count: " + countOfStars);
-    if (countOfStars >= 1) {
-      // Atleast one pair of matching 'markers'
-      let indexOfStars = [];
-      [...text].forEach((value, index) => {
-        if (value === "*") {
-          indexOfStars.push(length + index);
-        }
-      });
-      if (countOfStars % 2 !== 0)
-        indexOfStars.pop();
-      console.log("indexOfStars : " + indexOfStars);
-      // Add new child spans
-      let newSpanText = "<span class='note__text'>";
-      //let boldEnded = false;
-      [...newText].forEach((value, index, array) => {
-        if (index < length) {
-          newSpanText += value;
-        } else {
-          let indexOfStarsIndex = indexOfStars.indexOf(index);
-          if (value === "*" && indexOfStarsIndex !== -1) {
-            if (indexOfStarsIndex % 2 === 0) {
-              //newSpanText += "<span class='note__star'>" + value;
-              newSpanText += "</span><span class='note__bold'>" + value;
-            } else {
-              if (index === array.length-1)
-                newSpanText += value;
-              else
-                newSpanText += value + "</span><span class='note__text'>";
-              //boldEnded = true;
-            }
-          } else {
-            newSpanText += value;
-          }
-        }
-      });
-      newSpanText += "\xa0</span>";
-      while (newSpanText.indexOf("<span class='note__text'></span>") !== -1)
-        newSpanText = newSpanText.replace("<span class='note__text'></span>", "");
-      console.log("New Span: '" + newSpanText + "'");
-      console.log("Offset: ", offset);
-      let pNode = el.parentNode;
-      el.parentNode.innerHTML = newSpanText;
-      setCaretPositionInChildNode(pNode, offset);
+    pairs.getCount(text);
+    if (pairs.totalCountOfCharacters >= 1) {
+      pairs.getIndex(text, length);
+      parentNode.innerHTML = pairs.getNewSpanText(newText, length);
+      setCaretPositionInChildNode(parentNode, offset);
       e.preventDefault();
     }
   }
 
-  function checkHeader(el, updatedText, offset, e) {
-    let currentText;
-    if (updatedText) {
-      currentText = updatedText;
-    } else {
-      currentText = el.parentNode.innerText;
-    }
+  function checkHeader(el, currentText, offset, e) {
     let newText = "";
     for (let i = 0; i < currentText.length-1; i++) {
       if (currentText[i] === '\xa0')
@@ -94,55 +50,20 @@ function App() {
     }
 
     let strings = newText.split(" ");
-    let firstString = strings[0];
     let regexForOrderedList = new RegExp('^\\d+\\.$');
-    if (strings.length > 1 && firstString === "#") {
-      console.log("Header 1");
-      el.parentNode.setAttribute("class", "note__header1");
-    } else if (strings.length > 1 && firstString === "##") {
-      console.log("Header 2");
-      el.parentNode.setAttribute("class", "note__header2");
-    } else if (strings.length > 1 && firstString === "###") {
-      console.log("Header 3");
-      el.parentNode.setAttribute("class", "note__header3");
-    } else if (strings.length > 1 && firstString === "####") {
-      console.log("Header 4");
-      el.parentNode.setAttribute("class", "note__header4");
-    } else if (strings.length > 1 && firstString === "#####") {
-      console.log("Header 5");
-      el.parentNode.setAttribute("class", "note__header5");
-    } else if (strings.length > 1 && firstString === "######") {
-      console.log("Header 6");
-      el.parentNode.setAttribute("class", "note__header6");
-    } else if (strings.length > 1 && firstString === "*") {
-      console.log("Unordered List");
-      el.parentNode.setAttribute("class", "note__unorderedlist");
-    } else if (strings.length > 1 && regexForOrderedList.test(firstString)) {
-      console.log("Ordered List");
-      el.parentNode.setAttribute("class", "note__orderedlist");
-    } else if (strings.length > 1 && firstString === ">") {
-      console.log("Block Quote");
-      el.parentNode.setAttribute("class", "note__blockquote");
-    } else {
-      console.log("Para");
-      el.parentNode.setAttribute("class", "note__paragraph");
-    }
+    let isOrderedList = regexForOrderedList.test(strings[0]);
+
+    let headers = new Headers();
+    headers.setHeader(el.parentNode, strings, isOrderedList);
 
     // Handle *word*
-    if (strings.length > 1 && ( firstString === "#" ||
-                                firstString === "##" ||
-                                firstString === "###" ||
-                                firstString === "####" ||
-                                firstString === "#####" ||
-                                firstString === "######" ||
-                                firstString === "*" ||
-                                regexForOrderedList.test(firstString) ||
-                                firstString === ">")) {
+    let isHeader = headers.characterCodeOfHeaders.indexOf(strings[0]);
+    if (strings.length > 1 && (isHeader !== -1 || isOrderedList)) {
       // Not a paragraph
-      checkForPairs(el, newText, firstString.length, offset, e);
+      checkForPairs(el.parentNode, newText, strings[0].length, offset, e);
     } else {
       // Paragraph
-      checkForPairs(el, newText, 0, offset, e);
+      checkForPairs(el.parentNode, newText, 0, offset, e);
     }
   }
 
@@ -238,8 +159,8 @@ function App() {
         });
         currentNode.parentNode.parentNode.parentNode.insertBefore(divElement, currentNode.parentNode.parentNode.nextSibling);
         // Check if Header or Paragraph
-        checkHeader(currentNode, null, parentOffset, e);
-        checkHeader(spanElement.firstChild, null, parentOffset, e);
+        checkHeader(currentNode, currentNode.parentNode.innerText, parentOffset, e);
+        checkHeader(spanElement.firstChild, spanElement.innerText, parentOffset, e);
         // Set the Cursor position
         setCaretPositionToOffset(spanElement.firstChild, 0);
       }
@@ -267,9 +188,8 @@ function App() {
           let previousLastChild = previousDivNode.firstChild.lastChild;
           let previousText = previousLastChild.innerText;
           previousDivNode.firstChild.lastChild.innerText = previousText.slice(0, -1);
-          previousDivNode.firstChild.innerHTML += currentNode.parentNode.innerHTML;
-
-          setCaretPositionInChildNode(previousDivNode.firstChild, previousOffset);
+          previousDivNode.firstChild.innerText += currentNode.parentNode.innerText;
+          checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.innerText, previousOffset, e);
           currentNode.parentNode.parentNode.remove();
         }
       } else {
@@ -386,6 +306,11 @@ function App() {
             <span className="note__text">Sim</span>
             <span className="note__bold">*ple l*</span>
             <span className="note__text">ine&nbsp;</span>
+          </span>
+        </div>
+        <div className="note__line">
+          <span className="note__paragraph">
+            <span className="note__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&nbsp;</span>
           </span>
         </div>
       </div>
