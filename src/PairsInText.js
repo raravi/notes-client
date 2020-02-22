@@ -1,4 +1,4 @@
-function Pairs() {
+function PairsInText() {
   this.characters = ["*", "/", "_", "`", "-"];
   this.countOfCharacters = [0, 0, 0, 0, 0];
   this.totalCountOfCharacters = 0;
@@ -10,7 +10,7 @@ function Pairs() {
                             "note__strikethrough"];
 }
 
-Pairs.prototype.getCount = function (text) {
+PairsInText.prototype.getCount = function (text) {
   let _this = this;
   this.totalCountOfCharacters = 0;
   this.characters.forEach((value, index) => {
@@ -19,7 +19,7 @@ Pairs.prototype.getCount = function (text) {
   });
 };
 
-Pairs.prototype.getIndex = function (text, length) {
+PairsInText.prototype.getIndex = function (text, length) {
   let _this = this;
   [...text].forEach((characterInText, indexOfCharacterInText) => {
     _this.characters.forEach((character, indexOfCharacter) => {
@@ -34,7 +34,7 @@ Pairs.prototype.getIndex = function (text, length) {
   });
 };
 
-Pairs.prototype.getNewSpanText = function (newText, length) {
+PairsInText.prototype.getNewSpanText = function (newText, length) {
   let _this = this;
   let newSpanText = "<span class='note__text'>";
   [...newText].forEach((value, index, array) => {
@@ -67,4 +67,4 @@ Pairs.prototype.getNewSpanText = function (newText, length) {
   return newSpanText;
 };
 
-export { Pairs };
+export { PairsInText };

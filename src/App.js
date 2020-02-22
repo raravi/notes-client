@@ -1,6 +1,6 @@
 import React from 'react';
-import { Pairs } from './Pairs';
-import { Headers } from './Headers';
+import { PairsInText } from './PairsInText';
+import { HeadersInText } from './HeadersInText';
 import './App.css';
 
 function App() {
@@ -28,13 +28,13 @@ function App() {
   }
 
   function checkForPairs(parentNode, newText, length, offset, e) {
-    let pairs = new Pairs();
+    let pairsInText = new PairsInText();
     let text = newText.slice(length);
     console.log("text : '" + text + "'");
-    pairs.getCount(text);
-    if (pairs.totalCountOfCharacters >= 1) {
-      pairs.getIndex(text, length);
-      parentNode.innerHTML = pairs.getNewSpanText(newText, length);
+    pairsInText.getCount(text);
+    if (pairsInText.totalCountOfCharacters >= 1) {
+      pairsInText.getIndex(text, length);
+      parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
       setCaretPositionInChildNode(parentNode, offset);
       e.preventDefault();
     }
@@ -53,11 +53,11 @@ function App() {
     let regexForOrderedList = new RegExp('^\\d+\\.$');
     let isOrderedList = regexForOrderedList.test(strings[0]);
 
-    let headers = new Headers();
-    headers.setHeader(el.parentNode, strings, isOrderedList);
+    let headersInText = new HeadersInText();
+    headersInText.setHeader(el.parentNode, strings, isOrderedList);
 
     // Handle *word*
-    let isHeader = headers.characterCodeOfHeaders.indexOf(strings[0]);
+    let isHeader = headersInText.characterCodeOfHeaders.indexOf(strings[0]);
     if (strings.length > 1 && (isHeader !== -1 || isOrderedList)) {
       // Not a paragraph
       checkForPairs(el.parentNode, newText, strings[0].length, offset, e);
@@ -284,35 +284,15 @@ function App() {
       <div contentEditable="true" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClick}>
         <div className="note__line">
           <span className="note__header1">
-            <span className="note__text"># Header </span>
-            <span className="note__text">One&nbsp;</span>
+            <span className="note__text"># Header One&nbsp;</span>
           </span>
         </div>
         <div className="note__line">
           <span className="note__paragraph">
-            <span className="note__text">Simple </span>
-            <span className="note__text">lineeeeeeeeee&nbsp;</span>
+            <span className="note__text">Simple lineeeeeeeeee&nbsp;</span>
           </span>
         </div>
-        <div className="note__line">
-          <span className="note__header1">
-            <span className="note__text"># Head</span>
-            <span className="note__bold">*er O*</span>
-            <span className="note__text">ne&nbsp;</span>
-          </span>
-        </div>
-        <div className="note__line">
-          <span className="note__paragraph">
-            <span className="note__text">Sim</span>
-            <span className="note__bold">*ple l*</span>
-            <span className="note__text">ine&nbsp;</span>
-          </span>
-        </div>
-        <div className="note__line">
-          <span className="note__paragraph">
-            <span className="note__text">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&nbsp;</span>
-          </span>
-        </div>
+
       </div>
       <footer className="footer">
         <p>&#169; 2020 Amith Raravi - source code on <a href="/">Github</a></p>
@@ -322,3 +302,25 @@ function App() {
 }
 
 export default App;
+
+/*
+<div className="note__line">
+  <span className="note__header1">
+    <span className="note__text"># Head</span>
+    <span className="note__bold">*er O*</span>
+    <span className="note__text">ne&nbsp;</span>
+  </span>
+</div>
+<div className="note__line">
+  <span className="note__paragraph">
+    <span className="note__text">Sim</span>
+    <span className="note__bold">*ple l*</span>
+    <span className="note__text">ine&nbsp;</span>
+  </span>
+</div>
+<div className="note__line">
+  <span className="note__paragraph">
+    <span className="note__text">You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).&nbsp;</span>
+  </span>
+</div>
+*/

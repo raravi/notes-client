@@ -1,4 +1,4 @@
-function Headers() {
+function HeadersInText() {
   this.characterCodeOfHeaders = [ "#",
                                   "##",
                                   "###",
@@ -19,7 +19,7 @@ function Headers() {
                           "note__orderedlist"];
 }
 
-Headers.prototype.setHeader = function (parentNode, strings, isOrderedList) {
+HeadersInText.prototype.setHeader = function (parentNode, strings, isOrderedList) {
   if (strings.length > 1 && this.characterCodeOfHeaders.indexOf(strings[0]) !== -1) {
     let indexOfHeader = this.characterCodeOfHeaders.indexOf(strings[0]);
     parentNode.setAttribute("class", this.classOfHeaders[indexOfHeader]);
@@ -30,4 +30,4 @@ Headers.prototype.setHeader = function (parentNode, strings, isOrderedList) {
   }
 };
 
-export { Headers };
+export { HeadersInText };
