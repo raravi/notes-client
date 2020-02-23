@@ -32,12 +32,10 @@ function App() {
     let text = newText.slice(length);
     console.log("text : '" + text + "'");
     pairsInText.getCount(text);
-    if (pairsInText.totalCountOfCharacters >= 1) {
-      pairsInText.getIndex(text, length);
-      parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
-      setCaretPositionInChildNode(parentNode, offset);
-      e.preventDefault();
-    }
+    pairsInText.getIndex(text, length);
+    parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
+    setCaretPositionInChildNode(parentNode, offset);
+    e.preventDefault();
   }
 
   function checkHeader(el, currentText, offset, e) {
@@ -132,7 +130,6 @@ function App() {
             offsetLeft -= children[i].innerText.length;
           }
         }
-        // console.log("indexOfSpan :", indexOfSpan, "haveToBreakSpan :", haveToBreakSpan, "breakAtOffset :", breakAtOffset);
         let tempNodes = [];
         for (let i = 0; i < children.length; i++) {
           if (i === indexOfSpan) {
@@ -188,7 +185,7 @@ function App() {
           let previousLastChild = previousDivNode.firstChild.lastChild;
           let previousText = previousLastChild.innerText;
           previousDivNode.firstChild.lastChild.innerText = previousText.slice(0, -1);
-          previousDivNode.firstChild.innerText += currentNode.parentNode.innerText;
+          previousDivNode.firstChild.innerHTML += currentNode.parentNode.innerHTML;
           checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.innerText, previousOffset, e);
           currentNode.parentNode.parentNode.remove();
         }
@@ -292,7 +289,25 @@ function App() {
             <span className="note__text">Simple lineeeeeeeeee&nbsp;</span>
           </span>
         </div>
-
+        <div className="note__line">
+          <span className="note__header1">
+            <span className="note__text"># Head</span>
+            <span className="note__bold">*er O*</span>
+            <span className="note__text">ne&nbsp;</span>
+          </span>
+        </div>
+        <div className="note__line">
+          <span className="note__paragraph">
+            <span className="note__text">Sim</span>
+            <span className="note__bold">*ple l*</span>
+            <span className="note__text">ine&nbsp;</span>
+          </span>
+        </div>
+        <div className="note__line">
+          <span className="note__paragraph">
+            <span className="note__text">You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).&nbsp;</span>
+          </span>
+        </div>
       </div>
       <footer className="footer">
         <p>&#169; 2020 Amith Raravi - source code on <a href="/">Github</a></p>

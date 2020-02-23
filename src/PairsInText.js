@@ -1,7 +1,6 @@
 function PairsInText() {
   this.characters = ["*", "/", "_", "`", "-"];
   this.countOfCharacters = [0, 0, 0, 0, 0];
-  this.totalCountOfCharacters = 0;
   this.indexOfCharacters = [[], [], [], [], []];
   this.classOfCharacters = ["note__bold",
                             "note__italic",
@@ -12,10 +11,8 @@ function PairsInText() {
 
 PairsInText.prototype.getCount = function (text) {
   let _this = this;
-  this.totalCountOfCharacters = 0;
   this.characters.forEach((value, index) => {
     _this.countOfCharacters[index] = (text.match(new RegExp(`\\${value}`, "g")) || []).length;
-    _this.totalCountOfCharacters += _this.countOfCharacters[index];
   });
 };
 
