@@ -32,11 +32,13 @@ function App() {
     let text = newText.slice(length);
     pairsInText.getCountAndIndex(text, length);
     parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
-    setCaretPositionInChildNode(parentNode, offset);
-    e.preventDefault();
+    if (offset !== undefined)
+      setCaretPositionInChildNode(parentNode, offset);
+    if (e !== undefined)
+      e.preventDefault();
   }
 
-  function checkHeader(el, currentText, offset, e) {
+  function replaceNbspWithBlankspace(currentText) {
     let newText = "";
     for (let i = 0; i < currentText.length; i++) {
       if (currentText[i] === '\xa0')
@@ -44,10 +46,61 @@ function App() {
       else
         newText += currentText[i];
     }
+    return newText;
+  }
+
+  function checkIfOrderedList (string) {
+    let regexForOrderedList = new RegExp('^\\d+\\.$');
+    return regexForOrderedList.test(string);
+  }
+
+  function checkPreviousNodeIsOrderedList(el, newText) {
+    let previousDivNode = el.parentNode.parentNode.previousSibling;
+
+    if (previousDivNode && previousDivNode.getAttribute("class") === "note__line") {
+      let previousText = replaceNbspWithBlankspace(previousDivNode.firstChild.innerText);
+      let strings = previousText.split(" ");
+      let isOrderedList = checkIfOrderedList(strings[0]);
+      if (isOrderedList) {
+        let alteredText = replaceNbspWithBlankspace(newText);
+        let alteredTextStrings = alteredText.split(" ");
+        newText = newText.replace ( alteredTextStrings[0].slice(0, -1),
+                                    (Number(strings[0].slice(0, -1))+1).toString());
+        return {isOrderedList: true, newText: newText};
+      }
+    }
+    return {isOrderedList: false, newText: ""};
+  }
+
+  function fixNextItemsInOrderedList(el, currentText) {
+    let nextDivNode = el.parentNode.parentNode.nextSibling;
+    let strings = replaceNbspWithBlankspace(currentText).split(" ");
+
+    while(nextDivNode && nextDivNode.getAttribute("class") === "note__line") {
+      let nextText = replaceNbspWithBlankspace(nextDivNode.firstChild.innerText);
+      let nextTextStrings = nextText.split(" ");
+      let isOrderedList = checkIfOrderedList(nextTextStrings[0]);
+
+      if (isOrderedList) {
+        nextText = nextText.replace ( nextTextStrings[0].slice(0, -1),
+                                    (Number(strings[0].slice(0, -1))+1).toString());
+        checkForPairs(nextDivNode.firstChild, nextText, nextTextStrings[0].length);
+
+        nextDivNode = nextDivNode.nextSibling;
+        strings = replaceNbspWithBlankspace(nextText).split(" ");
+      } else {
+        nextDivNode = null;
+        return;
+      }
+    }
+  }
+
+  function checkHeader(el, currentText, offset, e) {
+    let newText = replaceNbspWithBlankspace(currentText);
 
     let strings = newText.split(" ");
-    let regexForOrderedList = new RegExp('^\\d+\\.$');
-    let isOrderedList = regexForOrderedList.test(strings[0]);
+    let isOrderedList = checkIfOrderedList(strings[0]);
+    let previousNode;
 
     let headersInText = new HeadersInText();
     headersInText.setHeader(el.parentNode, strings, isOrderedList);
@@ -55,6 +108,13 @@ function App() {
     // Handle *word*
     let isHeader = headersInText.characterCodeOfHeaders.indexOf(strings[0]);
     if (strings.length > 1 && (isHeader !== -1 || isOrderedList)) {
+      if (isOrderedList) {
+        previousNode = checkPreviousNodeIsOrderedList(el, newText);
+        if (previousNode && previousNode.isOrderedList) {
+          newText = previousNode.newText;
+        }
+        fixNextItemsInOrderedList(el, newText);
+      }
       // Not a paragraph
       checkForPairs(el.parentNode, newText, strings[0].length, offset, e);
     } else {
@@ -199,6 +259,7 @@ function App() {
           } else if (currentNode.parentNode.innerText === "\n") {
             setCaretPositionInChildNode(previousDivNode.firstChild, previousOffset);
             currentNode.parentNode.parentNode.remove();
+            checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.innerText, previousOffset);
           } else {
             previousDivNode.firstChild.innerHTML += currentNode.parentNode.innerHTML;
             checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.innerText, previousOffset, e);
