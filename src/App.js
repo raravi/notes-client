@@ -112,6 +112,10 @@ function App() {
         previousNode = checkPreviousNodeIsOrderedList(el, newText);
         if (previousNode && previousNode.isOrderedList) {
           newText = previousNode.newText;
+          let oldLength = strings[0].length;
+          strings = newText.split(" ");
+          if (oldLength + 1 === offset)
+            offset = strings[0].length + 1;
         }
         fixNextItemsInOrderedList(el, newText);
       }
