@@ -49,62 +49,76 @@ body {
 .note__line {
   display: block;
   width: 100%;
+  letter-spacing: 0.03em;
+  word-spacing: 0.04em;
 }
 
 .note__paragraph {
   color: grey;
+  line-height: 1.35;
+  margin: 10px 0;
 }
 
 .note__header1 {
   color: grey;
-  font-size: 28px;
-  line-height: 2.5;
+  font-size: 32px;
+  line-height: 1.25;
+  margin: 15px 0;
 }
 
 .note__header2 {
   color: grey;
-  font-size: 26px;
-  line-height: 2.5;
+  font-size: 28px;
+  line-height: 1.25;
+  margin: 15px 0;
 }
 
 .note__header3 {
   color: grey;
   font-size: 24px;
-  line-height: 2.5;
+  line-height: 1.25;
+  margin: 15px 0;
 }
 
 .note__header4 {
   color: grey;
   font-size: 22px;
-  line-height: 2.5;
+  line-height: 1.25;
+  margin: 15px 0;
 }
 
 .note__header5 {
   color: grey;
   font-size: 20px;
-  line-height: 2.5;
+  line-height: 1.25;
+  margin: 15px 0;
 }
 
 .note__header6 {
   color: grey;
   font-size: 18px;
-  line-height: 2.5;
+  line-height: 1.25;
+  margin: 15px 0;
 }
 
 .note__unorderedlist {
   color: grey;
   padding-left: 25px;
+  margin: 8px 0;
 }
 
 .note__orderedlist {
   color: grey;
   padding-left: 25px;
+  margin: 8px 0;
 }
 
 .note__blockquote {
   color: grey;
-  border-left: 2px solid grey;
+  border-left: 6px solid lightgrey;
   padding-left: 15px;
+  line-height: 1.4;
+  margin: 8px 0;
 }
 
 .note__text {
@@ -124,7 +138,11 @@ body {
 }
 
 .note__code {
-  border: 1px solid black;
+  border: 1px solid grey;
+}
+
+.note__link {
+  background-color: lightgrey;
 }
 
 .note__strikethrough {

@@ -1,33 +1,32 @@
 function PairsInText() {
-  this.characters = ["*", "/", "_", "`", "-"];
-  this.countOfCharacters = [0, 0, 0, 0, 0];
-  this.indexOfCharacters = [[], [], [], [], []];
+  this.characters = ["*", "/", "_", "`", "-", "["];
+  this.regexOfCharacters = ["\\*[^*]*\\*",
+                            "\\/[^/]*\\/",
+                            "\\_[^_]*\\_",
+                            "\\`[^`]*\\`",
+                            "\\-[^-]*\\-",
+                            "\\[[^[\\]]*\\]\\([^()]*\\)"];
+  this.countOfCharacters = [0, 0, 0, 0, 0, 0];
+  this.indexOfCharacters = [[], [], [], [], [], []];
   this.classOfCharacters = ["note__bold",
                             "note__italic",
                             "note__underline",
                             "note__code",
-                            "note__strikethrough"];
+                            "note__strikethrough",
+                            "note__link"];
 }
 
-PairsInText.prototype.getCount = function (text) {
+PairsInText.prototype.getCountAndIndex = function (text, length) {
   let _this = this;
-  this.characters.forEach((value, index) => {
-    _this.countOfCharacters[index] = (text.match(new RegExp(`\\${value}`, "g")) || []).length;
-  });
-};
 
-PairsInText.prototype.getIndex = function (text, length) {
-  let _this = this;
-  [...text].forEach((characterInText, indexOfCharacterInText) => {
-    _this.characters.forEach((character, indexOfCharacter) => {
-      if (characterInText === character) {
-        _this.indexOfCharacters[indexOfCharacter].push(length + indexOfCharacterInText)
-      }
+  this.characters.forEach((valueOfCharacter, indexOfCharacter) => {
+    let arrayOfLinks = Array.from(text.matchAll(new RegExp(_this.regexOfCharacters[indexOfCharacter], "g")));
+
+    this.countOfCharacters[indexOfCharacter] = arrayOfLinks.length * 2;
+    arrayOfLinks.forEach((item, index) => {
+      _this.indexOfCharacters[indexOfCharacter].push(length + item.index);
+      _this.indexOfCharacters[indexOfCharacter].push(length + item.index + item[0].length-1);
     });
-  });
-  this.countOfCharacters.forEach((count, index) => {
-    if (count % 2 !== 0)
-      _this.indexOfCharacters[index].pop();
   });
 };
 
@@ -36,28 +35,69 @@ PairsInText.prototype.getNewSpanText = function (newText, length) {
   let newSpanText = "<span class='note__text'>";
   [...newText].forEach((value, index, array) => {
     if (index < length) {
-      newSpanText += value;
-    } else {
-      let valueIsAPairCharacter = _this.characters.indexOf(value);
-      if (valueIsAPairCharacter !== -1) {
-
+      if (value === ' ') {
+        newSpanText += '\xa0';
+      } else {
+        newSpanText += value;
       }
+    } else {
+      let indexOfCharacter = -1;
+      let indexOfCharacterIndex = -1;
+      _this.indexOfCharacters.forEach((valueOfCharIndex, indexOfCharIndex) => {
+        if (valueOfCharIndex.indexOf(index) !== -1) {
+          indexOfCharacter = indexOfCharIndex;
+          indexOfCharacterIndex = valueOfCharIndex.indexOf(index);
+        }
+      });
+
+      if (indexOfCharacter !== -1) {
+        if (indexOfCharacterIndex % 2 === 0) {
+          newSpanText += `</span><span class='${_this.classOfCharacters[indexOfCharacter]}'>` + value;
+        } else {
+          if (index === array.length-1) {
+            if (value === ' ') {
+              newSpanText += '\xa0';
+            } else {
+              newSpanText += value;
+            }
+          }
+          else
+            newSpanText += value + "</span><span class='note__text'>";
+        }
+      } else {
+        if (value === ' ') {
+          newSpanText += '\xa0';
+        } else {
+          newSpanText += value;
+        }
+      }
+
+      /*let valueIsAPairCharacter = _this.characters.indexOf(value);
       if (valueIsAPairCharacter !== -1 && _this.indexOfCharacters[valueIsAPairCharacter].indexOf(index) !== -1) {
         let indexOfCharacterIndex = _this.indexOfCharacters[valueIsAPairCharacter].indexOf(index);
         if (indexOfCharacterIndex % 2 === 0) {
           newSpanText += `</span><span class='${_this.classOfCharacters[valueIsAPairCharacter]}'>` + value;
         } else {
-          if (index === array.length-1)
-            newSpanText += value;
+          if (index === array.length-1) {
+            if (value === ' ') {
+              newSpanText += '\xa0';
+            } else {
+              newSpanText += value;
+            }
+          }
           else
             newSpanText += value + "</span><span class='note__text'>";
         }
       } else {
-        newSpanText += value;
-      }
+        if (value === ' ') {
+          newSpanText += '\xa0';
+        } else {
+          newSpanText += value;
+        }
+      }*/
     }
   });
-  newSpanText += "\xa0</span>";
+  newSpanText += "</span>";
   while (newSpanText.indexOf("<span class='note__text'></span>") !== -1)
     newSpanText = newSpanText.replace("<span class='note__text'></span>", "");
 
