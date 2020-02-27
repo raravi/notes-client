@@ -235,18 +235,17 @@ function App() {
     let focusParentOffset = getParentOffset(focusNode, focusOffset);
 
     if (anchorNode.parentNode === focusNode.parentNode) {
-      console.log("Same Div");
+      // Same Div
       if (anchorParentOffset < focusParentOffset)
         text = anchorNode.parentNode.innerText.slice(anchorParentOffset, focusParentOffset);
       else
         text = anchorNode.parentNode.innerText.slice(focusParentOffset, anchorParentOffset);
     } else {
-      console.log("Different Divs");
+      // Different Divs
       let anchorDivNode = anchorNode.parentNode.parentNode;
       let focusDivNode = focusNode.parentNode.parentNode;
       let focusNodeComesAfter = getFocusNodeComesAfter(anchorDivNode, focusDivNode);
 
-      console.log("focusNodeComesAfter : ", focusNodeComesAfter);
       if (focusNodeComesAfter) {
         // anchor to focus
         text = getTextFromNodes(anchorDivNode, anchorParentOffset, focusDivNode, focusParentOffset);
@@ -265,7 +264,6 @@ function App() {
 
     if (anchorNode === focusNode) {
       // Same SPAN
-      console.log("Same SPAN");
       if (anchorOffset < focusOffset) {
         cutTextInSameSpan(anchorNode, anchorOffset, focusOffset);
       } else {
@@ -273,7 +271,6 @@ function App() {
       }
     } else if (anchorNode.parentNode === focusNode.parentNode) {
       // Same DIV, Different SPANs
-      console.log("Same DIV, Different SPANs");
       let focusNodeComesAfter = getFocusNodeComesAfter(anchorNode, focusNode);
       if (focusNodeComesAfter) {
         // anchor to focus
@@ -284,12 +281,10 @@ function App() {
       }
     } else {
       // Different Divs
-      console.log("Different Divs");
       let anchorDivNode = anchorNode.parentNode.parentNode;
       let focusDivNode = focusNode.parentNode.parentNode;
       let focusNodeComesAfter = getFocusNodeComesAfter(anchorDivNode, focusDivNode);
 
-      console.log("focusNodeComesAfter : ", focusNodeComesAfter);
       if (focusNodeComesAfter) {
         // anchor to focus
         cutTextInDifferentDivs(anchorNode, anchorOffset, focusNode, focusOffset);
@@ -313,28 +308,22 @@ function App() {
       //it was Ctrl + C (Cmd + C)
       e.preventDefault();
       if (currentSelection.isCollapsed === false) {
-        console.log("currentSelection : ", currentSelection);
-
         let focusNode = getNodeFromSelection(currentSelection.focusNode);
         let focusOffset = currentSelection.focusOffset;
 
         let copiedText = getTextToCopy(currentNode, currentOffset, focusNode, focusOffset);
         localStorage.setItem("text", copiedText);
-        console.log("copiedText : '" + copiedText + "'");
       }
     } else if (e.keyCode === 88 && (e.ctrlKey || e.metaKey)) {
       console.log("In CMD + X", e.keyCode, e.ctrlKey, e.metaKey);
       //it was Ctrl + X (Cmd + X)
       e.preventDefault();
       if (currentSelection.isCollapsed === false) {
-        console.log("currentSelection : ", currentSelection);
-
         let focusNode = getNodeFromSelection(currentSelection.focusNode);
         let focusOffset = currentSelection.focusOffset;
 
         let copiedText = getTextToCopy(currentNode, currentOffset, focusNode, focusOffset);
         localStorage.setItem("text", copiedText);
-        console.log("cutText : '" + copiedText + "'");
 
         cutNodes(currentNode, currentOffset, focusNode, focusOffset);
       }
@@ -350,7 +339,6 @@ function App() {
 
       if (currentSelection.isCollapsed === false) {
         // Selection to be deleted, and then Enter to be processed
-        console.log("currentSelection : ", currentSelection);
 
         let focusNode = getNodeFromSelection(currentSelection.focusNode);
         let focusOffset = currentSelection.focusOffset;
@@ -374,18 +362,15 @@ function App() {
 
       // Check for conditions to edit DIVs
       if (parentOffset === 0) {
-        console.log("parentOffset : ", parentOffset);
         currentNode.parentNode.parentNode.parentNode.insertBefore(divElement, currentNode.parentNode.parentNode);
         // Set the Cursor position
         setCaretPositionToOffset(currentNode, 0);
       } else if (parentOffset === currentNode.parentNode.innerText.length) {
-        console.log("parentOffset : Last position");
         // Insert new DIV after updating it above
         currentNode.parentNode.parentNode.parentNode.insertBefore(divElement, currentNode.parentNode.parentNode.nextSibling);
         // Set the Cursor position
         setCaretPositionToOffset(innerSpanElement, 0);
       } else {
-        console.log("parentOffset : Somewhere in the Middle");
         let indexOfSpan = -1, haveToBreakSpan, breakAtOffset = -1;
         let offsetLeft = parentOffset;
         let children = currentNode.parentNode.childNodes;
@@ -440,8 +425,6 @@ function App() {
 
       if (currentSelection.isCollapsed === false) {
         // Selection to be deleted, and then character to be processed
-        console.log("currentSelection : ", currentSelection);
-
         let focusNode = getNodeFromSelection(currentSelection.focusNode);
         let focusOffset = currentSelection.focusOffset;
         let currentDivNode = currentNode.parentNode.parentNode;
@@ -463,8 +446,6 @@ function App() {
       if (currentSelection.isCollapsed === false) {
         e.preventDefault();
         // Selection to be deleted, and then Backspace to be processed
-        console.log("currentSelection : ", currentSelection);
-
         let focusNode = getNodeFromSelection(currentSelection.focusNode);
         let focusOffset = currentSelection.focusOffset;
         let currentDivNode = currentNode.parentNode.parentNode;
