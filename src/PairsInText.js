@@ -71,30 +71,6 @@ PairsInText.prototype.getNewSpanText = function (newText, length) {
           newSpanText += value;
         }
       }
-
-      /*let valueIsAPairCharacter = _this.characters.indexOf(value);
-      if (valueIsAPairCharacter !== -1 && _this.indexOfCharacters[valueIsAPairCharacter].indexOf(index) !== -1) {
-        let indexOfCharacterIndex = _this.indexOfCharacters[valueIsAPairCharacter].indexOf(index);
-        if (indexOfCharacterIndex % 2 === 0) {
-          newSpanText += `</span><span class='${_this.classOfCharacters[valueIsAPairCharacter]}'>` + value;
-        } else {
-          if (index === array.length-1) {
-            if (value === ' ') {
-              newSpanText += '\xa0';
-            } else {
-              newSpanText += value;
-            }
-          }
-          else
-            newSpanText += value + "</span><span class='note__text'>";
-        }
-      } else {
-        if (value === ' ') {
-          newSpanText += '\xa0';
-        } else {
-          newSpanText += value;
-        }
-      }*/
     }
   });
   newSpanText += "</span>";
