@@ -63,6 +63,27 @@ function App() {
     }
   }
 
+  function createNewDivForText(text) {
+    // Create new DIV with an 'empty' SPAN inside it
+    let spanElement = document.createElement('span');
+    spanElement.setAttribute("class", "note__text");
+    if (text === "") {
+      spanElement.innerHTML = '<br>';
+    } else {
+      spanElement.innerText = text;
+    }
+
+    let pElement = document.createElement('p');
+    pElement.setAttribute("class", "note__paragraph");
+    pElement.appendChild(spanElement);
+
+    let divElement = document.createElement('div');
+    divElement.setAttribute("class", "note__line");
+    divElement.appendChild(pElement);
+
+    return divElement;
+  }
+
   function replaceNbspWithBlankspace(currentText) {
     let newText = "";
     for (let i = 0; i < currentText.length; i++) {
@@ -121,7 +142,8 @@ function App() {
     let pairsInText = new PairsInText();
     let text = newText.slice(length);
     pairsInText.getCountAndIndex(text, length);
-    parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
+    if (newText)
+      parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
     if (offset !== undefined)
       setCaretPositionInChildNode(parentNode, offset);
     if (e !== undefined)
@@ -161,13 +183,33 @@ function App() {
   }
 
   function cutTextInSameSpan(node, fromOffset, toOffset) {
-    node.innerText = node.innerText.slice(0, fromOffset) + node.innerText.slice(toOffset);
-    setCaretPositionToOffset(node, fromOffset);
+    let remainingText = node.innerText.slice(0, fromOffset) + node.innerText.slice(toOffset);
+    if (remainingText === "") {
+      if (node.parentNode.childNodes.length === 1) {
+        node.innerHTML = "<br>";
+        setCaretPositionToOffset(node, 0);
+      } else {
+        let parentNode = node.parentNode;
+        let parentOffset = getParentOffset(node, fromOffset);
+        node.remove();
+        setCaretPositionInChildNode(parentNode, parentOffset);
+      }
+    } else {
+      node.innerText = remainingText;
+      setCaretPositionToOffset(node, fromOffset);
+    }
   }
 
   function cutTextInSameDiv(parentNode, fromOffset, toOffset) {
-    parentNode.innerText = parentNode.innerText.slice(0, fromOffset) + parentNode.innerText.slice(toOffset);
-    checkHeader(parentNode.firstChild, parentNode.innerText, fromOffset);
+    let remainingText = parentNode.innerText.slice(0, fromOffset) + parentNode.innerText.slice(toOffset);
+    if (remainingText === "") {
+      parentNode.setAttribute("class", "note__paragraph");
+      parentNode.innerHTML = "<span class='note__text'><br></span>";
+      setCaretPositionToOffset(parentNode.firstChild, 0);
+    } else {
+      parentNode.innerText = remainingText;
+      checkHeader(parentNode.firstChild, parentNode.innerText, fromOffset);
+    }
   }
 
   function cutTextInDifferentDivs(fromNode, fromOffset, toNode, toOffset) {
@@ -177,7 +219,7 @@ function App() {
     let toParentOffset = getParentOffset(toNode, toOffset);
     let currentDivNode = fromDivNode;
 
-    fromDivNode.firstChild.innerText = fromDivNode.firstChild.innerText.slice(0, fromParentOffset) + toDivNode.firstChild.innerText.slice(toParentOffset);
+    let remainingText = fromDivNode.firstChild.innerText.slice(0, fromParentOffset) + toDivNode.firstChild.innerText.slice(toParentOffset);
 
     while (currentDivNode) {
       if (currentDivNode === fromDivNode) {
@@ -193,7 +235,14 @@ function App() {
       }
     }
 
-    checkHeader(fromDivNode.firstChild.firstChild, fromDivNode.firstChild.innerText, fromParentOffset);
+    if (remainingText === "") {
+      fromDivNode.firstChild.setAttribute("class", "note__paragraph");
+      fromDivNode.firstChild.innerHTML = "<span class='note__text'><br></span>";
+      setCaretPositionToOffset(fromDivNode.firstChild.firstChild, 0);
+    } else {
+      fromDivNode.firstChild.innerText = remainingText;
+      checkHeader(fromDivNode.firstChild.firstChild, fromDivNode.firstChild.innerText, fromParentOffset);
+    }
   }
 
   function checkHeader(el, currentText, offset, e) {
@@ -331,6 +380,47 @@ function App() {
       console.log("In CMD + V", e.keyCode, e.ctrlKey, e.metaKey);
       //it was Ctrl + V (Cmd + V)
       e.preventDefault();
+      let textToCopy = localStorage.getItem("text");
+      if (textToCopy && textToCopy.length > 0) {
+        let textLines = textToCopy.split("\n");
+
+        let stringBeforeCaret = currentNode.parentNode.innerText.slice(0, parentOffset);
+        let stringAfterCaret = currentNode.parentNode.innerText.slice(parentOffset);
+
+        if (currentNode.innerHTML === "<br>") {
+          stringBeforeCaret = "";
+          stringAfterCaret = "";
+        }
+
+        if (textLines.length === 1) {
+          // Same Div
+          let currentPNode = currentNode.parentNode;
+          currentNode.parentNode.innerText = stringBeforeCaret + textLines[0] + stringAfterCaret;
+          checkHeader(currentPNode.firstChild, currentPNode.innerText, parentOffset + textLines[0].length);
+        } else {
+          // Multiple Divs
+          let currentDivNode = currentNode.parentNode.parentNode;
+          let nextDivNode = currentDivNode.nextSibling;
+          textLines.forEach((line, index, array) => {
+            if (index === 0) {
+              // First Line
+              currentDivNode.firstChild.innerText = stringBeforeCaret + line;
+              checkHeader(currentDivNode.firstChild.firstChild, currentDivNode.firstChild.innerText);
+            } else if (index === array.length-1) {
+              // Last line
+              let divElement = createNewDivForText(line + stringAfterCaret);
+              currentDivNode.parentNode.insertBefore(divElement, nextDivNode);
+              checkHeader(divElement.firstChild.firstChild, divElement.firstChild.innerText, line.length);
+            } else {
+              // Middle Lines
+              let divElement = createNewDivForText(line);
+              currentDivNode.parentNode.insertBefore(divElement, nextDivNode);
+              checkHeader(divElement.firstChild.firstChild, divElement.firstChild.innerText);
+            }
+          });
+        }
+      }
+
     } else if (e.keyCode === 13) {
       // trap the return key being pressed
       console.log("In Enter");
