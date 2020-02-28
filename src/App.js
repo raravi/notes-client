@@ -1,5 +1,5 @@
 import React from 'react';
-import { onKeyDownInEditor, onClickInEditor } from './Editor';
+import { onKeyDownInEditor, onClickInEditor } from './editor/Editor';
 import './App.css';
 
 function App() {
