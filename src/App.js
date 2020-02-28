@@ -51,18 +51,6 @@ function App() {
     return parentOffset;
   }
 
-  function getCurrentNode(divNode, divOffset) {
-    let offsetLeft = divOffset;
-    let children = divNode.firstChild.childNodes;
-    for (let i = 0; i < children.length; i++) {
-      if (offsetLeft <= children[i].innerText.length) {
-        return children[i];
-      } else {
-        offsetLeft -= children[i].innerText.length;
-      }
-    }
-  }
-
   function createNewDivForText(text) {
     // Create new DIV with an 'empty' SPAN inside it
     let spanElement = document.createElement('span');
@@ -183,6 +171,8 @@ function App() {
   }
 
   function cutTextInSameSpan(node, fromOffset, toOffset) {
+    console.log("fromOffset : ", fromOffset);
+    console.log("toOffset : ", toOffset);
     let remainingText = node.innerText.slice(0, fromOffset) + node.innerText.slice(toOffset);
     if (remainingText === "") {
       if (node.parentNode.childNodes.length === 1) {
@@ -351,15 +341,18 @@ function App() {
     let currentOffset = currentSelection.anchorOffset;
     let currentText = currentNode.innerText;
     let parentOffset = getParentOffset(currentNode, currentOffset);
+    let focusNode, focusOffset;
+
+    if (currentSelection.isCollapsed === false) {
+      focusNode = getNodeFromSelection(currentSelection.focusNode);
+      focusOffset = currentSelection.focusOffset;
+    }
 
     if (e.keyCode === 67 && (e.ctrlKey || e.metaKey)) {
       console.log("In CMD + C", e.keyCode, e.ctrlKey, e.metaKey);
       //it was Ctrl + C (Cmd + C)
       e.preventDefault();
       if (currentSelection.isCollapsed === false) {
-        let focusNode = getNodeFromSelection(currentSelection.focusNode);
-        let focusOffset = currentSelection.focusOffset;
-
         let copiedText = getTextToCopy(currentNode, currentOffset, focusNode, focusOffset);
         localStorage.setItem("text", copiedText);
       }
@@ -368,9 +361,6 @@ function App() {
       //it was Ctrl + X (Cmd + X)
       e.preventDefault();
       if (currentSelection.isCollapsed === false) {
-        let focusNode = getNodeFromSelection(currentSelection.focusNode);
-        let focusOffset = currentSelection.focusOffset;
-
         let copiedText = getTextToCopy(currentNode, currentOffset, focusNode, focusOffset);
         localStorage.setItem("text", copiedText);
 
@@ -429,13 +419,12 @@ function App() {
 
       if (currentSelection.isCollapsed === false) {
         // Selection to be deleted, and then Enter to be processed
-
-        let focusNode = getNodeFromSelection(currentSelection.focusNode);
-        let focusOffset = currentSelection.focusOffset;
-        let currentDivNode = currentNode.parentNode.parentNode;
-
         cutNodes(currentNode, currentOffset, focusNode, focusOffset);
-        currentNode = getCurrentNode(currentDivNode, parentOffset);
+
+        currentSelection = window.getSelection();
+        currentNode = getNodeFromSelection(currentSelection.anchorNode);
+        currentOffset = currentSelection.anchorOffset;
+        parentOffset = getParentOffset(currentNode, currentOffset);
       }
       // Create new DIV with an 'empty' SPAN inside it
       let innerSpanElement = document.createElement('span');
@@ -515,12 +504,12 @@ function App() {
 
       if (currentSelection.isCollapsed === false) {
         // Selection to be deleted, and then character to be processed
-        let focusNode = getNodeFromSelection(currentSelection.focusNode);
-        let focusOffset = currentSelection.focusOffset;
-        let currentDivNode = currentNode.parentNode.parentNode;
-
         cutNodes(currentNode, currentOffset, focusNode, focusOffset);
-        currentNode = getCurrentNode(currentDivNode, parentOffset);
+
+        currentSelection = window.getSelection();
+        currentNode = getNodeFromSelection(currentSelection.anchorNode);
+        currentOffset = currentSelection.anchorOffset;
+        parentOffset = getParentOffset(currentNode, currentOffset);
       }
       // Calculate new Text after addition of character from 'e.key'
       let stringBeforeCaret = currentNode.parentNode.innerText.slice(0, parentOffset);
@@ -536,12 +525,7 @@ function App() {
       if (currentSelection.isCollapsed === false) {
         e.preventDefault();
         // Selection to be deleted, and then Backspace to be processed
-        let focusNode = getNodeFromSelection(currentSelection.focusNode);
-        let focusOffset = currentSelection.focusOffset;
-        let currentDivNode = currentNode.parentNode.parentNode;
-
         cutNodes(currentNode, currentOffset, focusNode, focusOffset);
-        currentNode = getCurrentNode(currentDivNode, parentOffset);
       } else {
         if (parentOffset === 1 && currentNode.parentNode.innerText.length === 1) {
           e.preventDefault();
@@ -674,4 +658,15 @@ export default App;
     <span className="note__text">You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).&nbsp;</span>
   </span>
 </div>
+*/
+
+/*
+# How to write a blog post!
+1. *Come up with an interesting topic*: This can be anything. But it should be something that you're good at. Only then will you be able to write about it in detail.
+2. *Research on it*: Do your bit before you start to write. Make a habit of researching about the topic, and check all available literature on it. So that you get an idea of how things stand now.
+3. *A broad outline*: Break down the topic into sub-topics so that you can structure your post in a meaningful way.
+4. *Write write write*: Just start typing, that's all there is to it. Just keep typing out the thoughts that come randomly into your head. Get everything out.
+5. *Edit it*: Once you have typed out everything in your head, then it's time to start structuring it into the outline you had come up with earlier. It's okay if the outline changes, as long as it makes sense!
+## Why should I write a blog post?
+Writing is a form of expression. And we humans have an innate need to express ourselves and be heard. We want to see and wish to be seen. And writing is one of the mediums for doing so. It also helps us become better at thinking objectively and form opinions based on research in a coherent manner.
 */
