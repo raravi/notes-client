@@ -8,7 +8,7 @@ function App() {
 
   return (
     <>
-      {userLoggedIn && <Dashboard />}
+      {userLoggedIn && <Dashboard setUserLoggedIn={setUserLoggedIn} />}
       {!userLoggedIn && <Login setUserLoggedIn={setUserLoggedIn} />}
     </>
   );

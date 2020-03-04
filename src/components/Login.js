@@ -155,9 +155,9 @@ export const Login = (props) => {
   }
 
   return (
-    <>
+    <div className="login-container">
       <header className="login-header">
-        <h1 className="login-header__title">Notes</h1>
+        <h1 className="login-header__title">notes</h1>
       </header>
       { !forgotPassword && !newUser &&
         <LoginSection
@@ -189,6 +189,6 @@ export const Login = (props) => {
       <footer className="login-footer">
         <p>&#169; 2020 Amith Raravi - source code on <a href="https://github.com/raravi/notes-client">Github</a></p>
       </footer>
-    </>
+    </div>
   )
 }

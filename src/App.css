@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Titillium+Web:300,400,600,700,900|Source+Sans+Pro:300,400,600|Roboto+Condensed:300,400,700&display=swap');
+
 /**
  * CSS custom variables to keep the CSS 'DRY'!
  */
@@ -5,6 +7,7 @@
   --color-blue: hsl(230, 45%, 40%);
   --color-blue-light: hsl(230, 45%, 60%);
   --color-grey: hsl(213, 30%, 60%);
+  --color-grey-light: hsl(213, 30%, 92%);
   --color-grey-lighter: hsl(213, 30%, 72%);
   --color-grey-note: hsl(230, 5%, 97%);
 
@@ -23,6 +26,7 @@
 }
 
 body {
+  font-family: 'Source Sans Pro', sans-serif;
   font-size: 16px;
 	line-height: 1.4em;
   font-weight: 300;
@@ -46,7 +50,6 @@ body {
 }
 
 .mainbar {
-  /* width: auto; */
   display: flex;
   flex-direction: column;
 }
@@ -63,16 +66,29 @@ body {
   position: absolute;
   top: 50%;
   left: 30px;
-  transform:  translateY(-50%);
-  font-size: 36px;
+  transform: translateY(-60%);
+  font-size: 40px;
+  font-weight: 500;
   letter-spacing: 0.05em;
   -webkit-text-rendering: optimizeLegibility;
 	-moz-text-rendering: optimizeLegibility;
 	text-rendering: optimizeLegibility;
   color: var(--color-blue-light);
-  font-family: monospace;
-  font-weight: 200;
-  /* padding-left: 40px; */
+}
+
+.header__logout {
+  position: absolute;
+  top: 50%;
+  right: 30px;
+  transform: translateY(-60%);
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  color: var(--color-grey-lighter);
+  cursor: pointer;
+}
+
+.header__logout:hover {
+  color: var(--color-grey);
 }
 
 .note {
@@ -211,22 +227,31 @@ body {
   color: var(--color-blue);
 }
 
+/**
+ * Login / Register / Forgot Password Sections
+ */
+.login-container {
+  max-width: 700px;
+  min-width: 270px;
+  margin: 0 auto;
+  padding: 0 10px;
+}
+
 .login-header {
-  padding: 50px 0;
+  padding: 24px 0;
   text-align: center;
   color: var(--color-blue-light);
+  border-bottom: 2px solid var(--color-grey-light);
 }
 
 .login-header__title {
-  margin-left: 20px;
-  padding-left: 40px;
-  /* font-family: 'Kelly Slab', sans-serif; */
-  font-size: 52px;
-  letter-spacing: 0.2em;
+  padding-left: 30px;
+  font-size: 76px;
+  letter-spacing: 0.13em;
   -webkit-text-rendering: optimizeLegibility;
 	-moz-text-rendering: optimizeLegibility;
 	text-rendering: optimizeLegibility;
-  padding-top: 25px;
+  padding-top: 15px;
   padding-bottom: 25px;
   padding-right: 20px;
   border-radius: 25px;
@@ -245,9 +270,6 @@ body {
   color: var(--color-blue);
 }
 
-/**
- * Login / Register / Forgot Password Sections
- */
 .login,
 .register,
 .forgot-password {
@@ -373,7 +395,6 @@ body {
 
 .login__forgot-password {
   font-family: 'Roboto Condensed', sans-serif;
-  /* font-family: 'Source Sans Pro', sans-serif; */
   font-size: 16px;
   letter-spacing: 0.1em;
   color: var(--color-grey);

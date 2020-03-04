@@ -1,13 +1,14 @@
 import React from "react";
 import { onKeyDownInEditor, onClickInEditor } from '../editor/Editor';
 
-export const Dashboard = () => {
+export const Dashboard = (props) => {
   return (
     <div className="container">
       <div className="sidebar"></div>
       <div className="mainbar">
         <header className="header">
-          <div className="header__title">Notes</div>
+          <div className="header__title">notes</div>
+          <div className="header__logout" onClick={() => props.setUserLoggedIn(null)}>logout</div>
         </header>
         <div contentEditable="true" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClickInEditor}>
           <div className="note__line">
