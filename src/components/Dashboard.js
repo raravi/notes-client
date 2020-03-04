@@ -12,26 +12,19 @@ export const Dashboard = (props) => {
     axios.post('http://localhost:8000/api/users/save', {
       token: sessionStorage.getItem("token")
     })
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+    .then(response => console.log(response))
+    .catch(error => console.log(error));
   }
 
   function onLogout() {
     props.setUserLoggedIn(null);
+    sessionStorage.removeItem("token");
     /**
      * POST the user request to the API endpoint '/logout'.
      */
     axios.post('http://localhost:8000/api/users/logout')
-    .then(function (response) {
-      console.log(response);
-    })
-    .catch(function (error) {
-      console.log(error);
-    });
+    .then(response => console.log(response))
+    .catch(error => console.log(error));
   }
 
   return (
