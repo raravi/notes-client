@@ -20,6 +20,20 @@ export const Dashboard = (props) => {
     });
   }
 
+  function onLogout() {
+    props.setUserLoggedIn(null);
+    /**
+     * POST the user request to the API endpoint '/logout'.
+     */
+    axios.post('http://localhost:8000/api/users/logout')
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
   return (
     <div className="container">
       <div className="sidebar"></div>
@@ -27,7 +41,7 @@ export const Dashboard = (props) => {
         <header className="header">
           <div className="header__title">notes</div>
           <div className="header__save" onClick={onSave}>Save</div>
-          <div className="header__logout" onClick={() => props.setUserLoggedIn(null)}>logout</div>
+          <div className="header__logout" onClick={onLogout}>logout</div>
         </header>
         <div contentEditable="true" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClickInEditor}>
           <div className="note__line">
