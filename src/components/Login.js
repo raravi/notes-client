@@ -5,6 +5,8 @@ import { ForgotPasswordSection } from './ForgotPasswordSection';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
+axios.defaults.withCredentials = true  // enable axios post cookie, default false
+
 export const Login = (props) => {
   let [ forgotPassword, setForgotPassword ] = useState(false);
   let [ newUser, setNewUser ] = useState(false);

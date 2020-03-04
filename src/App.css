@@ -76,6 +76,21 @@ body {
   color: var(--color-blue-light);
 }
 
+.header__save {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  font-size: 20px;
+  letter-spacing: 0.1em;
+  color: var(--color-grey-lighter);
+  cursor: pointer;
+}
+
+.header__save:hover {
+  color: var(--color-grey);
+}
+
 .header__logout {
   position: absolute;
   top: 50%;

@@ -1,13 +1,32 @@
 import React from "react";
+import axios from 'axios';
 import { onKeyDownInEditor, onClickInEditor } from '../editor/Editor';
 
+axios.defaults.withCredentials = true  // enable axios post cookie, default false
+
 export const Dashboard = (props) => {
+  function onSave() {
+    /**
+     * POST the user request to the API endpoint '/save'.
+     */
+    axios.post('http://localhost:8000/api/users/save', {
+      token: sessionStorage.getItem("token")
+    })
+    .then(function (response) {
+      console.log(response);
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+  }
+
   return (
     <div className="container">
       <div className="sidebar"></div>
       <div className="mainbar">
         <header className="header">
           <div className="header__title">notes</div>
+          <div className="header__save" onClick={onSave}>Save</div>
           <div className="header__logout" onClick={() => props.setUserLoggedIn(null)}>logout</div>
         </header>
         <div contentEditable="true" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClickInEditor}>
