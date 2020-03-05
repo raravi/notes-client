@@ -581,4 +581,34 @@ function onClickInEditor(e) {
   console.log("On Click");
 }
 
-export { onKeyDownInEditor, onClickInEditor };
+function loadNoteInEditor(noteContent) {
+  console.log(noteContent);
+  let textLines = noteContent.split("\\n");
+  console.log(textLines);
+  let editor = document.querySelector('.note');
+  editor.setAttribute("contentEditable", "true");
+  editor.innerHTML = "";
+  textLines.forEach(line => {
+    // Create new DIV with an 'empty' SPAN inside it
+    let innerSpanElement = document.createElement('span');
+    innerSpanElement.setAttribute("class", "note__text");
+    innerSpanElement.innerText = line;
+
+    let spanElement = document.createElement('p');
+    spanElement.setAttribute("class", "note__paragraph");
+    spanElement.appendChild(innerSpanElement);
+
+    let divElement = document.createElement('div');
+    divElement.setAttribute("class", "note__line");
+    divElement.appendChild(spanElement);
+
+    editor.appendChild(divElement);
+
+    let children = editor.childNodes;
+    children.forEach(node => {
+      checkHeader(node.firstChild.firstChild, node.firstChild.innerText);
+    });
+  });
+}
+
+export { onKeyDownInEditor, onClickInEditor, loadNoteInEditor };

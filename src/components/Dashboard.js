@@ -1,6 +1,6 @@
 import React from "react";
 import axios from 'axios';
-import { onKeyDownInEditor, onClickInEditor } from '../editor/Editor';
+import { onKeyDownInEditor, onClickInEditor, loadNoteInEditor } from '../editor/Editor';
 
 axios.defaults.withCredentials = true  // enable axios post cookie, default false
 
@@ -27,10 +27,31 @@ export const Dashboard = (props) => {
     .catch(error => console.log(error));
   }
 
+  function onClickNoteInSidebar(e) {
+    let currentNoteInSidebar = e.target;
+    let note = props.notes.find(note => note.id === currentNoteInSidebar.dataset.id);
+    if (note) {
+      let noteContent = note.note;
+      loadNoteInEditor(noteContent);
+      let children = currentNoteInSidebar.parentNode.childNodes;
+      children.forEach(node => {
+        node.setAttribute("class", "sidebar__note");
+      });
+      currentNoteInSidebar.setAttribute("class", "sidebar__note sidebar__note--active");
+    }
+  }
+
   return (
     <div className="container">
       <div className="sidebar">
-       {props.notes.map(note => <div key={note.id}>{note.id}</div>)}
+        <div className="sidebar__header"></div>
+        <div className="sidebar__new-note">New note</div>
+        <div className="sidebar__notes-header">All notes</div>
+        <div className="sidebar__notes">
+          {props.notes.map(note =>
+            <div className="sidebar__note" data-id={note.id} key={note.id} onClick={onClickNoteInSidebar}>{note.id}</div>
+          )}
+        </div>
       </div>
       <div className="mainbar">
         <header className="header">
@@ -38,10 +59,10 @@ export const Dashboard = (props) => {
           <div className="header__save" onClick={onSave}>Save</div>
           <div className="header__logout" onClick={onLogout}>logout</div>
         </header>
-        <div contentEditable="true" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClickInEditor}>
+        <div contentEditable="false" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClickInEditor}>
           <div className="note__line">
             <p className="note__header1">
-              <span className="note__text">#&nbsp;Header&nbsp;One</span>
+              <span className="note__text">Welcome to notes!</span>
             </p>
           </div>
           <div className="note__line">
@@ -51,30 +72,12 @@ export const Dashboard = (props) => {
           </div>
           <div className="note__line">
             <p className="note__paragraph">
-              <span className="note__text"><br /></span>
+              <span className="note__text">To edit, please click on your saved notes in the sidebar.</span>
             </p>
           </div>
           <div className="note__line">
             <p className="note__paragraph">
-              <span className="note__text">Sim</span>
-            </p>
-          </div>
-          <div className="note__line">
-            <p className="note__header1">
-              <span className="note__text">#&nbsp;Head</span>
-              <span className="note__bold">*er&nbsp;O*</span>
-            </p>
-          </div>
-          <div className="note__line">
-            <p className="note__paragraph">
-              <span className="note__text">Sim</span>
-              <span className="note__bold">*ple&nbsp;l*</span>
-              <span className="note__text">ine</span>
-            </p>
-          </div>
-          <div className="note__line">
-            <p className="note__blockquote">
-              <span className="note__text">&gt; You can have properly indented paragraphs within list items. Notice the blank line above, </span><span className="note__link">[I'm an inline-style link](www.google.com)</span><span className="note__text"> and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).</span>
+              <span className="note__text">Or open a new note!</span>
             </p>
           </div>
         </div>
