@@ -5,11 +5,12 @@ import './App.css';
 
 function App() {
   let [ userLoggedIn, setUserLoggedIn ] = useState(null);
+  let [ notes, setNotes ] = useState([]);
 
   return (
     <>
-      {userLoggedIn && <Dashboard setUserLoggedIn={setUserLoggedIn} />}
-      {!userLoggedIn && <Login setUserLoggedIn={setUserLoggedIn} />}
+      {userLoggedIn && <Dashboard setUserLoggedIn={setUserLoggedIn} notes={notes} />}
+      {!userLoggedIn && <Login setUserLoggedIn={setUserLoggedIn} setNotes={setNotes} />}
     </>
   );
 }

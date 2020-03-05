@@ -29,7 +29,9 @@ export const Dashboard = (props) => {
 
   return (
     <div className="container">
-      <div className="sidebar"></div>
+      <div className="sidebar">
+       {props.notes.map(note => <div key={note.id}>{note.id}</div>)}
+      </div>
       <div className="mainbar">
         <header className="header">
           <div className="header__title">notes</div>

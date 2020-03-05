@@ -49,9 +49,10 @@ export const Login = (props) => {
       password: password.value
     })
     .then(function (response) {
-      sessionStorage.setItem("token", response.data.token);
       let tokenDecoded = jwtDecode(response.data.token);
       if(tokenDecoded) {
+        sessionStorage.setItem("token", response.data.token);
+        props.setNotes(response.data.notes);
         props.setUserLoggedIn({id: tokenDecoded.id, name: tokenDecoded.name});
         // TODO: Do Login stuff
       }
