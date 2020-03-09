@@ -1,19 +1,41 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import axios from 'axios';
-import { onKeyDownInEditor, onClickInEditor, loadNoteInEditor } from '../editor/Editor';
+import { onKeyDownInEditor, onClickInEditor, loadNoteInEditor, getTextFromEditor } from '../editor/Editor';
 
 axios.defaults.withCredentials = true  // enable axios post cookie, default false
 
 export const Dashboard = (props) => {
-  function onSave() {
-    /**
-     * POST the user request to the API endpoint '/save'.
-     */
-    axios.post('http://localhost:8000/api/users/save', {
-      token: sessionStorage.getItem("token")
-    })
-    .then(response => console.log(response))
-    .catch(error => console.log(error));
+  let [ currentNoteId, setCurrentNoteId ] = useState(null);
+  let [ currentNoteContent, setCurrentNoteContent ] = useState("");
+
+  useEffect(() => {
+    const id = setInterval(saveNote, 5000);
+    return () => clearInterval(id);
+  });
+
+  /**
+   * POST the user request to the API endpoint '/save'.
+   */
+  function saveNote() {
+    if (currentNoteId) {
+      let textContent = getTextFromEditor();
+      if (currentNoteContent !== textContent) {
+        console.log("In saveNote: note edited");
+        axios.post('http://localhost:8000/api/users/save', {
+          token: sessionStorage.getItem("token"),
+          userid: props.userId,
+          noteid: currentNoteId,
+          notetext: getTextFromEditor()
+        })
+        .then(response => console.log(response))
+        .catch(error => console.log(error));
+
+        let note = props.notes.find(note => note.id === currentNoteId);
+        note.note = textContent;
+
+        setCurrentNoteContent(textContent);
+      }
+    }
   }
 
   function onLogout() {
@@ -30,9 +52,11 @@ export const Dashboard = (props) => {
   function onClickNoteInSidebar(e) {
     let currentNoteInSidebar = e.target;
     let note = props.notes.find(note => note.id === currentNoteInSidebar.dataset.id);
+    saveNote();
     if (note) {
-      let noteContent = note.note;
-      loadNoteInEditor(noteContent);
+      loadNoteInEditor(note.note);
+      setCurrentNoteId(note.id);
+      setCurrentNoteContent(note.note);
       let children = currentNoteInSidebar.parentNode.childNodes;
       children.forEach(node => {
         node.setAttribute("class", "sidebar__note");
@@ -56,7 +80,6 @@ export const Dashboard = (props) => {
       <div className="mainbar">
         <header className="header">
           <div className="header__title">notes</div>
-          <div className="header__save" onClick={onSave}>Save</div>
           <div className="header__logout" onClick={onLogout}>logout</div>
         </header>
         <div contentEditable="false" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClickInEditor}>

@@ -9,7 +9,7 @@ function App() {
 
   return (
     <>
-      {userLoggedIn && <Dashboard setUserLoggedIn={setUserLoggedIn} notes={notes} />}
+      {userLoggedIn && <Dashboard setUserLoggedIn={setUserLoggedIn} notes={notes} userId={userLoggedIn.id} />}
       {!userLoggedIn && <Login setUserLoggedIn={setUserLoggedIn} setNotes={setNotes} />}
     </>
   );

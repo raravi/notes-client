@@ -582,33 +582,50 @@ function onClickInEditor(e) {
 }
 
 function loadNoteInEditor(noteContent) {
-  console.log(noteContent);
-  let textLines = noteContent.split("\\n");
-  console.log(textLines);
+  let textLines = noteContent.split("\n");
   let editor = document.querySelector('.note');
   editor.setAttribute("contentEditable", "true");
   editor.innerHTML = "";
   textLines.forEach(line => {
-    // Create new DIV with an 'empty' SPAN inside it
-    let innerSpanElement = document.createElement('span');
-    innerSpanElement.setAttribute("class", "note__text");
-    innerSpanElement.innerText = line;
-
-    let spanElement = document.createElement('p');
-    spanElement.setAttribute("class", "note__paragraph");
-    spanElement.appendChild(innerSpanElement);
-
     let divElement = document.createElement('div');
     divElement.setAttribute("class", "note__line");
-    divElement.appendChild(spanElement);
+
+    if (line === "") {
+      divElement.innerHTML = "<p class='note__paragraph'><span class='node__text'><br /></span></p>";
+    } else {
+      // Create new DIV with an 'empty' SPAN inside it
+      let innerSpanElement = document.createElement('span');
+      innerSpanElement.setAttribute("class", "note__text");
+      innerSpanElement.innerText = line;
+
+      let spanElement = document.createElement('p');
+      spanElement.setAttribute("class", "note__paragraph");
+      spanElement.appendChild(innerSpanElement);
+
+      divElement.appendChild(spanElement);
+    }
 
     editor.appendChild(divElement);
-
-    let children = editor.childNodes;
-    children.forEach(node => {
-      checkHeader(node.firstChild.firstChild, node.firstChild.innerText);
-    });
+    if (line === "")
+      setCaretPositionToOffset(divElement.firstChild.firstChild, 0);
+    else
+      checkHeader(divElement.firstChild.firstChild, divElement.firstChild.innerText);
   });
 }
 
-export { onKeyDownInEditor, onClickInEditor, loadNoteInEditor };
+function getTextFromEditor() {
+  let editor = document.querySelector('.note');
+  let children = editor.childNodes;
+  let textContent = "";
+  children.forEach(lineNode => {
+    if (lineNode.firstChild.firstChild.innerHTML === "<br>")
+      textContent += "";
+    else
+      textContent += lineNode.innerText;
+    if (lineNode !== editor.lastChild)
+      textContent += "\n";
+  });
+  return textContent;
+}
+
+export { onKeyDownInEditor, onClickInEditor, loadNoteInEditor, getTextFromEditor };
