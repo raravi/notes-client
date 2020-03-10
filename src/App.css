@@ -49,6 +49,7 @@ body {
 .sidebar {
   width: 250px;
   background-color: var(--color-blue);
+  height: 100vh;
 }
 
 .sidebar__header {
@@ -57,12 +58,29 @@ body {
   border-bottom: 1px solid var(--color-blue-dim2);
 }
 
+.sidebar__notes {
+  height: 60vh;
+  overflow-y: scroll;
+}
+
+.sidebar__new-note,
+.sidebar__notes-header {
+  height: 10vh;
+  max-height: 50px;
+}
+
+.sidebar__note {
+  height: 60px;
+}
+
 .sidebar__new-note,
 .sidebar__notes-header,
 .sidebar__note {
-  padding: 15px 10px 15px 40px;
+  position: relative;
+  padding: 0 10px 0 40px;
   color: var(--color-grey-light);
   font-size: 16px;
+  /* line-height: 2; */
   letter-spacing: 0.1em;
   transition: 0.2s background-color;
   word-break: break-all;
@@ -78,6 +96,14 @@ body {
 .sidebar__note--active {
   background-color: var(--color-blue-dim);
   font-weight: 500;
+}
+
+.sidebar__new-note p,
+.sidebar__notes-header p,
+.sidebar__note p {
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .mainbar {

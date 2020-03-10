@@ -78,7 +78,10 @@ export const Dashboard = (props) => {
   }
 
   function onClickNoteInSidebar(e) {
+    console.log(e.target);
     let currentNoteInSidebar = e.target;
+    if (currentNoteInSidebar.nodeName === "P")
+      currentNoteInSidebar = currentNoteInSidebar.parentNode;
     let note = props.notes.find(note => note.id === currentNoteInSidebar.dataset.id);
     syncNote();
     if (note) {
@@ -97,11 +100,11 @@ export const Dashboard = (props) => {
     <div className="container">
       <div className="sidebar">
         <div className="sidebar__header"></div>
-        <div className="sidebar__new-note">New note</div>
-        <div className="sidebar__notes-header">All notes</div>
+        <div className="sidebar__new-note"><p>New note</p></div>
+        <div className="sidebar__notes-header"><p>All notes</p></div>
         <div className="sidebar__notes">
           {props.notes.map(note =>
-            <div className="sidebar__note" data-id={note.id} key={note.id} onClick={onClickNoteInSidebar}>{note.id}</div>
+            <div className="sidebar__note" data-id={note.id} key={note.id} onClick={onClickNoteInSidebar}><p>{note.id}</p></div>
           )}
         </div>
       </div>
