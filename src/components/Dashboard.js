@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
-import { onKeyDownInEditor, onClickInEditor, loadNoteInEditor, getTextFromEditor } from '../editor/Editor';
+import { onKeyDownInEditor,
+          onClickInEditor,
+          loadNoteInEditor,
+          getTextFromEditor } from '../editor/Editor';
 
 axios.defaults.withCredentials = true  // enable axios post cookie, default false
 
@@ -9,19 +12,19 @@ export const Dashboard = (props) => {
   let [ currentNoteContent, setCurrentNoteContent ] = useState("");
 
   useEffect(() => {
-    const id = setInterval(saveNote, 5000);
+    const id = setInterval(syncNote, 5000);
     return () => clearInterval(id);
   });
 
   /**
    * POST the user request to the API endpoint '/save'.
    */
-  function saveNote() {
+  function syncNote() {
     if (currentNoteId) {
       let textContent = getTextFromEditor();
       if (currentNoteContent !== textContent) {
-        console.log("In saveNote: note edited");
-        axios.post('http://localhost:8000/api/users/save', {
+        console.log("In syncNote: note edited");
+        axios.post('http://localhost:8000/api/users/sync', {
           token: sessionStorage.getItem("token"),
           userid: props.userId,
           noteid: currentNoteId,
@@ -42,7 +45,7 @@ export const Dashboard = (props) => {
         setCurrentNoteContent(textContent);
       } else {
         // Note isn't edited
-        axios.post('http://localhost:8000/api/users/save', {
+        axios.post('http://localhost:8000/api/users/sync', {
           token: sessionStorage.getItem("token"),
           userid: props.userId,
           noteid: currentNoteId
@@ -77,7 +80,7 @@ export const Dashboard = (props) => {
   function onClickNoteInSidebar(e) {
     let currentNoteInSidebar = e.target;
     let note = props.notes.find(note => note.id === currentNoteInSidebar.dataset.id);
-    saveNote();
+    syncNote();
     if (note) {
       loadNoteInEditor(note.note);
       setCurrentNoteId(note.id);
