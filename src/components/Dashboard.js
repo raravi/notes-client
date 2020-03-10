@@ -25,15 +25,40 @@ export const Dashboard = (props) => {
           token: sessionStorage.getItem("token"),
           userid: props.userId,
           noteid: currentNoteId,
-          notetext: getTextFromEditor()
+          notetext: textContent
         })
-        .then(response => console.log(response))
+        .then(response => {
+          console.log(response.data);
+          if (response.data.notemodified) {
+            textContent = response.data.note;
+            loadNoteInEditor(textContent);
+          }
+        })
         .catch(error => console.log(error));
 
         let note = props.notes.find(note => note.id === currentNoteId);
         note.note = textContent;
 
         setCurrentNoteContent(textContent);
+      } else {
+        // Note isn't edited
+        axios.post('http://localhost:8000/api/users/save', {
+          token: sessionStorage.getItem("token"),
+          userid: props.userId,
+          noteid: currentNoteId
+        })
+        .then(response => {
+          console.log(response.data);
+          if (response.data.notemodified) {
+            loadNoteInEditor(response.data.note);
+
+            let note = props.notes.find(note => note.id === currentNoteId);
+            note.note = response.data.note;
+
+            setCurrentNoteContent(response.data.note);
+          }
+        })
+        .catch(error => console.log(error));
       }
     }
   }
