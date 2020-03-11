@@ -210,6 +210,8 @@ body {
 .note__line {
   display: block;
   width: 100%;
+  overflow-wrap: break-word;  /* All browsers since IE 5.5+ */
+  word-wrap: break-word;      /* Renamed property in CSS3 draft spec */
   letter-spacing: 0.03em;
   word-spacing: 0.04em;
 }
