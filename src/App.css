@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css?family=Titillium+Web:300,400,600,700,900|Source+Sans+Pro:300,400,600|Roboto+Condensed:300,400,700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Raleway:500|Titillium+Web:300,400,600,700,900|Source+Sans+Pro:300,400,600|Roboto+Condensed:300,400,700&display=swap');
 
 /**
  * CSS custom variables to keep the CSS 'DRY'!
@@ -7,6 +7,7 @@
   --color-blue: hsl(230, 45%, 45%);
   --color-blue-dim: hsl(230, 45%, 50%);
   --color-blue-dim2: hsl(230, 45%, 52%);
+  --color-blue-dim3: hsl(230, 45%, 42%);
   --color-blue-light: hsl(230, 45%, 60%);
   --color-grey: hsl(213, 30%, 60%);
   --color-grey-light: hsl(213, 30%, 92%);
@@ -65,11 +66,13 @@ body {
 
 .sidebar__new-note,
 .sidebar__notes-header {
+  padding: 0 10px 0 40px;
   height: 10vh;
   max-height: 50px;
 }
 
 .sidebar__note {
+  padding: 0 60px 0 40px;
   height: 60px;
 }
 
@@ -77,11 +80,11 @@ body {
 .sidebar__notes-header,
 .sidebar__note {
   position: relative;
-  padding: 0 10px 0 40px;
-  color: var(--color-grey-light);
+  color: var(--color-grey-lighter);
   font-size: 16px;
+  font-weight: 500;
   /* line-height: 2; */
-  letter-spacing: 0.1em;
+  letter-spacing: 0.05em;
   transition: 0.2s background-color;
   word-break: break-all;
   border-bottom: 1px solid var(--color-blue-dim2);
@@ -94,8 +97,11 @@ body {
 }
 
 .sidebar__note--active {
-  background-color: var(--color-blue-dim);
-  font-weight: 500;
+  background-color: var(--color-blue-dim3);
+  border-left: 6px solid var(--color-grey-note);
+  padding-left: 34px;
+  color: var(--color-grey-light);
+  font-weight: 700;
 }
 
 .sidebar__new-note p,
@@ -104,6 +110,31 @@ body {
   position: relative;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.sidebar__note-close {
+  display: none;
+}
+
+.sidebar__note:hover .sidebar__note-close {
+  display: inline;
+  position: absolute;
+  padding: 0 4px;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  font-size: 14px;
+  text-transform: uppercase;
+  font-weight: 500;
+  font-family: 'Raleway', sans-serif;
+  color: var(--color-grey-lighter);
+  background-color: var(--color-blue-dim3);
+
+}
+
+.sidebar__note:hover .sidebar__note-close:hover {
+  background-color: var(--color-grey-lighter);
+  color: var(--color-blue-dim3);
 }
 
 .mainbar {

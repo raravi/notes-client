@@ -1,6 +1,11 @@
 import { PairsInText } from './PairsInText';
 import { HeadersInText } from './HeadersInText';
 
+let welcomeNote = "# Welcome to notes!\n" +
+                  "\n" +
+                  "To edit, please click on your saved notes in the sidebar.\n" +
+                  "Or open a new note!";
+
 function setCaretPositionToOffset(el, offset) {
   el.focus();
   let range = document.createRange();
@@ -582,33 +587,19 @@ function onClickInEditor(e) {
 }
 
 function loadNoteInEditor(noteContent) {
+  let editable = "true";
+  if (!noteContent) {
+    editable = "false";
+    noteContent = welcomeNote;
+  }
   let textLines = noteContent.split("\n");
   let editor = document.querySelector('.note');
-  editor.setAttribute("contentEditable", "true");
+  editor.setAttribute("contentEditable", editable);
   editor.innerHTML = "";
   textLines.forEach(line => {
-    let divElement = document.createElement('div');
-    divElement.setAttribute("class", "note__line");
-
-    if (line === "") {
-      divElement.innerHTML = "<p class='note__paragraph'><span class='node__text'><br /></span></p>";
-    } else {
-      // Create new DIV with an 'empty' SPAN inside it
-      let innerSpanElement = document.createElement('span');
-      innerSpanElement.setAttribute("class", "note__text");
-      innerSpanElement.innerText = line;
-
-      let spanElement = document.createElement('p');
-      spanElement.setAttribute("class", "note__paragraph");
-      spanElement.appendChild(innerSpanElement);
-
-      divElement.appendChild(spanElement);
-    }
-
+    let divElement = createNewDivForText(line);
     editor.appendChild(divElement);
-    if (line === "")
-      setCaretPositionToOffset(divElement.firstChild.firstChild, 0);
-    else
+    if (line !== "")
       checkHeader(divElement.firstChild.firstChild, divElement.firstChild.innerText);
   });
 }
@@ -621,11 +612,14 @@ function getTextFromEditor() {
     if (lineNode.firstChild.firstChild.innerHTML === "<br>")
       textContent += "";
     else
-      textContent += lineNode.innerText;
+      textContent += lineNode.firstChild.innerText;
     if (lineNode !== editor.lastChild)
       textContent += "\n";
   });
   return textContent;
 }
 
-export { onKeyDownInEditor, onClickInEditor, loadNoteInEditor, getTextFromEditor };
+export { onKeyDownInEditor,
+          onClickInEditor,
+          loadNoteInEditor,
+          getTextFromEditor };

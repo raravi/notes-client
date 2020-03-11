@@ -12,8 +12,9 @@ export const Dashboard = (props) => {
   let [ currentNoteContent, setCurrentNoteContent ] = useState("");
 
   useEffect(() => {
-    const id = setInterval(syncNote, 5000);
-    return () => clearInterval(id);
+    const id1 = setInterval(syncNote, 5000);
+    const id2 = setInterval(syncAll, 5000);
+    return () => {clearInterval(id1); clearInterval(id2)};
   });
 
   /**
@@ -22,56 +23,75 @@ export const Dashboard = (props) => {
   function syncNote() {
     if (currentNoteId) {
       let textContent = getTextFromEditor();
+      let options;
       if (currentNoteContent !== textContent) {
-        console.log("In syncNote: note edited");
-        axios.post('http://localhost:8000/api/users/sync', {
+        // console.log("In syncNote: note edited");
+        options = {
           token: sessionStorage.getItem("token"),
           userid: props.userId,
           noteid: currentNoteId,
           notetext: textContent
-        })
-        .then(response => {
-          console.log(response.data);
-          if (response.data.notemodified) {
-            textContent = response.data.note;
-            loadNoteInEditor(textContent);
-          }
-        })
-        .catch(error => console.log(error));
-
-        let note = props.notes.find(note => note.id === currentNoteId);
-        note.note = textContent;
-
-        setCurrentNoteContent(textContent);
+        };
       } else {
-        // Note isn't edited
-        axios.post('http://localhost:8000/api/users/sync', {
+        // console.log("In syncNote: note not edited");
+        options = {
           token: sessionStorage.getItem("token"),
           userid: props.userId,
           noteid: currentNoteId
-        })
-        .then(response => {
-          console.log(response.data);
-          if (response.data.notemodified) {
-            loadNoteInEditor(response.data.note);
-
-            let note = props.notes.find(note => note.id === currentNoteId);
-            note.note = response.data.note;
-
-            setCurrentNoteContent(response.data.note);
-          }
-        })
-        .catch(error => console.log(error));
+        };
       }
+
+      axios.post('http://localhost:8000/api/users/sync', options)
+      .then(response => {
+        console.log(response.data);
+        if (response.data.notemodified) {
+          loadNoteInEditor(response.data.note);
+          textContent = getTextFromEditor();
+        }
+        if (currentNoteContent !== textContent) {
+          let notes = props.notes.slice();
+          let note = notes.find(note => note.id === currentNoteId);
+          note.note = textContent;
+          if (response.data.modifieddate)
+            note.modifieddate = response.data.modifieddate;
+          props.setNotes(notes);
+
+          setCurrentNoteContent(textContent);
+        }
+      })
+      .catch(error => console.log(error));
     }
+  }
+
+  function syncAll() {
+    console.log("In syncAll");
+
+    axios.post('http://localhost:8000/api/users/sendall', {
+      token: sessionStorage.getItem("token"),
+      userid: props.userId
+    })
+    .then(response => {
+      if (response.data.success) {
+        if (currentNoteId) {
+          let propNote = props.notes.find(note => note.id === currentNoteId);
+          let responseNote = response.data.notes.find(note => note.id === currentNoteId);
+          if (propNote && !responseNote) {
+            loadNoteInEditor();
+            setCurrentNoteId(null);
+            setCurrentNoteContent("");
+          }
+        }
+
+        props.setNotes(response.data.notes);
+      }
+    })
+    .catch(error => console.log(error));
   }
 
   function onLogout() {
     props.setUserLoggedIn(null);
     sessionStorage.removeItem("token");
-    /**
-     * POST the user request to the API endpoint '/logout'.
-     */
+
     axios.post('http://localhost:8000/api/users/logout')
     .then(response => console.log(response))
     .catch(error => console.log(error));
@@ -82,29 +102,86 @@ export const Dashboard = (props) => {
     let currentNoteInSidebar = e.target;
     if (currentNoteInSidebar.nodeName === "P")
       currentNoteInSidebar = currentNoteInSidebar.parentNode;
+    if (currentNoteInSidebar.getAttribute("class") === "sidebar__note sidebar__note--active")
+      return;
     let note = props.notes.find(note => note.id === currentNoteInSidebar.dataset.id);
     syncNote();
     if (note) {
       loadNoteInEditor(note.note);
       setCurrentNoteId(note.id);
-      setCurrentNoteContent(note.note);
-      let children = currentNoteInSidebar.parentNode.childNodes;
-      children.forEach(node => {
-        node.setAttribute("class", "sidebar__note");
-      });
-      currentNoteInSidebar.setAttribute("class", "sidebar__note sidebar__note--active");
+      setCurrentNoteContent(getTextFromEditor());
     }
+  }
+
+  function onClickNewNoteInSidebar(e) {
+    if (currentNoteId) {
+      syncNote();
+      setCurrentNoteId(null);
+    }
+    axios.post('http://localhost:8000/api/users/new', {
+      token: sessionStorage.getItem("token"),
+      userid: props.userId
+    })
+    .then(response => {
+      console.log(response.data);
+      if (response.data.note) {
+        loadNoteInEditor(response.data.note.note);
+
+        let notes = props.notes.slice();
+        notes.push(response.data.note);
+        props.setNotes(notes);
+
+        setCurrentNoteId(response.data.note.id);
+        // Passing response.data.note.note makes a roundtrip of sync ?!
+        setCurrentNoteContent(getTextFromEditor());
+      }
+    })
+    .catch(error => console.log(error));
+  }
+
+  function onClickDeleteNote(e) {
+    let noteId = e.target.parentNode.dataset.id;
+    console.log("In onClickDeleteNote: ", noteId);
+    e.stopPropagation();
+
+    axios.post('http://localhost:8000/api/users/delete', {
+      token: sessionStorage.getItem("token"),
+      userid: props.userId,
+      noteid: noteId
+    })
+    .then(response => {
+      console.log(response.data);
+      if (currentNoteId === noteId) {
+        loadNoteInEditor();
+        setCurrentNoteId(null);
+        setCurrentNoteContent("");
+      }
+      let notes = props.notes.slice();
+      let noteIndex = notes.findIndex(note => note.id === noteId);
+      notes.splice(noteIndex, 1);
+      props.setNotes(notes);
+
+    })
+    .catch(error => console.log(error));
   }
 
   return (
     <div className="container">
       <div className="sidebar">
         <div className="sidebar__header"></div>
-        <div className="sidebar__new-note"><p>New note</p></div>
+        <div className="sidebar__new-note" onClick={onClickNewNoteInSidebar}><p>New note</p></div>
         <div className="sidebar__notes-header"><p>All notes</p></div>
         <div className="sidebar__notes">
           {props.notes.map(note =>
-            <div className="sidebar__note" data-id={note.id} key={note.id} onClick={onClickNoteInSidebar}><p>{note.id}</p></div>
+            <div className={currentNoteId && currentNoteId === note.id
+                            ? "sidebar__note sidebar__note--active"
+                            : "sidebar__note"}
+                data-id={note.id}
+                key={note.id}
+                onClick={onClickNoteInSidebar}>
+              <p>{note.id}</p>
+              <span className="sidebar__note-close" onClick={onClickDeleteNote}>x</span>
+            </div>
           )}
         </div>
       </div>
