@@ -173,8 +173,6 @@ function getFocusNodeComesAfter(anchorNode, focusNode) {
 }
 
 function cutTextInSameSpan(node, fromOffset, toOffset) {
-  console.log("fromOffset : ", fromOffset);
-  console.log("toOffset : ", toOffset);
   let remainingText = node.innerText.slice(0, fromOffset) + node.innerText.slice(toOffset);
   if (remainingText === "") {
     if (node.parentNode.childNodes.length === 1) {

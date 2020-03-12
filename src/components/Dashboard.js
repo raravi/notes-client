@@ -27,7 +27,6 @@ export const Dashboard = (props) => {
       let textContent = getTextFromEditor();
       let options;
       if (currentNoteContent !== textContent) {
-        // console.log("In syncNote: note edited");
         options = {
           token: sessionStorage.getItem("token"),
           userid: props.userId,
@@ -35,7 +34,6 @@ export const Dashboard = (props) => {
           notetext: textContent
         };
       } else {
-        // console.log("In syncNote: note not edited");
         options = {
           token: sessionStorage.getItem("token"),
           userid: props.userId,
@@ -45,7 +43,6 @@ export const Dashboard = (props) => {
 
       axios.post('http://localhost:8000/api/users/sync', options)
       .then(response => {
-        console.log(response.data);
         if (response.data.notemodified) {
           loadNoteInEditor(response.data.note);
           textContent = getTextFromEditor();
@@ -66,8 +63,6 @@ export const Dashboard = (props) => {
   }
 
   function syncAll() {
-    console.log("In syncAll");
-
     axios.post('http://localhost:8000/api/users/sendall', {
       token: sessionStorage.getItem("token"),
       userid: props.userId
@@ -100,7 +95,6 @@ export const Dashboard = (props) => {
   }
 
   function onClickNoteInSidebar(e) {
-    console.log(e.target);
     let currentNoteInSidebar = e.target;
     if (currentNoteInSidebar.nodeName === "P")
       currentNoteInSidebar = currentNoteInSidebar.parentNode;
@@ -125,7 +119,6 @@ export const Dashboard = (props) => {
       userid: props.userId
     })
     .then(response => {
-      console.log(response.data);
       if (response.data.note) {
         loadNoteInEditor(response.data.note.note);
 
@@ -143,7 +136,6 @@ export const Dashboard = (props) => {
 
   function onClickDeleteNote(e) {
     let noteId = e.target.parentNode.dataset.id;
-    console.log("In onClickDeleteNote: ", noteId);
     e.stopPropagation();
 
     axios.post('http://localhost:8000/api/users/delete', {
@@ -152,7 +144,6 @@ export const Dashboard = (props) => {
       noteid: noteId
     })
     .then(response => {
-      console.log(response.data);
       if (currentNoteId === noteId) {
         loadNoteInEditor();
         setCurrentNoteId(null);

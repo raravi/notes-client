@@ -54,7 +54,6 @@ export const Login = (props) => {
         sessionStorage.setItem("token", response.data.token);
         props.setNotes(response.data.notes);
         props.setUserLoggedIn({id: tokenDecoded.id, name: tokenDecoded.name});
-        // TODO: Do Login stuff
       }
     })
     .catch(function (error) {
@@ -67,8 +66,6 @@ export const Login = (props) => {
             setLoginPasswordError(error.response.data.password);
           }
         }
-      } else {
-        console.log(error);
       }
     });
   }
@@ -117,8 +114,6 @@ export const Login = (props) => {
             setRegisterPassword2Error(error.response.data.password2);
           }
         }
-      } else {
-        console.log(error);
       }
     });
   }
@@ -151,8 +146,6 @@ export const Login = (props) => {
             setForgotPasswordEmailError(error.response.data.email);
           }
         }
-      } else {
-        console.log(error);
       }
     });
   }
