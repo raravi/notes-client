@@ -66,7 +66,7 @@ body {
 
 .sidebar__new-note,
 .sidebar__notes-header {
-  padding: 0 10px 0 40px;
+  padding: 0 10px 0 56px;
   height: 10vh;
   max-height: 50px;
 }
@@ -110,6 +110,17 @@ body {
   position: relative;
   top: 50%;
   transform: translateY(-50%);
+}
+
+.sidebar__list-icon {
+  position: absolute;
+  top: 50%;
+  left: 20px;
+  transform: translateY(-50%);
+}
+
+.sidebar__list-text {
+  display: inline-block;
 }
 
 .sidebar__note-close {

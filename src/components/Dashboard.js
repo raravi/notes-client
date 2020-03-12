@@ -4,6 +4,8 @@ import { onKeyDownInEditor,
           onClickInEditor,
           loadNoteInEditor,
           getTextFromEditor } from '../editor/Editor';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus, faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 
 axios.defaults.withCredentials = true  // enable axios post cookie, default false
 
@@ -169,8 +171,14 @@ export const Dashboard = (props) => {
     <div className="container">
       <div className="sidebar">
         <div className="sidebar__header"></div>
-        <div className="sidebar__new-note" onClick={onClickNewNoteInSidebar}><p>New note</p></div>
-        <div className="sidebar__notes-header"><p>All notes</p></div>
+        <div className="sidebar__new-note" onClick={onClickNewNoteInSidebar}>
+          <FontAwesomeIcon className="sidebar__list-icon" icon={faPlus} />
+          <p className="sidebar__list-text">New note</p>
+        </div>
+        <div className="sidebar__notes-header">
+          <FontAwesomeIcon className="sidebar__list-icon" icon={faLayerGroup} />
+          <p className="sidebar__list-text">All notes</p>
+        </div>
         <div className="sidebar__notes">
           {props.notes.map(note =>
             <div className={currentNoteId && currentNoteId === note.id
