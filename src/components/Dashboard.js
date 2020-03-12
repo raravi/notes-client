@@ -167,10 +167,19 @@ export const Dashboard = (props) => {
     .catch(error => console.log(error));
   }
 
+  function getTitleSlug(note) {
+    let firstLine = note.split("\n")[0];
+    if (firstLine.length > 30)
+      return firstLine.slice(0, 30) + "...";
+    return firstLine;
+  }
+
   return (
     <div className="container">
       <div className="sidebar">
-        <div className="sidebar__header"></div>
+        <div className="sidebar__header">
+          <div className="sidebar__title">notes</div>
+        </div>
         <div className="sidebar__new-note" onClick={onClickNewNoteInSidebar}>
           <FontAwesomeIcon className="sidebar__list-icon" icon={faPlus} />
           <p className="sidebar__list-text">New note</p>
@@ -187,7 +196,7 @@ export const Dashboard = (props) => {
                 data-id={note.id}
                 key={note.id}
                 onClick={onClickNoteInSidebar}>
-              <p>{note.id}</p>
+              <p>{getTitleSlug(note.note)}</p>
               <span className="sidebar__note-close" onClick={onClickDeleteNote}>x</span>
             </div>
           )}
@@ -195,7 +204,6 @@ export const Dashboard = (props) => {
       </div>
       <div className="mainbar">
         <header className="header">
-          <div className="header__title">notes</div>
           <div className="header__logout" onClick={onLogout}>logout</div>
         </header>
         <div contentEditable="false" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClickInEditor}>

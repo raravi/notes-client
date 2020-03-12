@@ -54,14 +54,31 @@ body {
 }
 
 .sidebar__header {
+  position: relative;
   height: 10vh;
   min-height: 60px;
-  border-bottom: 1px solid var(--color-blue-dim2);
+}
+
+.sidebar__title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -60%);
+  font-size: 40px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  -webkit-text-rendering: optimizeLegibility;
+	-moz-text-rendering: optimizeLegibility;
+	text-rendering: optimizeLegibility;
+  color: var(--color-grey-light);
+  cursor: default;
 }
 
 .sidebar__notes {
   height: 60vh;
   overflow-y: scroll;
+  box-shadow: inset -1px -1px 4px var(--color-blue-dim2),
+            inset 1px 1px 4px var(--color-blue-dim2);
 }
 
 .sidebar__new-note,
@@ -72,8 +89,12 @@ body {
 }
 
 .sidebar__note {
-  padding: 0 60px 0 40px;
+  padding: 0 60px 0 25px;
   height: 60px;
+}
+
+.sidebar__notes-header {
+  cursor: default;
 }
 
 .sidebar__new-note,
@@ -83,23 +104,26 @@ body {
   color: var(--color-grey-lighter);
   font-size: 16px;
   font-weight: 500;
-  /* line-height: 2; */
   letter-spacing: 0.05em;
   transition: 0.2s background-color;
-  word-break: break-all;
-  border-bottom: 1px solid var(--color-blue-dim2);
+  overflow-wrap: break-word;  /* All browsers since IE 5.5+ */
+  word-wrap: break-word;      /* Renamed property in CSS3 draft spec */
 }
 
 .sidebar__new-note:hover,
 .sidebar__note:hover {
-  background-color: var(--color-blue-dim);
+  color: var(--color-grey-light);
   cursor: pointer;
 }
 
+.sidebar__new-note:hover .sidebar__list-icon {
+  color: var(--color-grey-light);
+}
+
 .sidebar__note--active {
-  background-color: var(--color-blue-dim3);
-  border-left: 6px solid var(--color-grey-note);
-  padding-left: 34px;
+  /* background-color: var(--color-blue-dim3); */
+  border-left: 4px solid var(--color-grey-note);
+  padding-left: 21px;
   color: var(--color-grey-light);
   font-weight: 700;
 }
@@ -117,6 +141,7 @@ body {
   top: 50%;
   left: 20px;
   transform: translateY(-50%);
+  color: var(--color-grey-lighter);
 }
 
 .sidebar__list-text {
@@ -161,20 +186,6 @@ body {
   position: relative;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.1),
               0 25px 50px 0 rgba(0, 0, 0, 0.05);
-}
-
-.header__title {
-  position: absolute;
-  top: 50%;
-  left: 30px;
-  transform: translateY(-60%);
-  font-size: 40px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  -webkit-text-rendering: optimizeLegibility;
-	-moz-text-rendering: optimizeLegibility;
-	text-rendering: optimizeLegibility;
-  color: var(--color-blue-light);
 }
 
 .header__logout {
