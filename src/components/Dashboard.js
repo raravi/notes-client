@@ -86,12 +86,15 @@ export const Dashboard = (props) => {
   }
 
   function onLogout() {
-    props.setUserLoggedIn(null);
-    sessionStorage.removeItem("token");
-
-    axios.post('http://localhost:8000/api/users/logout')
+    axios.post('http://localhost:8000/api/users/logout', {
+      token: sessionStorage.getItem("token"),
+      userid: props.userId
+    })
     .then(response => console.log(response))
     .catch(error => console.log(error));
+
+    sessionStorage.removeItem("token");
+    props.setUserLoggedIn(null);
   }
 
   function onClickNoteInSidebar(e) {

@@ -501,6 +501,15 @@ function onKeyDownInEditor(e) {
   } else if (e.key.length === 1) {
     // 'e.key' of length 1 represents the character to insert
     console.log("In length=1", e.key, e.keyCode);
+    let keyPressed = e.key;
+    if (e.key === '&')
+      keyPressed = '&amp;';
+    else if (e.key === '<')
+      keyPressed = '&lt;';
+    else if (e.key === '>')
+      keyPressed = '&gt;';
+    else if (e.key === '/')
+      keyPressed = '&#47;';
 
     if (currentSelection.isCollapsed === false) {
       // Selection to be deleted, and then character to be processed
@@ -514,7 +523,7 @@ function onKeyDownInEditor(e) {
     // Calculate new Text after addition of character from 'e.key'
     let stringBeforeCaret = currentNode.parentNode.innerText.slice(0, parentOffset);
     let stringAfterCaret = currentNode.parentNode.innerText.slice(parentOffset);
-    currentText = "" + stringBeforeCaret + e.key + stringAfterCaret;
+    currentText = "" + stringBeforeCaret + keyPressed + stringAfterCaret;
 
     // Check if Header or Paragraph
     checkHeader(currentNode, currentText, stringBeforeCaret.length+1, e);
@@ -584,7 +593,17 @@ function onClickInEditor(e) {
   console.log("On Click");
 }
 
+function escapeHTML(noteContent) {
+  noteContent = noteContent.replace(/&/g, '&amp;');
+  noteContent = noteContent.replace(/</g, '&lt;');
+  noteContent = noteContent.replace(/>/g, '&gt;');
+  noteContent = noteContent.replace(/\//g, '&#47;');
+
+  return noteContent;
+}
+
 function loadNoteInEditor(noteContent) {
+  noteContent = escapeHTML(noteContent);
   let editable = "true";
   if (!noteContent) {
     editable = "false";
