@@ -95,7 +95,7 @@ export const Dashboard = (props) => {
       syncNote();
       setCurrentNoteId(null);
     }
-    loadNoteInEditor(helpNote, "false");
+    loadNoteInEditor(helpNote, "true");
     setCurrentNoteId(null);
     setCurrentNoteContent("");
   }
