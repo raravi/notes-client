@@ -1,11 +1,6 @@
 import { PairsInText } from './PairsInText';
 import { HeadersInText } from './HeadersInText';
 
-let welcomeNote = "# Welcome to notes!\n" +
-                  "\n" +
-                  "To edit, please click on your saved notes in the sidebar.\n" +
-                  "Or open a new note!";
-
 function setCaretPositionToOffset(el, offset) {
   el.focus();
   let range = document.createRange();
@@ -602,13 +597,8 @@ function escapeHTML(noteContent) {
   return noteContent;
 }
 
-function loadNoteInEditor(noteContent) {
-  noteContent = escapeHTML(noteContent);
-  let editable = "true";
-  if (!noteContent) {
-    editable = "false";
-    noteContent = welcomeNote;
-  }
+function loadNoteInEditor(noteContent, editable) {
+  // noteContent = escapeHTML(noteContent);
   let textLines = noteContent.split("\n");
   let editor = document.querySelector('.note');
   editor.setAttribute("contentEditable", editable);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
+import { welcomeNote, helpNote } from "../config/content";
 import { onKeyDownInEditor,
           onClickInEditor,
           loadNoteInEditor,
@@ -12,6 +13,10 @@ axios.defaults.withCredentials = true  // enable axios post cookie, default fals
 export const Dashboard = (props) => {
   let [ currentNoteId, setCurrentNoteId ] = useState(null);
   let [ currentNoteContent, setCurrentNoteContent ] = useState("");
+
+  useEffect(() => {
+    loadNoteInEditor(welcomeNote, "false");
+  }, []);
 
   useEffect(() => {
     const id1 = setInterval(syncNote, 5000);
@@ -44,7 +49,7 @@ export const Dashboard = (props) => {
       axios.post('http://localhost:8000/api/users/sync', options)
       .then(response => {
         if (response.data.notemodified) {
-          loadNoteInEditor(response.data.note);
+          loadNoteInEditor(response.data.note, "true");
           textContent = getTextFromEditor();
         }
         if (currentNoteContent !== textContent) {
@@ -73,7 +78,7 @@ export const Dashboard = (props) => {
           let propNote = props.notes.find(note => note.id === currentNoteId);
           let responseNote = response.data.notes.find(note => note.id === currentNoteId);
           if (propNote && !responseNote) {
-            loadNoteInEditor();
+            loadNoteInEditor(welcomeNote, "false");
             setCurrentNoteId(null);
             setCurrentNoteContent("");
           }
@@ -83,6 +88,16 @@ export const Dashboard = (props) => {
       }
     })
     .catch(error => console.log(error));
+  }
+
+  function onHelp() {
+    if (currentNoteId) {
+      syncNote();
+      setCurrentNoteId(null);
+    }
+    loadNoteInEditor(helpNote, "false");
+    setCurrentNoteId(null);
+    setCurrentNoteContent("");
   }
 
   function onLogout() {
@@ -106,7 +121,7 @@ export const Dashboard = (props) => {
     let note = props.notes.find(note => note.id === currentNoteInSidebar.dataset.id);
     syncNote();
     if (note) {
-      loadNoteInEditor(note.note);
+      loadNoteInEditor(note.note, "true");
       setCurrentNoteId(note.id);
       setCurrentNoteContent(getTextFromEditor());
     }
@@ -123,7 +138,7 @@ export const Dashboard = (props) => {
     })
     .then(response => {
       if (response.data.note) {
-        loadNoteInEditor(response.data.note.note);
+        loadNoteInEditor(response.data.note.note, "true");
 
         let notes = props.notes.slice();
         notes.push(response.data.note);
@@ -148,7 +163,7 @@ export const Dashboard = (props) => {
     })
     .then(response => {
       if (currentNoteId === noteId) {
-        loadNoteInEditor();
+        loadNoteInEditor(welcomeNote, "false");
         setCurrentNoteId(null);
         setCurrentNoteContent("");
       }
@@ -198,27 +213,13 @@ export const Dashboard = (props) => {
       </div>
       <div className="mainbar">
         <header className="header">
+          <div className="header__help" onClick={onHelp}>help</div>
           <div className="header__logout" onClick={onLogout}>logout</div>
         </header>
         <div contentEditable="false" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClickInEditor}>
           <div className="note__line">
-            <p className="note__header1">
-              <span className="note__text">Welcome to notes!</span>
-            </p>
-          </div>
-          <div className="note__line">
             <p className="note__paragraph">
               <span className="note__text"><br /></span>
-            </p>
-          </div>
-          <div className="note__line">
-            <p className="note__paragraph">
-              <span className="note__text">To edit, please click on your saved notes in the sidebar.</span>
-            </p>
-          </div>
-          <div className="note__line">
-            <p className="note__paragraph">
-              <span className="note__text">Or open a new note!</span>
             </p>
           </div>
         </div>
@@ -231,28 +232,6 @@ export const Dashboard = (props) => {
     </div>
   )
 }
-
-/*
-<div className="note__line">
-  <span className="note__header1">
-    <span className="note__text"># Head</span>
-    <span className="note__bold">*er O*</span>
-    <span className="note__text">ne&nbsp;</span>
-  </span>
-</div>
-<div className="note__line">
-  <span className="note__paragraph">
-    <span className="note__text">Sim</span>
-    <span className="note__bold">*ple l*</span>
-    <span className="note__text">ine&nbsp;</span>
-  </span>
-</div>
-<div className="note__line">
-  <span className="note__paragraph">
-    <span className="note__text">You can have properly indented paragraphs within list items. Notice the blank line above, and the leading spaces (at least one, but we'll use three here to also align the raw Markdown).&nbsp;</span>
-  </span>
-</div>
-*/
 
 /*
 # How to write a blog post!

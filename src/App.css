@@ -188,10 +188,10 @@ body {
               0 25px 50px 0 rgba(0, 0, 0, 0.05);
 }
 
+.header__help,
 .header__logout {
   position: absolute;
   top: 50%;
-  right: 30px;
   transform: translateY(-60%);
   font-size: 20px;
   letter-spacing: 0.1em;
@@ -199,6 +199,15 @@ body {
   cursor: pointer;
 }
 
+.header__help {
+  left: 30px;
+}
+
+.header__logout {
+  right: 30px;
+}
+
+.header__help:hover,
 .header__logout:hover {
   color: var(--color-grey);
 }
