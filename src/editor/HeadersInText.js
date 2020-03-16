@@ -7,6 +7,7 @@ function HeadersInText() {
                                   "######",
                                   "*",
                                   ">",
+                                  "&gt;",
                                   "1."];
   this.classOfHeaders = [ "note__header1",
                           "note__header2",
@@ -16,6 +17,7 @@ function HeadersInText() {
                           "note__header6",
                           "note__unorderedlist",
                           "note__blockquote",
+                          "note__blockquote",
                           "note__orderedlist"];
 }
 
@@ -24,7 +26,7 @@ HeadersInText.prototype.setHeader = function (parentNode, strings, isOrderedList
     let indexOfHeader = this.characterCodeOfHeaders.indexOf(strings[0]);
     parentNode.setAttribute("class", this.classOfHeaders[indexOfHeader]);
   } else if (strings.length > 1 && isOrderedList) {
-    parentNode.setAttribute("class", this.classOfHeaders[8]);
+    parentNode.setAttribute("class", this.classOfHeaders[9]);
   } else {
     parentNode.setAttribute("class", "note__paragraph");
   }
