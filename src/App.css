@@ -192,10 +192,7 @@ body {
 .header__logout {
   position: absolute;
   top: 50%;
-  transform: translateY(-60%);
-  font-size: 20px;
-  letter-spacing: 0.1em;
-  color: var(--color-grey-lighter);
+  transform: translateY(-50%);
   cursor: pointer;
 }
 
@@ -207,9 +204,71 @@ body {
   right: 30px;
 }
 
+.header__icon {
+  font-size: 20px;
+  color: var(--color-blue-light);
+}
+
+.header__help-tooltip,
+.header__logout-tooltip {
+  visibility: hidden;
+  position: absolute;
+  width: 120px;
+  background-color: var(--color-blue-dim2);
+  color: var(--color-grey-light);
+  font-family: 'Raleway', sans-serif;
+  font-size: 14px;
+  text-align: center;
+  padding: 2px 0;
+  border-radius: 6px;
+  z-index: 1;
+  opacity: 0;
+  top: -2px;
+  transition: opacity 0.3s;
+}
+
+.header__help-tooltip {
+  left: 175%;
+}
+
+.header__logout-tooltip {
+  right: 178%;
+}
+
+.header__help-tooltip::after,
+.header__logout-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  margin-top: -5px;
+  border-width: 5px;
+  border-style: solid;
+}
+
+.header__help-tooltip::after {
+  right: 100%;
+  border-color: transparent var(--color-blue-dim2) transparent transparent;
+}
+
+.header__logout-tooltip::after {
+  left: 100%;
+  border-color: transparent transparent transparent var(--color-blue-dim2);
+}
+
 .header__help:hover,
 .header__logout:hover {
   color: var(--color-grey);
+}
+
+.header__help:hover .header__icon,
+.header__logout:hover .header__icon {
+  color: var(--color-blue);
+}
+
+.header__help:hover .header__help-tooltip,
+.header__logout:hover .header__logout-tooltip {
+  visibility: visible;
+  opacity: 1;
 }
 
 .note {

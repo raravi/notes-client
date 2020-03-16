@@ -6,7 +6,10 @@ import { onKeyDownInEditor,
           loadNoteInEditor,
           getTextFromEditor } from '../editor/Editor';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus, faLayerGroup } from '@fortawesome/free-solid-svg-icons';
+import {  faPlus,
+          faLayerGroup,
+          faQuestion,
+          faPowerOff } from '@fortawesome/free-solid-svg-icons';
 
 axios.defaults.withCredentials = true  // enable axios post cookie, default false
 
@@ -213,8 +216,14 @@ export const Dashboard = (props) => {
       </div>
       <div className="mainbar">
         <header className="header">
-          <div className="header__help" onClick={onHelp}>help</div>
-          <div className="header__logout" onClick={onLogout}>logout</div>
+          <div className="header__help" onClick={onHelp}>
+            <FontAwesomeIcon className="header__icon" icon={faQuestion} />
+            <span class="header__help-tooltip">Click for help</span>
+          </div>
+          <div className="header__logout" data-tooltip="Sign off" onClick={onLogout}>
+            <FontAwesomeIcon className="header__icon" icon={faPowerOff} />
+            <span class="header__logout-tooltip">Sign off</span>
+          </div>
         </header>
         <div contentEditable="false" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClickInEditor}>
           <div className="note__line">
