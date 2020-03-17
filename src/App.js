@@ -9,8 +9,14 @@ function App() {
 
   return (
     <>
-      {userLoggedIn && <Dashboard setUserLoggedIn={setUserLoggedIn} notes={notes} setNotes={setNotes} userId={userLoggedIn.id} />}
-      {!userLoggedIn && <Login setUserLoggedIn={setUserLoggedIn} setNotes={setNotes} />}
+      {userLoggedIn &&
+        <Dashboard  setUserLoggedIn={setUserLoggedIn}
+                    notes={notes}
+                    setNotes={setNotes}
+                    userId={userLoggedIn.id} />}
+      {!userLoggedIn &&
+        <Login  setUserLoggedIn={setUserLoggedIn}
+                setNotes={setNotes} />}
     </>
   );
 }

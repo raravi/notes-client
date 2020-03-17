@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should take a snapshot 1`] = `
+<DocumentFragment>
+  <div
+    class="login-container"
+  >
+    <header
+      class="login-header"
+    >
+      <h1
+        class="login-header__title"
+      >
+        notes
+      </h1>
+    </header>
+    <section
+      class="login"
+    >
+      <div
+        class="login__header-group"
+      >
+        <h2
+          class="login__header login__header--selected"
+        >
+          Login
+        </h2>
+        <h2
+          class="login__header"
+          data-testid="login-register"
+        >
+          Register
+        </h2>
+      </div>
+      <input
+        class="login__email"
+        name="email"
+        placeholder="Email"
+        type="email"
+      />
+      <br />
+      <label
+        class="login__email-error"
+        data-testid="login-email-error"
+      />
+      <input
+        class="login__password"
+        name="password"
+        placeholder="Password"
+        type="password"
+      />
+      <label
+        class="login__password-error"
+      />
+      <br />
+      <button
+        class="login__submit"
+        data-testid="login-button"
+        type="button"
+      >
+        Submit
+      </button>
+      <div
+        class="login__forgot-passwordblock"
+      >
+        <span
+          class="login__forgot-password"
+          data-testid="login-forgotpassword"
+        >
+          Forgot Password
+        </span>
+      </div>
+    </section>
+    <footer
+      class="login-footer"
+    >
+      <p>
+        © 2020 Amith Raravi - source code on 
+        <a
+          href="https://github.com/raravi/notes-client"
+        >
+          Github
+        </a>
+      </p>
+    </footer>
+  </div>
+</DocumentFragment>
+`;

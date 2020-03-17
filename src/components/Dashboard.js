@@ -218,14 +218,18 @@ export const Dashboard = (props) => {
         <header className="header">
           <div className="header__help" onClick={onHelp}>
             <FontAwesomeIcon className="header__icon" icon={faQuestion} />
-            <span class="header__help-tooltip">Click for help</span>
+            <span className="header__help-tooltip">Click for help</span>
           </div>
           <div className="header__logout" data-tooltip="Sign off" onClick={onLogout}>
             <FontAwesomeIcon className="header__icon" icon={faPowerOff} />
-            <span class="header__logout-tooltip">Sign off</span>
+            <span className="header__logout-tooltip">Sign off</span>
           </div>
         </header>
-        <div contentEditable="false" className="note" onKeyDown={onKeyDownInEditor} onMouseUp={onClickInEditor}>
+        <div  contentEditable="false"
+              className="note"
+              onKeyDown={onKeyDownInEditor}
+              onMouseUp={onClickInEditor}
+              data-testid="dashboard-note">
           <div className="note__line">
             <p className="note__paragraph">
               <span className="note__text"><br /></span>

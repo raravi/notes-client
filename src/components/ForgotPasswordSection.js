@@ -12,7 +12,11 @@ export const ForgotPasswordSection = (props) => {
       <input type="email" name="email" className="forgot-password__email" placeholder="Email" />
       <label className="forgot-password__email-error">{props.forgotPasswordEmailError}</label>
       <label className="forgot-password__email-success">{props.forgotPasswordEmailSuccess}</label><br />
-      <button type="button" className="forgot-password__submit" onClick={props.sendForPasswordReset}>Submit</button>
+      <button type="button"
+              className="forgot-password__submit"
+              onClick={props.sendForPasswordReset} data-testid="forgotpassword-button">
+        Submit
+      </button>
     </section>
   )
 }
