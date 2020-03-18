@@ -18,11 +18,11 @@ function setCaretPositionInChildNode(node, offset) {
   let offsetLeft = offset;
   let children = node.childNodes;
   for (let i = 0; i < children.length; i++) {
-    if (offsetLeft <= children[i].innerText.length) {
+    if (offsetLeft <= children[i].textContent.length) {
       setCaretPositionToOffset(children[i], offsetLeft);
       return;
     } else {
-      offsetLeft -= children[i].innerText.length;
+      offsetLeft -= children[i].textContent.length;
     }
   }
 }
@@ -45,7 +45,7 @@ function getParentOffset(node, offset) {
       parentOffset += offset;
       break;
     } else {
-      parentOffset += children[i].innerText.length;
+      parentOffset += children[i].textContent.length;
     }
   }
   return parentOffset;
@@ -87,7 +87,7 @@ function checkIfOrderedList (string) {
 function checkPreviousNodeIsOrderedList(el, newText) {
   let previousDivNode = el.parentNode.parentNode.previousSibling;
   if (previousDivNode && previousDivNode.getAttribute("class") === "note__line") {
-    let previousText = replaceNbspWithBlankspace(previousDivNode.firstChild.innerText);
+    let previousText = replaceNbspWithBlankspace(previousDivNode.firstChild.textContent);
     let strings = previousText.split(" ");
     let isOrderedList = checkIfOrderedList(strings[0]);
     if (isOrderedList) {
@@ -105,7 +105,7 @@ function fixNextItemsInOrderedList(el, currentText) {
   let nextDivNode = el.parentNode.parentNode.nextSibling;
   let strings = replaceNbspWithBlankspace(currentText).split(" ");
   while(nextDivNode && nextDivNode.getAttribute("class") === "note__line") {
-    let nextText = replaceNbspWithBlankspace(nextDivNode.firstChild.innerText);
+    let nextText = replaceNbspWithBlankspace(nextDivNode.firstChild.textContent);
     let nextTextStrings = nextText.split(" ");
     let isOrderedList = checkIfOrderedList(nextTextStrings[0]);
     if (isOrderedList) {
@@ -139,14 +139,14 @@ function getTextFromNodes(fromNode, fromNodeOffset, toNode, toNodeOffset) {
   let currentDivNode = fromNode;
   while (currentDivNode) {
     if (currentDivNode === fromNode) { // first node
-      text += currentDivNode.firstChild.innerText.slice(fromNodeOffset) + "\n";
+      text += currentDivNode.firstChild.textContent.slice(fromNodeOffset) + "\n";
       currentDivNode = currentDivNode.nextSibling;
     } else if (currentDivNode === toNode) { // last node
-      text += currentDivNode.firstChild.innerText.slice(0, toNodeOffset);
+      text += currentDivNode.firstChild.textContent.slice(0, toNodeOffset);
       // processing done
       currentDivNode = null;
     } else { // middle node(s)
-      text += currentDivNode.firstChild.innerText.slice() + "\n";
+      text += currentDivNode.firstChild.textContent.slice() + "\n";
       currentDivNode = currentDivNode.nextSibling;
     }
   }
@@ -167,7 +167,7 @@ function getFocusNodeComesAfter(anchorNode, focusNode) {
 }
 
 function cutTextInSameSpan(node, fromOffset, toOffset) {
-  let remainingText = node.innerText.slice(0, fromOffset) + node.innerText.slice(toOffset);
+  let remainingText = node.textContent.slice(0, fromOffset) + node.textContent.slice(toOffset);
   if (remainingText === "") {
     if (node.parentNode.childNodes.length === 1) {
       node.innerHTML = "<br>";
@@ -179,20 +179,20 @@ function cutTextInSameSpan(node, fromOffset, toOffset) {
       setCaretPositionInChildNode(parentNode, parentOffset);
     }
   } else {
-    node.innerText = remainingText;
+    node.textContent = remainingText;
     setCaretPositionToOffset(node, fromOffset);
   }
 }
 
 function cutTextInSameDiv(parentNode, fromOffset, toOffset) {
-  let remainingText = parentNode.innerText.slice(0, fromOffset) + parentNode.innerText.slice(toOffset);
+  let remainingText = parentNode.textContent.slice(0, fromOffset) + parentNode.textContent.slice(toOffset);
   if (remainingText === "") {
     parentNode.setAttribute("class", "note__paragraph");
     parentNode.innerHTML = "<span class='note__text'><br></span>";
     setCaretPositionToOffset(parentNode.firstChild, 0);
   } else {
-    parentNode.innerText = remainingText;
-    checkHeader(parentNode.firstChild, parentNode.innerText, fromOffset);
+    parentNode.textContent = remainingText;
+    checkHeader(parentNode.firstChild, parentNode.textContent, fromOffset);
   }
 }
 
@@ -203,7 +203,7 @@ function cutTextInDifferentDivs(fromNode, fromOffset, toNode, toOffset) {
   let toParentOffset = getParentOffset(toNode, toOffset);
   let currentDivNode = fromDivNode;
 
-  let remainingText = fromDivNode.firstChild.innerText.slice(0, fromParentOffset) + toDivNode.firstChild.innerText.slice(toParentOffset);
+  let remainingText = fromDivNode.firstChild.textContent.slice(0, fromParentOffset) + toDivNode.firstChild.textContent.slice(toParentOffset);
 
   while (currentDivNode) {
     if (currentDivNode === fromDivNode) {
@@ -224,8 +224,8 @@ function cutTextInDifferentDivs(fromNode, fromOffset, toNode, toOffset) {
     fromDivNode.firstChild.innerHTML = "<span class='note__text'><br></span>";
     setCaretPositionToOffset(fromDivNode.firstChild.firstChild, 0);
   } else {
-    fromDivNode.firstChild.innerText = remainingText;
-    checkHeader(fromDivNode.firstChild.firstChild, fromDivNode.firstChild.innerText, fromParentOffset);
+    fromDivNode.firstChild.textContent = remainingText;
+    checkHeader(fromDivNode.firstChild.firstChild, fromDivNode.firstChild.textContent, fromParentOffset);
   }
 }
 
@@ -272,9 +272,9 @@ function getTextToCopy(anchorNode, anchorOffset, focusNode, focusOffset) {
   if (anchorNode.parentNode === focusNode.parentNode) {
     // Same Div
     if (anchorParentOffset < focusParentOffset)
-      text = anchorNode.parentNode.innerText.slice(anchorParentOffset, focusParentOffset);
+      text = anchorNode.parentNode.textContent.slice(anchorParentOffset, focusParentOffset);
     else
-      text = anchorNode.parentNode.innerText.slice(focusParentOffset, anchorParentOffset);
+      text = anchorNode.parentNode.textContent.slice(focusParentOffset, anchorParentOffset);
   } else {
     // Different Divs
     let anchorDivNode = anchorNode.parentNode.parentNode;
@@ -335,7 +335,7 @@ function onKeyDownInEditor(e) {
   let currentSelection = window.getSelection();
   let currentNode = getNodeFromSelection(currentSelection.anchorNode);
   let currentOffset = currentSelection.anchorOffset;
-  let currentText = currentNode.innerText;
+  let currentText = currentNode.textContent;
   let parentOffset = getParentOffset(currentNode, currentOffset);
   let focusNode, focusOffset;
 
@@ -370,8 +370,8 @@ function onKeyDownInEditor(e) {
     if (textToCopy && textToCopy.length > 0) {
       let textLines = textToCopy.split("\n");
 
-      let stringBeforeCaret = currentNode.parentNode.innerText.slice(0, parentOffset);
-      let stringAfterCaret = currentNode.parentNode.innerText.slice(parentOffset);
+      let stringBeforeCaret = currentNode.parentNode.textContent.slice(0, parentOffset);
+      let stringAfterCaret = currentNode.parentNode.textContent.slice(parentOffset);
 
       if (currentNode.innerHTML === "<br>") {
         stringBeforeCaret = "";
@@ -381,8 +381,8 @@ function onKeyDownInEditor(e) {
       if (textLines.length === 1) {
         // Same Div
         let currentPNode = currentNode.parentNode;
-        currentNode.parentNode.innerText = stringBeforeCaret + textLines[0] + stringAfterCaret;
-        checkHeader(currentPNode.firstChild, currentPNode.innerText, parentOffset + textLines[0].length);
+        currentNode.parentNode.textContent = stringBeforeCaret + textLines[0] + stringAfterCaret;
+        checkHeader(currentPNode.firstChild, currentPNode.textContent, parentOffset + textLines[0].length);
       } else {
         // Multiple Divs
         let currentDivNode = currentNode.parentNode.parentNode;
@@ -390,18 +390,18 @@ function onKeyDownInEditor(e) {
         textLines.forEach((line, index, array) => {
           if (index === 0) {
             // First Line
-            currentDivNode.firstChild.innerText = stringBeforeCaret + line;
-            checkHeader(currentDivNode.firstChild.firstChild, currentDivNode.firstChild.innerText);
+            currentDivNode.firstChild.textContent = stringBeforeCaret + line;
+            checkHeader(currentDivNode.firstChild.firstChild, currentDivNode.firstChild.textContent);
           } else if (index === array.length-1) {
             // Last line
             let divElement = createNewDivForText(line + stringAfterCaret);
             currentDivNode.parentNode.insertBefore(divElement, nextDivNode);
-            checkHeader(divElement.firstChild.firstChild, divElement.firstChild.innerText, line.length);
+            checkHeader(divElement.firstChild.firstChild, divElement.firstChild.textContent, line.length);
           } else {
             // Middle Lines
             let divElement = createNewDivForText(line);
             currentDivNode.parentNode.insertBefore(divElement, nextDivNode);
-            checkHeader(divElement.firstChild.firstChild, divElement.firstChild.innerText);
+            checkHeader(divElement.firstChild.firstChild, divElement.firstChild.textContent);
           }
         });
       }
@@ -440,7 +440,7 @@ function onKeyDownInEditor(e) {
       currentNode.parentNode.parentNode.parentNode.insertBefore(divElement, currentNode.parentNode.parentNode);
       // Set the Cursor position
       setCaretPositionToOffset(currentNode, 0);
-    } else if (parentOffset === currentNode.parentNode.innerText.length) {
+    } else if (parentOffset === currentNode.parentNode.textContent.length) {
       // Insert new DIV after updating it above
       currentNode.parentNode.parentNode.parentNode.insertBefore(divElement, currentNode.parentNode.parentNode.nextSibling);
       // Set the Cursor position
@@ -450,30 +450,30 @@ function onKeyDownInEditor(e) {
       let offsetLeft = parentOffset;
       let children = currentNode.parentNode.childNodes;
       for (let i = 0; i < children.length; i++) {
-        if (offsetLeft < children[i].innerText.length) {
+        if (offsetLeft < children[i].textContent.length) {
           // Have to break current SPAN
           indexOfSpan = i;
           haveToBreakSpan = true;
           breakAtOffset = offsetLeft;
           break;
-        } else if (offsetLeft === children[i].innerText.length) {
+        } else if (offsetLeft === children[i].textContent.length) {
           indexOfSpan = i;
           haveToBreakSpan = false;
           break;
         } else {
-          offsetLeft -= children[i].innerText.length;
+          offsetLeft -= children[i].textContent.length;
         }
       }
       let tempNodes = [];
       for (let i = 0; i < children.length; i++) {
         if (i === indexOfSpan) {
           if (haveToBreakSpan) {
-            let tempText = children[i].innerText;
-            children[i].innerText = tempText.slice(0, breakAtOffset);
+            let tempText = children[i].textContent;
+            children[i].textContent = tempText.slice(0, breakAtOffset);
 
             let textElement = document.createElement('span');
             textElement.setAttribute("class", children[i].getAttribute("class"));
-            textElement.innerText = tempText.slice(breakAtOffset);
+            textElement.textContent = tempText.slice(breakAtOffset);
             tempNodes.push(textElement);
           }
         }
@@ -488,8 +488,8 @@ function onKeyDownInEditor(e) {
       });
       currentNode.parentNode.parentNode.parentNode.insertBefore(divElement, currentNode.parentNode.parentNode.nextSibling);
       // Check if Header or Paragraph
-      checkHeader(currentNode, currentNode.parentNode.innerText, parentOffset, e);
-      checkHeader(spanElement.firstChild, spanElement.innerText, parentOffset, e);
+      checkHeader(currentNode, currentNode.parentNode.textContent, parentOffset, e);
+      checkHeader(spanElement.firstChild, spanElement.textContent, parentOffset, e);
       // Set the Cursor position
       setCaretPositionToOffset(spanElement.firstChild, 0);
     }
@@ -507,8 +507,8 @@ function onKeyDownInEditor(e) {
       parentOffset = getParentOffset(currentNode, currentOffset);
     }
     // Calculate new Text after addition of character from 'e.key'
-    let stringBeforeCaret = currentNode.parentNode.innerText.slice(0, parentOffset);
-    let stringAfterCaret = currentNode.parentNode.innerText.slice(parentOffset);
+    let stringBeforeCaret = currentNode.parentNode.textContent.slice(0, parentOffset);
+    let stringAfterCaret = currentNode.parentNode.textContent.slice(parentOffset);
     currentText = "" + stringBeforeCaret + e.key + stringAfterCaret;
 
     currentText = purify.sanitize(currentText);
@@ -529,7 +529,7 @@ function onKeyDownInEditor(e) {
       // Selection to be deleted, and then Backspace to be processed
       cutNodes(currentNode, currentOffset, focusNode, focusOffset);
     } else {
-      if (parentOffset === 1 && currentNode.parentNode.innerText.length === 1) {
+      if (parentOffset === 1 && currentNode.parentNode.textContent.length === 1) {
         e.preventDefault();
         let parentNode = currentNode.parentNode;
         parentNode.innerHTML = "<span class='node__text'><br></span>";
@@ -539,31 +539,31 @@ function onKeyDownInEditor(e) {
 
         if (previousDivNode && previousDivNode.getAttribute("class") === "note__line") {
           e.preventDefault(); // Prevent move to last cursor position.
-          let previousOffset = previousDivNode.firstChild.innerText.length;
+          let previousOffset = previousDivNode.firstChild.textContent.length;
 
-          if (previousDivNode.firstChild.innerText === "\n" && currentNode.parentNode.innerText === "\n") {
+          if (previousDivNode.firstChild.textContent === "\n" && currentNode.parentNode.textContent === "\n") {
             previousDivNode.innerHTML = "<p class='note__paragraph'><span class='node__text'><br></span></p>";
             setCaretPositionToOffset(previousDivNode.firstChild.firstChild, 0);
             currentNode.parentNode.parentNode.remove();
-          } else if (previousDivNode.firstChild.innerText === "\n") {
+          } else if (previousDivNode.firstChild.textContent === "\n") {
             previousDivNode.innerHTML = currentNode.parentNode.parentNode.innerHTML;
             setCaretPositionToOffset(previousDivNode.firstChild.firstChild, 0);
             currentNode.parentNode.parentNode.remove();
-          } else if (currentNode.parentNode.innerText === "\n") {
+          } else if (currentNode.parentNode.textContent === "\n") {
             setCaretPositionInChildNode(previousDivNode.firstChild, previousOffset);
             currentNode.parentNode.parentNode.remove();
-            checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.innerText, previousOffset);
+            checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.textContent, previousOffset);
           } else {
             previousDivNode.firstChild.innerHTML += currentNode.parentNode.innerHTML;
-            checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.innerText, previousOffset, e);
+            checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.textContent, previousOffset, e);
             currentNode.parentNode.parentNode.remove();
           }
         } else {
           e.preventDefault();
         }
       } else {
-        let stringBeforeCaret = currentNode.parentNode.innerText.slice(0, parentOffset);
-        let stringAfterCaret = currentNode.parentNode.innerText.slice(parentOffset);
+        let stringBeforeCaret = currentNode.parentNode.textContent.slice(0, parentOffset);
+        let stringAfterCaret = currentNode.parentNode.textContent.slice(parentOffset);
         currentText = "" + stringBeforeCaret.slice(0, -1) + stringAfterCaret;
 
         checkHeader(currentNode, currentText, stringBeforeCaret.length-1, e);
@@ -587,6 +587,10 @@ function onClickInEditor(e) {
 }
 
 function loadNoteInEditor(noteContent, editable) {
+  if (noteContent === undefined || editable === undefined)
+    return;
+  if (editable !== "true" && editable !== "false")
+    return;
   noteContent = purify.sanitize(noteContent);
   let textLines = noteContent.split("\n");
   let editor = document.querySelector('.note');
@@ -596,7 +600,7 @@ function loadNoteInEditor(noteContent, editable) {
     let divElement = createNewDivForText(line);
     editor.appendChild(divElement);
     if (line !== "")
-      checkHeader(divElement.firstChild.firstChild, divElement.firstChild.innerText);
+      checkHeader(divElement.firstChild.firstChild, divElement.firstChild.textContent);
   });
 }
 
@@ -608,11 +612,11 @@ function getTextFromEditor() {
     if (lineNode.firstChild.firstChild.innerHTML === "<br>")
       textContent += "";
     else
-      textContent += lineNode.firstChild.innerText;
+      textContent += lineNode.firstChild.textContent;
     if (lineNode !== editor.lastChild)
       textContent += "\n";
   });
-  return textContent;
+  return replaceNbspWithBlankspace(textContent);
 }
 
 export { onKeyDownInEditor,
