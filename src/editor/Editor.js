@@ -58,7 +58,7 @@ function createNewDivForText(text) {
   if (text === "") {
     spanElement.innerHTML = '<br>';
   } else {
-    spanElement.innerText = text;
+    spanElement.innerHTML = text;
   }
 
   let pElement = document.createElement('p');

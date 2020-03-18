@@ -192,7 +192,9 @@ export const Dashboard = (props) => {
         <div className="sidebar__header">
           <div className="sidebar__title">notes</div>
         </div>
-        <div className="sidebar__new-note" onClick={onClickNewNoteInSidebar}>
+        <div  className="sidebar__new-note"
+              data-testid="dashboard-newnote"
+              onClick={onClickNewNoteInSidebar}>
           <FontAwesomeIcon className="sidebar__list-icon" icon={faPlus} />
           <p className="sidebar__list-text">New note</p>
         </div>
@@ -216,11 +218,15 @@ export const Dashboard = (props) => {
       </div>
       <div className="mainbar">
         <header className="header">
-          <div className="header__help" onClick={onHelp}>
+          <div  className="header__help"
+                data-testid="dashboard-help"
+                onClick={onHelp}>
             <FontAwesomeIcon className="header__icon" icon={faQuestion} />
             <span className="header__help-tooltip">Click for help</span>
           </div>
-          <div className="header__logout" data-tooltip="Sign off" onClick={onLogout}>
+          <div  className="header__logout"
+                data-testid="dashboard-logout"
+                onClick={onLogout}>
             <FontAwesomeIcon className="header__icon" icon={faPowerOff} />
             <span className="header__logout-tooltip">Sign off</span>
           </div>
