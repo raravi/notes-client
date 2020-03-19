@@ -330,9 +330,11 @@ function cutNodes(anchorNode, anchorOffset, focusNode, focusOffset) {
   }
 }
 
-function onKeyDownInEditor(e) {
+function keyPressedInEditor(e, currentSelection) {
   // Get current SPAN details
-  let currentSelection = window.getSelection();
+  // let currentSelection = window.getSelection();
+  if (e === undefined || currentSelection === undefined)
+    return false;
   let currentNode = getNodeFromSelection(currentSelection.anchorNode);
   let currentOffset = currentSelection.anchorOffset;
   let currentText = currentNode.textContent;
@@ -350,7 +352,7 @@ function onKeyDownInEditor(e) {
     e.preventDefault();
     if (currentSelection.isCollapsed === false) {
       let copiedText = getTextToCopy(currentNode, currentOffset, focusNode, focusOffset);
-      localStorage.setItem("text", copiedText);
+      localStorage.setItem("text", replaceNbspWithBlankspace(copiedText));
     }
   } else if (e.keyCode === 88 && (e.ctrlKey || e.metaKey)) {
     console.log("In CMD + X", e.keyCode, e.ctrlKey, e.metaKey);
@@ -358,7 +360,7 @@ function onKeyDownInEditor(e) {
     e.preventDefault();
     if (currentSelection.isCollapsed === false) {
       let copiedText = getTextToCopy(currentNode, currentOffset, focusNode, focusOffset);
-      localStorage.setItem("text", copiedText);
+      localStorage.setItem("text", replaceNbspWithBlankspace(copiedText));
 
       cutNodes(currentNode, currentOffset, focusNode, focusOffset);
     }
@@ -366,6 +368,14 @@ function onKeyDownInEditor(e) {
     console.log("In CMD + V", e.keyCode, e.ctrlKey, e.metaKey);
     //it was Ctrl + V (Cmd + V)
     e.preventDefault();
+    if (currentSelection.isCollapsed === false) {
+      cutNodes(currentNode, currentOffset, focusNode, focusOffset);
+
+      currentSelection = window.getSelection();
+      currentNode = getNodeFromSelection(currentSelection.anchorNode);
+      currentOffset = currentSelection.anchorOffset;
+      parentOffset = getParentOffset(currentNode, currentOffset);
+    }
     let textToCopy = localStorage.getItem("text");
     if (textToCopy && textToCopy.length > 0) {
       let textLines = textToCopy.split("\n");
@@ -580,6 +590,7 @@ function onKeyDownInEditor(e) {
   } else {
     console.log("In else", e.key, e.keyCode);
   }
+  return true;
 }
 
 function onClickInEditor(e) {
@@ -619,7 +630,7 @@ function getTextFromEditor() {
   return replaceNbspWithBlankspace(textContent);
 }
 
-export { onKeyDownInEditor,
+export {  keyPressedInEditor,
           onClickInEditor,
           loadNoteInEditor,
           getTextFromEditor };

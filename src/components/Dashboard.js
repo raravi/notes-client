@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import { welcomeNote, helpNote } from "../config/content";
-import { onKeyDownInEditor,
+import { keyPressedInEditor,
           onClickInEditor,
           loadNoteInEditor,
           getTextFromEditor } from '../editor/Editor';
@@ -184,6 +184,10 @@ export const Dashboard = (props) => {
     if (firstLine.length > 30)
       return firstLine.slice(0, 30) + "...";
     return firstLine;
+  }
+
+  function onKeyDownInEditor(e) {
+    keyPressedInEditor(e, window.getSelection());
   }
 
   return (
