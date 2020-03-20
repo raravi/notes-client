@@ -49,23 +49,27 @@ export const Login = (props) => {
       password: password.value
     })
     .then(function (response) {
-      let tokenDecoded = jwtDecode(response.data.token);
-      if(tokenDecoded) {
-        sessionStorage.setItem("token", response.data.token);
-        props.setNotes(response.data.notes);
-        props.setUserLoggedIn({id: tokenDecoded.id, name: tokenDecoded.name});
+      if (response && response.data && response.data.token) {
+        let tokenDecoded = jwtDecode(response.data.token);
+        if(tokenDecoded) {
+          sessionStorage.setItem("token", response.data.token);
+          props.setNotes(response.data.notes);
+          props.setUserLoggedIn({id: tokenDecoded.id, name: tokenDecoded.name});
+        } else {
+          setLoginEmailError("An error occured...");
+        }
       }
     })
     .catch(function (error) {
-      if (error.response) {
-        if (error.response.data) {
-          if (error.response.data.email) {
-            setLoginEmailError(error.response.data.email);
-          }
-          if (error.response.data.password) {
-            setLoginPasswordError(error.response.data.password);
-          }
+      if (error && error.response && error.response.data) {
+        if (error.response.data.email) {
+          setLoginEmailError(error.response.data.email);
         }
+        if (error.response.data.password) {
+          setLoginPasswordError(error.response.data.password);
+        }
+      } else {
+        setLoginEmailError("Unable to reach server...");
       }
     });
   }
@@ -96,24 +100,25 @@ export const Login = (props) => {
       password2: password2.value
     })
     .then(function (response) {
-      setRegisterSuccess(response.data.createduser);
+      if (response && response.data && response.data.createduser)
+        setRegisterSuccess(response.data.createduser);
     })
     .catch(function (error) {
-      if (error.response) {
-        if (error.response.data) {
-          if (error.response.data.name) {
-            setRegisterUsernameError(error.response.data.name);
-          }
-          if (error.response.data.email) {
-            setRegisterEmailError(error.response.data.email);
-          }
-          if (error.response.data.password) {
-            setRegisterPasswordError(error.response.data.password);
-          }
-          if (error.response.data.password2) {
-            setRegisterPassword2Error(error.response.data.password2);
-          }
+      if (error && error.response && error.response.data) {
+        if (error.response.data.name) {
+          setRegisterUsernameError(error.response.data.name);
         }
+        if (error.response.data.email) {
+          setRegisterEmailError(error.response.data.email);
+        }
+        if (error.response.data.password) {
+          setRegisterPasswordError(error.response.data.password);
+        }
+        if (error.response.data.password2) {
+          setRegisterPassword2Error(error.response.data.password2);
+        }
+      } else {
+        setRegisterUsernameError("Unable to reach server...");
       }
     });
   }
@@ -136,16 +141,14 @@ export const Login = (props) => {
       email: email.value
     })
     .then(function (response) {
-      if (response.data.emailsent)
+      if (response && response.data && response.data.emailsent)
         setForgotPasswordEmailSuccess(response.data.emailsent);
     })
     .catch(function (error) {
-      if (error.response) {
-        if (error.response.data) {
-          if (error.response.data.email) {
-            setForgotPasswordEmailError(error.response.data.email);
-          }
-        }
+      if (error && error.response && error.response.data && error.response.data.email) {
+        setForgotPasswordEmailError(error.response.data.email);
+      } else {
+        setForgotPasswordEmailError("Unable to reach server...");
       }
     });
   }
