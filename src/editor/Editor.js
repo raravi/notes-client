@@ -339,8 +339,11 @@ function keyPressedInEditor(e, currentSelection) {
   let currentOffset = currentSelection.anchorOffset;
   let currentText = currentNode.textContent;
   let parentOffset = getParentOffset(currentNode, currentOffset);
-  let focusNode, focusOffset;
 
+  if (currentNode.textContent.length < currentOffset)
+    return false;
+
+  let focusNode, focusOffset;
   if (currentSelection.isCollapsed === false) {
     focusNode = getNodeFromSelection(currentSelection.focusNode);
     focusOffset = currentSelection.focusOffset;
@@ -565,8 +568,9 @@ function keyPressedInEditor(e, currentSelection) {
             checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.textContent, previousOffset);
           } else {
             previousDivNode.firstChild.innerHTML += currentNode.parentNode.innerHTML;
-            checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.textContent, previousOffset, e);
+            setCaretPositionInChildNode(previousDivNode.firstChild, previousOffset);
             currentNode.parentNode.parentNode.remove();
+            checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.textContent, previousOffset, e);
           }
         } else {
           e.preventDefault();
