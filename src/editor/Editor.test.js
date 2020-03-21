@@ -90,6 +90,10 @@ const text =  "Some random text goes here!\n" +
               "Last line for this sample.",
       firstLineOfText = text.split("\n")[0];
 
+beforeEach(() => {
+  localStorage.removeItem("text");
+});
+
 it('loads Dashboard note DIV', () => {
   const { getByTestId } = render(<MockApp />);
 
@@ -269,6 +273,21 @@ describe('keyPressedInEditor', () => {
       expect(getTextFromEditor().length).toBe(text.length);
     });
 
+    it('copy: no selection', () => {
+      selection.anchorNode = spanElement;
+      selection.focusNode = spanElement;
+      selection.anchorOffset = 0;
+      selection.focusOffset = 0;
+      selection.isCollapsed = true;
+      event.keyCode = 67;
+
+      const executed = keyPressedInEditor(event, selection);
+
+      expect(executed).toBe(true);
+      expect(localStorage.getItem("text")).toBe(null);
+      expect(getTextFromEditor().length).toBe(text.length);
+    });
+
     it('cut: anchorNode before focusNode (default)', () => {
       event.keyCode = 88;
 
@@ -328,6 +347,22 @@ describe('keyPressedInEditor', () => {
       expect(textAfterCut.length + textCut.length).toBe(text.length);
     });
 
+    it('cut: no selection', () => {
+      selection.anchorNode = spanElement;
+      selection.focusNode = spanElement;
+      selection.anchorOffset = 0;
+      selection.focusOffset = 0;
+      selection.isCollapsed = true;
+      event.keyCode = 88;
+
+      const executed = keyPressedInEditor(event, selection);
+      const textAfterCut = getTextFromEditor();
+
+      expect(executed).toBe(true);
+      expect(localStorage.getItem("text")).toBe(null);
+      expect(textAfterCut.length).toBe(text.length);
+    });
+
     it('paste: one line of text', () => {
       selection.focusOffset = 0;
       selection.isCollapsed = true;
@@ -372,6 +407,19 @@ describe('keyPressedInEditor', () => {
       expect(executed).toBe(true);
       expect(localStorage.getItem("text")).toBe(textPasted);
       expect(textAfterPaste.length - textPasted.length).toBe(text.length - 4);
+    });
+
+    it('paste: no selection', () => {
+      selection.focusOffset = 0;
+      selection.isCollapsed = true;
+      event.keyCode = 86;
+
+      const executed = keyPressedInEditor(event, selection);
+      const textAfterPaste = getTextFromEditor();
+
+      expect(executed).toBe(true);
+      expect(localStorage.getItem("text")).toBe(null);
+      expect(textAfterPaste.length).toBe(text.length);
     });
   });
 
@@ -963,6 +1011,70 @@ describe('keyPressedInEditor', () => {
       expect(executed).toBe(true);
       expect(textAfterEnter.length).toBe(text.length + 1);
     });
+
+    it('ordered list: single char entered at first item', () => {
+      let spanElementList = document.querySelectorAll('.note__text');
+      let selection = selectionObject;
+      let event = mockEvent();
+
+      selection.anchorNode = spanElementList[8];
+      selection.focusNode = spanElementList[8];
+      selection.anchorOffset = 1;
+      selection.focusOffset = 1;
+      selection.isCollapsed = true;
+      event.key = '1';
+      event.keyCode = 49;
+
+      const executed = keyPressedInEditor(event, selection);
+      const textAfterEnter = getTextFromEditor();
+
+      expect(executed).toBe(true);
+      expect(textAfterEnter.length).toBe(text.length + 3);
+    });
+
+    it('ordered list: single char entered at first line', () => {
+      let spanElementList = document.querySelectorAll('.note__text');
+      let selection = selectionObject;
+      let event = mockEvent();
+
+      selection.anchorNode = spanElementList[0];
+      selection.focusNode = spanElementList[0];
+      selection.anchorOffset = 0;
+      selection.focusOffset = 0;
+      selection.isCollapsed = true;
+      event.key = '1';
+      event.keyCode = 49;
+
+      let executed = keyPressedInEditor(event, selection);
+      expect(executed).toBe(true);
+
+      spanElementList = document.querySelectorAll('.note__text');
+      selection.anchorNode = spanElementList[0];
+      selection.focusNode = spanElementList[0];
+      selection.anchorOffset = 1;
+      selection.focusOffset = 1;
+      selection.isCollapsed = true;
+      event.key = '.';
+      event.keyCode = 190;
+
+      executed = keyPressedInEditor(event, selection);
+      expect(executed).toBe(true);
+
+      spanElementList = document.querySelectorAll('.note__text');
+      selection.anchorNode = spanElementList[0];
+      selection.focusNode = spanElementList[0];
+      selection.anchorOffset = 2;
+      selection.focusOffset = 2;
+      selection.isCollapsed = true;
+      event.key = ' ';
+      event.keyCode = 32;
+
+      executed = keyPressedInEditor(event, selection);
+      const textAfterEnter = getTextFromEditor();
+
+      expect(executed).toBe(true);
+      expect(textAfterEnter.length).toBe(text.length + 3);
+    });
   });
 
   describe('Backspace', () => {
@@ -991,8 +1103,8 @@ describe('keyPressedInEditor', () => {
       let selection = selectionObject;
       let event = mockEvent();
 
-      selection.anchorNode = spanElementList[5];
-      selection.focusNode = spanElementList[5];
+      selection.anchorNode = spanElementList[5].firstChild;
+      selection.focusNode = spanElementList[5].firstChild;
       selection.anchorOffset = 0;
       selection.focusOffset = 0;
       selection.isCollapsed = true;

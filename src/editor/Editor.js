@@ -126,8 +126,7 @@ function checkForPairs(parentNode, newText, length, offset, e) {
   let pairsInText = new PairsInText();
   let text = newText.slice(length);
   pairsInText.getCountAndIndex(text, length);
-  if (newText)
-    parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
+  parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
   if (offset !== undefined)
     setCaretPositionInChildNode(parentNode, offset);
   if (e !== undefined)
@@ -554,15 +553,15 @@ function keyPressedInEditor(e, currentSelection) {
           e.preventDefault(); // Prevent move to last cursor position.
           let previousOffset = previousDivNode.firstChild.textContent.length;
 
-          if (previousDivNode.firstChild.textContent === "\n" && currentNode.parentNode.textContent === "\n") {
+          if (previousDivNode.firstChild.textContent === "" && currentNode.parentNode.textContent === "") {
             previousDivNode.innerHTML = "<p class='note__paragraph'><span class='node__text'><br></span></p>";
             setCaretPositionToOffset(previousDivNode.firstChild.firstChild, 0);
             currentNode.parentNode.parentNode.remove();
-          } else if (previousDivNode.firstChild.textContent === "\n") {
+          } else if (previousDivNode.firstChild.textContent === "") {
             previousDivNode.innerHTML = currentNode.parentNode.parentNode.innerHTML;
             setCaretPositionToOffset(previousDivNode.firstChild.firstChild, 0);
             currentNode.parentNode.parentNode.remove();
-          } else if (currentNode.parentNode.textContent === "\n") {
+          } else if (currentNode.parentNode.textContent === "") {
             setCaretPositionInChildNode(previousDivNode.firstChild, previousOffset);
             currentNode.parentNode.parentNode.remove();
             checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.textContent, previousOffset);

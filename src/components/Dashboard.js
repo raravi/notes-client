@@ -71,6 +71,7 @@ export const Dashboard = (props) => {
   }
 
   function syncAll() {
+    console.log("syncAll");
     axios.post('http://localhost:8000/api/users/sendall', {
       token: sessionStorage.getItem("token"),
       userid: props.userId
@@ -94,10 +95,7 @@ export const Dashboard = (props) => {
   }
 
   function onHelp() {
-    if (currentNoteId) {
-      syncNote();
-      setCurrentNoteId(null);
-    }
+    syncNote();
     loadNoteInEditor(helpNote, "true");
     setCurrentNoteId(null);
     setCurrentNoteContent("");
@@ -123,24 +121,20 @@ export const Dashboard = (props) => {
       return;
     let note = props.notes.find(note => note.id === currentNoteInSidebar.dataset.id);
     syncNote();
-    if (note) {
-      loadNoteInEditor(note.note, "true");
-      setCurrentNoteId(note.id);
-      setCurrentNoteContent(getTextFromEditor());
-    }
+    loadNoteInEditor(note.note, "true");
+    setCurrentNoteId(note.id);
+    setCurrentNoteContent(getTextFromEditor());
   }
 
   function onClickNewNoteInSidebar(e) {
-    if (currentNoteId) {
-      syncNote();
-      setCurrentNoteId(null);
-    }
+    syncNote();
+    setCurrentNoteId(null);
     axios.post('http://localhost:8000/api/users/new', {
       token: sessionStorage.getItem("token"),
       userid: props.userId
     })
     .then(response => {
-      if (response.data.note) {
+      if (response && response.data && response.data.note && response.data.note.note) {
         loadNoteInEditor(response.data.note.note, "true");
 
         let notes = props.notes.slice();
@@ -165,16 +159,17 @@ export const Dashboard = (props) => {
       noteid: noteId
     })
     .then(response => {
-      if (currentNoteId === noteId) {
-        loadNoteInEditor(welcomeNote, "false");
-        setCurrentNoteId(null);
-        setCurrentNoteContent("");
+      if (response && response.data && response.data.success) {
+        if (currentNoteId === noteId) {
+          loadNoteInEditor(welcomeNote, "false");
+          setCurrentNoteId(null);
+          setCurrentNoteContent("");
+        }
+        let notes = props.notes.slice();
+        let noteIndex = notes.findIndex(note => note.id === noteId);
+        notes.splice(noteIndex, 1);
+        props.setNotes(notes);
       }
-      let notes = props.notes.slice();
-      let noteIndex = notes.findIndex(note => note.id === noteId);
-      notes.splice(noteIndex, 1);
-      props.setNotes(notes);
-
     })
     .catch(error => console.log(error));
   }
