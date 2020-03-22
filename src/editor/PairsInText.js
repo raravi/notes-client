@@ -35,11 +35,7 @@ PairsInText.prototype.getNewSpanText = function (newText, length) {
   let newSpanText = "<span class='note__text'>";
   [...newText].forEach((value, index, array) => {
     if (index < length) {
-      if (value === ' ') {
-        newSpanText += '\xa0';
-      } else {
-        newSpanText += value;
-      }
+      newSpanText += value;
     } else {
       let indexOfCharacter = -1;
       let indexOfCharacterIndex = -1;
@@ -54,15 +50,7 @@ PairsInText.prototype.getNewSpanText = function (newText, length) {
         if (indexOfCharacterIndex % 2 === 0) {
           newSpanText += `</span><span class='${_this.classOfCharacters[indexOfCharacter]}'>` + value;
         } else {
-          if (index === array.length-1) {
-            if (value === ' ') {
-              newSpanText += '\xa0';
-            } else {
-              newSpanText += value;
-            }
-          }
-          else
-            newSpanText += value + "</span><span class='note__text'>";
+          newSpanText += value + "</span><span class='note__text'>";
         }
       } else {
         if (value === ' ') {

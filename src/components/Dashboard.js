@@ -71,7 +71,6 @@ export const Dashboard = (props) => {
   }
 
   function syncAll() {
-    console.log("syncAll");
     axios.post('http://localhost:8000/api/users/sendall', {
       token: sessionStorage.getItem("token"),
       userid: props.userId

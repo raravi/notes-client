@@ -523,12 +523,13 @@ function keyPressedInEditor(e, currentSelection) {
     let stringAfterCaret = currentNode.parentNode.textContent.slice(parentOffset);
     currentText = "" + stringBeforeCaret + e.key + stringAfterCaret;
 
-    currentText = purify.sanitize(currentText);
-
-    if (currentText === purify.sanitize(stringBeforeCaret)) {
-      e.preventDefault();
-      return;
-    }
+    // This screws up text while editing!!!
+    // Try entering blankspaces at the beginning of a line
+    // currentText = purify.sanitize(currentText);
+    // if (currentText === purify.sanitize(stringBeforeCaret)) {
+    //   e.preventDefault();
+    //   return;
+    // }
 
     // Check if Header or Paragraph
     checkHeader(currentNode, currentText, stringBeforeCaret.length+1, e);
@@ -540,6 +541,11 @@ function keyPressedInEditor(e, currentSelection) {
       e.preventDefault();
       // Selection to be deleted, and then Backspace to be processed
       cutNodes(currentNode, currentOffset, focusNode, focusOffset);
+
+      currentSelection = window.getSelection();
+      currentNode = getNodeFromSelection(currentSelection.anchorNode);
+      currentOffset = currentSelection.anchorOffset;
+      checkHeader(currentNode, currentNode.parentNode.textContent, currentOffset);
     } else {
       if (parentOffset === 1 && currentNode.parentNode.textContent.length === 1) {
         e.preventDefault();
