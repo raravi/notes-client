@@ -839,7 +839,7 @@ describe('Dashboard Page', () => {
     fireEvent.click(document.querySelector(".sidebar__note-close"));
   });
 
-  it('syncAll: success', async () => {console.log('syncAll: success');
+  it('syncAll: success', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     responseLoginSuccess.data.notes.push(note);
     axiosMock.post
@@ -913,7 +913,7 @@ describe('Dashboard Page', () => {
     const { getByTestId, findByTestId, getByText, findByText } = render(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
-    
+
     jest.runOnlyPendingTimers();
   });
 });
