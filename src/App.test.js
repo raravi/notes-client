@@ -11,6 +11,7 @@ import {  keyPressedInEditor,
 
 jest.mock('axios');
 jest.mock('jwt-decode');
+jest.useFakeTimers();
 
 let tokenDecodedSuccess = {
       id: '5e5edca43aa9dc587503e1b4',
@@ -82,12 +83,12 @@ let tokenDecodedSuccess = {
       modifieddate: "2020-03-16T00:51:52.006Z"
     },
     noteLong = {
-      id: "5e604fa41c9d440000e7fbc2",
+      id: "5e604fa41c9d440000e7fbc3",
       note: "# Note for health Note for health Note for health\n" +
-        "1. *Come up with an interesting topic*: This can be anything.\n" +
+        "1. *Come up with interesting topics*: This can be anything.\n" +
         "2. *Research on it*: Something here.\n" +
         "3. *Define an outline*: Come up with a decent outline. Do something.",
-      modifieddate: "2020-03-16T00:51:52.006Z"
+      modifieddate: "2020-02-15T00:51:52.006Z"
     },
     responseSyncNoteNoChanges = {
       data: {
@@ -124,6 +125,24 @@ let tokenDecodedSuccess = {
       }
     },
     responseDeleteError = {
+      response: {
+        status: 404,
+        data: {}
+      }
+    },
+    responseSyncAllSuccess = {
+      data: {
+        success: true,
+        notes: [note, noteLong]
+      }
+    },
+    responseSyncAllSuccessNoteDeleted = {
+      data: {
+        success: true,
+        notes: [noteLong]
+      }
+    },
+    responseSyncAllError = {
       response: {
         status: 404,
         data: {}
@@ -596,7 +615,7 @@ describe('Dashboard Page', () => {
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    const loadedNoteElement = await findByText(/Come up with interesting topics/);
 
     fireEvent.click(getByTestId('dashboard-help'));
 
@@ -818,5 +837,83 @@ describe('Dashboard Page', () => {
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note-close"));
+  });
+
+  it('syncAll: success', async () => {console.log('syncAll: success');
+    responseLoginSuccess.data.token = responseLoginSuccessToken;
+    responseLoginSuccess.data.notes.push(note);
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseSyncAllSuccess);
+    jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
+    const { getByTestId, findByTestId, findAllByTestId } = render(<App />);
+    fireEvent.click(getByTestId('login-button'));
+    const dashboardNoteElement = await findByTestId('dashboard-note');
+    const notesInSidebar = await findAllByTestId("sidebar-note");
+    expect(notesInSidebar.length).toBe(1);
+
+    jest.runOnlyPendingTimers();
+  });
+
+  it('syncAll: note loaded', async () => {
+    responseLoginSuccess.data.token = responseLoginSuccessToken;
+    responseLoginSuccess.data.notes.push(note);
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseSyncNoteNoChanges)
+      .mockResolvedValueOnce(responseSyncAllSuccess);
+    jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
+    const { getByTestId, findByTestId, findAllByTestId, findByText } = render(<App />);
+    fireEvent.click(getByTestId('login-button'));
+    const dashboardNoteElement = await findByTestId('dashboard-note');
+    fireEvent.click(document.querySelector(".sidebar__note"));
+    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+
+    jest.runOnlyPendingTimers();
+  });
+
+  it('syncAll: note deleted', async () => {
+    responseLoginSuccess.data.token = responseLoginSuccessToken;
+    responseLoginSuccess.data.notes.push(note);
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseSyncNoteNoChanges)
+      .mockResolvedValueOnce(responseSyncAllSuccessNoteDeleted);
+    jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
+    const { getByTestId, findByTestId, getByText, findByText } = render(<App />);
+    fireEvent.click(getByTestId('login-button'));
+    const dashboardNoteElement = await findByTestId('dashboard-note');
+    fireEvent.click(document.querySelector(".sidebar__note"));
+    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+
+    jest.runOnlyPendingTimers();
+  });
+
+  it('syncAll: no response', async () => {
+    responseLoginSuccess.data.token = responseLoginSuccessToken;
+    responseLoginSuccess.data.notes.push(note);
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(null);
+    jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
+    const { getByTestId, findByTestId, getByText, findByText } = render(<App />);
+    fireEvent.click(getByTestId('login-button'));
+    const dashboardNoteElement = await findByTestId('dashboard-note');
+
+    jest.runOnlyPendingTimers();
+  });
+
+  it('syncAll: error', async () => {
+    responseLoginSuccess.data.token = responseLoginSuccessToken;
+    responseLoginSuccess.data.notes.push(note);
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockImplementation(() => Promise.reject(responseSyncAllError));
+    jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
+    const { getByTestId, findByTestId, getByText, findByText } = render(<App />);
+    fireEvent.click(getByTestId('login-button'));
+    const dashboardNoteElement = await findByTestId('dashboard-note');
+    
+    jest.runOnlyPendingTimers();
   });
 });

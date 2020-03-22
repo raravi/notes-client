@@ -77,7 +77,7 @@ export const Dashboard = (props) => {
       userid: props.userId
     })
     .then(response => {
-      if (response.data.success) {
+      if (response && response.data && response.data.success) {
         if (currentNoteId) {
           let propNote = props.notes.find(note => note.id === currentNoteId);
           let responseNote = response.data.notes.find(note => note.id === currentNoteId);
@@ -206,6 +206,7 @@ export const Dashboard = (props) => {
             <div className={currentNoteId && currentNoteId === note.id
                             ? "sidebar__note sidebar__note--active"
                             : "sidebar__note"}
+                data-testid="sidebar-note"
                 data-id={note.id}
                 key={note.id}
                 onClick={onClickNoteInSidebar}>
