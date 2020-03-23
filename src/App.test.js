@@ -12,6 +12,7 @@ import {  keyPressedInEditor,
 jest.mock('axios');
 jest.mock('jwt-decode');
 jest.useFakeTimers();
+console.error = jest.fn();
 
 let tokenDecodedSuccess = {
       id: '5e5edca43aa9dc587503e1b4',

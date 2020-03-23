@@ -6,6 +6,8 @@ import {  keyPressedInEditor,
           loadNoteInEditor,
           getTextFromEditor } from './Editor.js';
 
+console.error = jest.fn();
+
 document.createRange = () => ({
   setStart: () => {},
   setEnd: () => {},
@@ -804,6 +806,26 @@ describe('keyPressedInEditor', () => {
       expect(executed).toBe(true);
       expect(textAfterEnter.length).toBe(text.length + 1 - 24);
       expect(textAfterEnter.split("\n").length + 1).toBe(text.split("\n").length + 1);
+    });
+
+    it('end of DIV, middle of text', () => {
+      let spanElementList = document.querySelectorAll('.note__text');
+      let selection = selectionObject;
+      let event = mockEvent();
+
+      selection.anchorNode = spanElementList[1];
+      selection.focusNode = spanElementList[1];
+      selection.anchorOffset = spanElementList[1].textContent.length;
+      selection.focusOffset = spanElementList[1].textContent.length;
+      selection.isCollapsed = true;
+      event.keyCode = 13;
+
+      const executed = keyPressedInEditor(event, selection);
+      const textAfterEnter = getTextFromEditor();
+
+      expect(executed).toBe(true);
+      expect(textAfterEnter.length).toBe(text.length + 1);
+      expect(textAfterEnter.split("\n").length).toBe(text.split("\n").length + 1);
     });
 
     it('middle DIV in text', () => {

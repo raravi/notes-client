@@ -231,6 +231,7 @@ export const Dashboard = (props) => {
           </div>
         </header>
         <div  contentEditable="false"
+              suppressContentEditableWarning={true}
               className="note"
               onKeyDown={onKeyDownInEditor}
               onMouseUp={onClickInEditor}

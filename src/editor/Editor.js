@@ -127,10 +127,12 @@ function checkForPairs(parentNode, newText, length, offset, e) {
   let text = newText.slice(length);
   pairsInText.getCountAndIndex(text, length);
   parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
-  if (offset !== undefined)
+  if (offset !== undefined) {
     setCaretPositionInChildNode(parentNode, offset);
-  if (e !== undefined)
+  }
+  if (e !== undefined) {
     e.preventDefault();
+  }
 }
 
 function getTextFromNodes(fromNode, fromNodeOffset, toNode, toNodeOffset) {
@@ -229,8 +231,8 @@ function cutTextInDifferentDivs(fromNode, fromOffset, toNode, toOffset) {
 }
 
 function checkHeader(el, currentText, offset, e) {
-  if (!currentText)
-    return;
+  // if (!currentText)
+  //   return;
   let newText = replaceNbspWithBlankspace(currentText);
 
   let strings = newText.split(" ");
@@ -478,16 +480,14 @@ function keyPressedInEditor(e, currentSelection) {
       }
       let tempNodes = [];
       for (let i = 0; i < children.length; i++) {
-        if (i === indexOfSpan) {
-          if (haveToBreakSpan) {
-            let tempText = children[i].textContent;
-            children[i].textContent = tempText.slice(0, breakAtOffset);
+        if (i === indexOfSpan && haveToBreakSpan) {
+          let tempText = children[i].textContent;
+          children[i].textContent = tempText.slice(0, breakAtOffset);
 
-            let textElement = document.createElement('span');
-            textElement.setAttribute("class", children[i].getAttribute("class"));
-            textElement.textContent = tempText.slice(breakAtOffset);
-            tempNodes.push(textElement);
-          }
+          let textElement = document.createElement('span');
+          textElement.setAttribute("class", children[i].getAttribute("class"));
+          textElement.textContent = tempText.slice(breakAtOffset);
+          tempNodes.push(textElement);
         }
         if (i > indexOfSpan) {
           tempNodes.push(children[i]);
@@ -545,7 +545,6 @@ function keyPressedInEditor(e, currentSelection) {
       currentSelection = window.getSelection();
       currentNode = getNodeFromSelection(currentSelection.anchorNode);
       currentOffset = currentSelection.anchorOffset;
-      checkHeader(currentNode, currentNode.parentNode.textContent, currentOffset);
     } else {
       if (parentOffset === 1 && currentNode.parentNode.textContent.length === 1) {
         e.preventDefault();
@@ -607,10 +606,12 @@ function onClickInEditor(e) {
 }
 
 function loadNoteInEditor(noteContent, editable) {
-  if (noteContent === undefined || editable === undefined)
+  if (noteContent === undefined || editable === undefined) {
     return;
-  if (editable !== "true" && editable !== "false")
+  }
+  if (editable !== "true" && editable !== "false") {
     return;
+  }
   noteContent = purify.sanitize(noteContent);
   let textLines = noteContent.split("\n");
   let editor = document.querySelector('.note');
@@ -619,8 +620,9 @@ function loadNoteInEditor(noteContent, editable) {
   textLines.forEach(line => {
     let divElement = createNewDivForText(line);
     editor.appendChild(divElement);
-    if (line !== "")
+    if (line !== "") {
       checkHeader(divElement.firstChild.firstChild, divElement.firstChild.textContent);
+    }
   });
 }
 
@@ -629,12 +631,14 @@ function getTextFromEditor() {
   let children = editor.childNodes;
   let textContent = "";
   children.forEach(lineNode => {
-    if (lineNode.firstChild.firstChild.innerHTML === "<br>")
+    if (lineNode.firstChild.firstChild.innerHTML === "<br>") {
       textContent += "";
-    else
+    } else {
       textContent += lineNode.firstChild.textContent;
-    if (lineNode !== editor.lastChild)
+    }
+    if (lineNode !== editor.lastChild) {
       textContent += "\n";
+    }
   });
   return replaceNbspWithBlankspace(textContent);
 }
