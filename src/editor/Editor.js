@@ -231,8 +231,6 @@ function cutTextInDifferentDivs(fromNode, fromOffset, toNode, toOffset) {
 }
 
 function checkHeader(el, currentText, offset, e) {
-  // if (!currentText)
-  //   return;
   let newText = replaceNbspWithBlankspace(currentText);
 
   let strings = newText.split(" ");
@@ -333,7 +331,6 @@ function cutNodes(anchorNode, anchorOffset, focusNode, focusOffset) {
 
 function keyPressedInEditor(e, currentSelection) {
   // Get current SPAN details
-  // let currentSelection = window.getSelection();
   if (e === undefined || currentSelection === undefined)
     return false;
   let currentNode = getNodeFromSelection(currentSelection.anchorNode);

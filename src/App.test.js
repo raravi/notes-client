@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, cleanup, fireEvent } from '@testing-library/react';
+import ReactTestUtils from 'react-dom/test-utils';
 import '@testing-library/jest-dom/extend-expect';
 import axiosMock from 'axios';
 import jwtDecodeMock from 'jwt-decode';
@@ -551,6 +552,49 @@ describe('Dashboard Page', () => {
 
     const dashboardNoteElement = await findByTestId('dashboard-note');
     const welcomeNoteElement = await findByText(/Welcome to notes/);
+  });
+
+  it('note edited', async () => {
+    responseLoginSuccess.data.token = responseLoginSuccessToken;
+    responseLoginSuccess.data.notes.push(note);
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess);
+    jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
+    const { getByTestId, findByTestId, getByText, findByText } = render(<App />);
+    fireEvent.click(getByTestId('login-button'));
+    const dashboardNoteElement = await findByTestId('dashboard-note');
+    fireEvent.click(document.querySelector(".sidebar__note"));
+    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+
+    document.createRange = () => ({
+      setStart: () => {},
+      setEnd: () => {},
+      collapse: () => {},
+      commonAncestorContainer: {
+        nodeName: 'BODY',
+        ownerDocument: document,
+      },
+    });
+
+    let windowSelection = {
+      anchorNode: {},
+      anchorOffset: 0,
+      focusNode: {},
+      focusOffset: 0,
+      isCollapsed: true,
+      addRange: () => {},
+      removeAllRanges: () => {}
+    };
+    window.getSelection = () => {
+      windowSelection.anchorNode = loadedNoteElement;
+      windowSelection.focusNode = loadedNoteElement;
+      windowSelection.anchorOffset = 1;
+      windowSelection.focusOffset = 1;
+      windowSelection.isCollapsed = true;
+      return windowSelection;
+    };
+
+    ReactTestUtils.Simulate.keyDown(getByTestId("dashboard-note"), {key: "A", keyCode: 65, which: 65});
   });
 
   it('help button is clicked: no note loaded', async () => {

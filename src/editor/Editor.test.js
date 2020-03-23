@@ -1027,11 +1027,22 @@ describe('keyPressedInEditor', () => {
       event.key = '.';
       event.keyCode = 190;
 
-      const executed = keyPressedInEditor(event, selection);
+      let executed = keyPressedInEditor(event, selection);
+
+      spanElementList = document.querySelectorAll('.note__text');
+      selection.anchorNode = spanElementList[13];
+      selection.focusNode = spanElementList[13];
+      selection.anchorOffset = 2;
+      selection.focusOffset = 2;
+      selection.isCollapsed = true;
+      event.key = ' ';
+      event.keyCode = 32;
+
+      executed = keyPressedInEditor(event, selection);
       const textAfterEnter = getTextFromEditor();
 
       expect(executed).toBe(true);
-      expect(textAfterEnter.length).toBe(text.length + 1);
+      expect(textAfterEnter.length).toBe(text.length + 2);
     });
 
     it('ordered list: single char entered at first item', () => {
