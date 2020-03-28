@@ -36,20 +36,23 @@ export const Dashboard = (props) => {
       let options;
       if (currentNoteContent !== textContent) {
         options = {
-          token: sessionStorage.getItem("token"),
           userid: props.userId,
           noteid: currentNoteId,
           notetext: textContent
         };
       } else {
         options = {
-          token: sessionStorage.getItem("token"),
           userid: props.userId,
           noteid: currentNoteId
         };
       }
 
-      axios.post('http://localhost:8000/api/users/sync', options)
+      axios.post('http://localhost:8000/api/users/sync', options,
+      {
+        headers: {
+          Authorization: sessionStorage.getItem("token")
+        }
+      })
       .then(response => {
         if (response.data.notemodified) {
           loadNoteInEditor(response.data.note, "true");
@@ -72,8 +75,12 @@ export const Dashboard = (props) => {
 
   function syncAll() {
     axios.post('http://localhost:8000/api/users/sendall', {
-      token: sessionStorage.getItem("token"),
       userid: props.userId
+    },
+    {
+      headers: {
+        Authorization: sessionStorage.getItem("token")
+      }
     })
     .then(response => {
       if (response && response.data && response.data.success) {
@@ -102,8 +109,12 @@ export const Dashboard = (props) => {
 
   function onLogout() {
     axios.post('http://localhost:8000/api/users/logout', {
-      token: sessionStorage.getItem("token"),
       userid: props.userId
+    },
+    {
+      headers: {
+        Authorization: sessionStorage.getItem("token")
+      }
     })
     .then(response => console.log(response))
     .catch(error => console.log(error));
@@ -129,8 +140,12 @@ export const Dashboard = (props) => {
     syncNote();
     setCurrentNoteId(null);
     axios.post('http://localhost:8000/api/users/new', {
-      token: sessionStorage.getItem("token"),
       userid: props.userId
+    },
+    {
+      headers: {
+        Authorization: sessionStorage.getItem("token")
+      }
     })
     .then(response => {
       if (response && response.data && response.data.note && response.data.note.note) {
@@ -153,9 +168,13 @@ export const Dashboard = (props) => {
     e.stopPropagation();
 
     axios.post('http://localhost:8000/api/users/delete', {
-      token: sessionStorage.getItem("token"),
       userid: props.userId,
       noteid: noteId
+    },
+    {
+      headers: {
+        Authorization: sessionStorage.getItem("token")
+      }
     })
     .then(response => {
       if (response && response.data && response.data.success) {
