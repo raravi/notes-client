@@ -41,7 +41,7 @@ This is an unordered list. Start the line with an asterisk.
 ---
 ## Links
 
-What will we do without links in a digital world?! And so it goes with our notes, that we will have to include links to our favorite websites from time to time. You can create a Link using the syntax [I'm a link](www.google.com)
+What will we do without links in a digital world?! And so it goes with our notes, that we will have to include links to our favorite websites from time to time. You can create a Link using the syntax `[I'm a link](www.google.com)`.
 
 ---
 ## Code
