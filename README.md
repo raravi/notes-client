@@ -67,3 +67,9 @@ Go ahead and use this page to test out the features of the notes app!
 I hope you enjoy it as well as find it useful!!
 
 Note: You also have to download the [server](https://github.com/raravi/notes-server) code for this to work completely!
+
+---
+
+## Testing (Jest & React Testing Library)
+
+This project has a code coverage of 100% with functional as well as unit tests written with care.
