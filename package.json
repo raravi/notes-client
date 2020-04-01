@@ -42,5 +42,8 @@
       "src/**/*.{js,jsx}",
       "!src/index.js"
     ]
+  },
+  "devDependencies": {
+    "codecov": "^3.6.5"
   }
 }
