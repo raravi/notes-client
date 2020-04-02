@@ -24,7 +24,7 @@
   },
   "author": "Amith Raravi <amith.raravi@gmail.com>",
   "homepage": "https://www.amithraravi.com/",
-  "license": "The MIT License (MIT)",
+  "license": "MIT",
   "eslintConfig": {
     "extends": "react-app"
   },
