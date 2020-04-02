@@ -1,3 +1,6 @@
+/**
+ *   The content for the WELCOME / HELP pages.
+ */
 const welcomeNote = "# Welcome to notes!\n" +
                   "\n" +
                   "To edit, please click on your saved notes in the sidebar.\n" +

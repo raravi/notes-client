@@ -8,6 +8,9 @@ import {  keyPressedInEditor,
 
 console.error = jest.fn();
 
+/**
+ *   STUB for createRange().
+ */
 document.createRange = () => ({
   setStart: () => {},
   setEnd: () => {},
@@ -18,6 +21,9 @@ document.createRange = () => ({
   },
 });
 
+/**
+ *   STUB for selection object.
+ */
 let selectionObject = {
   anchorNode: {},
   anchorOffset: 0,
@@ -28,6 +34,9 @@ let selectionObject = {
   removeAllRanges: () => {}
 };
 
+/**
+ *   STUB for window.selection().
+ */
 window.getSelection = () => {
   return {
     anchorNode: {},
@@ -40,6 +49,9 @@ window.getSelection = () => {
   };
 };
 
+/**
+ *   A Mock Event.
+ */
 const mockEvent = () => {
   return {
     key: "",
@@ -48,6 +60,9 @@ const mockEvent = () => {
   };
 };
 
+/**
+ *   A Mock App.
+ */
 const MockApp = () => {
   function onKeyDownInEditor(e) {
 
@@ -68,6 +83,9 @@ const MockApp = () => {
   )
 }
 
+/**
+ *   STUB for Note text.
+ */
 const text =  "Some random text goes here!\n" +
               "Second *line* is here\n" +
               "Third line for some more fun\n" +
@@ -102,6 +120,9 @@ it('loads Dashboard note DIV', () => {
   expect(getByTestId('dashboard-note')).toBeInTheDocument();
 });
 
+/**
+ *   Tests for loadNoteInEditor().
+ */
 describe('loadNoteInEditor', () => {
   it('no parameters: return without affecting DOM', () => {
     const { getByTestId } = render(<MockApp />);
@@ -162,6 +183,9 @@ describe('loadNoteInEditor', () => {
   });
 });
 
+/**
+ *   Tests for getTextFromEditor().
+ */
 describe('getTextFromEditor', () => {
   it('empty string', () => {
     render(<MockApp />);
@@ -200,6 +224,9 @@ describe('getTextFromEditor', () => {
   });
 });
 
+/**
+ *   Tests for keyPressedInEditor().
+ */
 describe('keyPressedInEditor', () => {
   beforeEach(() => {
     render(<MockApp />);
@@ -1440,6 +1467,9 @@ describe('keyPressedInEditor', () => {
   });
 });
 
+/**
+ *   Tests for onClickInEditor().
+ */
 describe('onClickInEditor', () => {
   it('click in editor', () => {
     let spanElementList = document.querySelectorAll('.note__text');

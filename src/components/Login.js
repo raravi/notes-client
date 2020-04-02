@@ -7,6 +7,10 @@ import jwtDecode from 'jwt-decode';
 
 axios.defaults.withCredentials = true  // enable axios post cookie, default false
 
+/**
+ * Login React Component: This component contains all the 
+ * Login components - (LoginSection, RegisterSection & ForgotPassword).
+ */
 export const Login = (props) => {
   let [ forgotPassword, setForgotPassword ] = useState(false);
   let [ newUser, setNewUser ] = useState(false);

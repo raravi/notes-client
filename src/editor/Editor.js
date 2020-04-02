@@ -4,6 +4,15 @@ import createDOMPurify from 'dompurify';
 
 const purify = createDOMPurify(window);
 
+/**
+ *   This file contains code to maintain the Editor functionality
+ * and handle the processing / output from NOTE DOM component.
+ */
+
+/**
+ *   This function sets the CARET position to the specified
+ * offset in the specified DOM node.
+ */
 function setCaretPositionToOffset(el, offset) {
   el.focus();
   let range = document.createRange();
@@ -14,6 +23,10 @@ function setCaretPositionToOffset(el, offset) {
   sel.addRange(range);
 }
 
+/**
+ *   This function sets the CARET position to the specified
+ * parent offset in the specified parent DOM node.
+ */
 function setCaretPositionInChildNode(node, offset) {
   let offsetLeft = offset;
   let children = node.childNodes;
@@ -27,6 +40,10 @@ function setCaretPositionInChildNode(node, offset) {
   }
 }
 
+/**
+ *   This function gets the current NODE from the
+ * provided selectionNode.
+ */
 function getNodeFromSelection(selectionNode) {
   let node = selectionNode;
   if (node.nodeType === 3 || node.nodeName === "BR") {
@@ -37,6 +54,10 @@ function getNodeFromSelection(selectionNode) {
   return node;
 }
 
+/**
+ *   This function gets the parent offset from the
+ * specified DOM node and the specified offset.
+ */
 function getParentOffset(node, offset) {
   let parentOffset = 0;
   let children = node.parentNode.childNodes;
@@ -51,6 +72,10 @@ function getParentOffset(node, offset) {
   return parentOffset;
 }
 
+/**
+ *   This function creates a new DIV element for the
+ * given text and returns it.
+ */
 function createNewDivForText(text) {
   // Create new DIV with an 'empty' SPAN inside it
   let spanElement = document.createElement('span');
@@ -72,6 +97,10 @@ function createNewDivForText(text) {
   return divElement;
 }
 
+/**
+ *   This function replaces all NBSPs with BLANKSPACE
+ * in the specified text.
+ */
 function replaceNbspWithBlankspace(currentText) {
   let newText = currentText.replace(/\xa0/g, ' ');
   newText = newText.replace(/&nbsp;/g, ' ');
@@ -79,11 +108,19 @@ function replaceNbspWithBlankspace(currentText) {
   return newText;
 }
 
+/**
+ *   This function checks if the given text is
+ * an Ordered List.
+ */
 function checkIfOrderedList (string) {
   let regexForOrderedList = new RegExp('^\\d+\\.$');
   return regexForOrderedList.test(string);
 }
 
+/**
+ *   This function checks if the Previous Node is
+ * an Ordered List.
+ */
 function checkPreviousNodeIsOrderedList(el, newText) {
   let previousDivNode = el.parentNode.parentNode.previousSibling;
   if (previousDivNode && previousDivNode.getAttribute("class") === "note__line") {
@@ -101,6 +138,10 @@ function checkPreviousNodeIsOrderedList(el, newText) {
   return {isOrderedList: false, newText: ""};
 }
 
+/**
+ *   This function checks if the next items in the
+ * Ordered List need to fixed.
+ */
 function fixNextItemsInOrderedList(el, currentText) {
   let nextDivNode = el.parentNode.parentNode.nextSibling;
   let strings = replaceNbspWithBlankspace(currentText).split(" ");
@@ -122,6 +163,9 @@ function fixNextItemsInOrderedList(el, currentText) {
   }
 }
 
+/**
+ *   This function checks for Pairs in a give NODE DOM element.
+ */
 function checkForPairs(parentNode, newText, length, offset, e) {
   let pairsInText = new PairsInText();
   let text = newText.slice(length);
@@ -135,6 +179,10 @@ function checkForPairs(parentNode, newText, length, offset, e) {
   }
 }
 
+/**
+ *   This function gets the text from the
+ * specified fromNode / ToNode DOM elements.
+ */
 function getTextFromNodes(fromNode, fromNodeOffset, toNode, toNodeOffset) {
   let text = "";
   let currentDivNode = fromNode;
@@ -154,6 +202,10 @@ function getTextFromNodes(fromNode, fromNodeOffset, toNode, toNodeOffset) {
   return text;
 }
 
+/**
+ *   This function checks if the Focus Node comes
+ * before / after the Anchor Node.
+ */
 function getFocusNodeComesAfter(anchorNode, focusNode) {
   let focusNodeComesAfter = true;
   let currentNode = anchorNode;
@@ -167,6 +219,9 @@ function getFocusNodeComesAfter(anchorNode, focusNode) {
   return focusNodeComesAfter;
 }
 
+/**
+ *   This function cuts the text from the same SPAN DOM element.
+ */
 function cutTextInSameSpan(node, fromOffset, toOffset) {
   let remainingText = node.textContent.slice(0, fromOffset) + node.textContent.slice(toOffset);
   if (remainingText === "") {
@@ -185,6 +240,9 @@ function cutTextInSameSpan(node, fromOffset, toOffset) {
   }
 }
 
+/**
+ *   This function cuts the text from the same DIV DOM element.
+ */
 function cutTextInSameDiv(parentNode, fromOffset, toOffset) {
   let remainingText = parentNode.textContent.slice(0, fromOffset) + parentNode.textContent.slice(toOffset);
   if (remainingText === "") {
@@ -197,6 +255,9 @@ function cutTextInSameDiv(parentNode, fromOffset, toOffset) {
   }
 }
 
+/**
+ *   This function cuts the text from different DIV DOM elements.
+ */
 function cutTextInDifferentDivs(fromNode, fromOffset, toNode, toOffset) {
   let fromDivNode = fromNode.parentNode.parentNode;
   let toDivNode = toNode.parentNode.parentNode;
@@ -230,6 +291,10 @@ function cutTextInDifferentDivs(fromNode, fromOffset, toNode, toOffset) {
   }
 }
 
+/**
+ *   This function styles the given text upon each change
+ * made to the NOTE.
+ */
 function checkHeader(el, currentText, offset, e) {
   let newText = replaceNbspWithBlankspace(currentText);
 
@@ -262,6 +327,10 @@ function checkHeader(el, currentText, offset, e) {
   }
 }
 
+/**
+ *   This function gets the text to copy from the
+ * specified Anchor Node / Focus Node.
+ */
 function getTextToCopy(anchorNode, anchorOffset, focusNode, focusOffset) {
   let text = "";
 
@@ -292,6 +361,10 @@ function getTextToCopy(anchorNode, anchorOffset, focusNode, focusOffset) {
   return text;
 }
 
+/**
+ *   This function cuts the NODE Div elements from the
+ * specified Anchor Node / Focus Node.
+ */
 function cutNodes(anchorNode, anchorOffset, focusNode, focusOffset) {
   let anchorParentOffset = getParentOffset(anchorNode, anchorOffset);
   let focusParentOffset = getParentOffset(focusNode, focusOffset);
@@ -329,6 +402,10 @@ function cutNodes(anchorNode, anchorOffset, focusNode, focusOffset) {
   }
 }
 
+/**
+ *   This function handles kepypress event in the NOTE.
+ * It will process each event, and do the required changes to the DOM!
+ */
 function keyPressedInEditor(e, currentSelection) {
   // Get current SPAN details
   if (e === undefined || currentSelection === undefined)
@@ -598,10 +675,16 @@ function keyPressedInEditor(e, currentSelection) {
   return true;
 }
 
+/**
+ *   This function handles clicks in the NOTE.
+ */
 function onClickInEditor(e) {
   console.log("On Click");
 }
 
+/**
+ *   This function loads note to the NOTE DOM element.
+ */
 function loadNoteInEditor(noteContent, editable) {
   if (noteContent === undefined || editable === undefined) {
     return;
@@ -623,6 +706,9 @@ function loadNoteInEditor(noteContent, editable) {
   });
 }
 
+/**
+ *   This function gets text from the NOTE DOM element.
+ */
 function getTextFromEditor() {
   let editor = document.querySelector('.note');
   let children = editor.childNodes;

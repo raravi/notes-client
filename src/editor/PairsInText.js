@@ -1,3 +1,8 @@
+/**
+ * PairsInText Class: For Dealing with Pairs maintenance.
+ * It is used to maintain the style information for the
+ * Pairs texts in NOTE DOM element.
+ */
 function PairsInText() {
   this.characters = ["*", "/", "_", "`", "-", "["];
   this.regexOfCharacters = ["\\*[^*]*\\*",
@@ -16,6 +21,10 @@ function PairsInText() {
                             "note__link"];
 }
 
+/**
+ *   This function gets the Counts / Index of appropriate Pairs for the
+ * given text using the object above.
+ */
 PairsInText.prototype.getCountAndIndex = function (text, length) {
   let _this = this;
 
@@ -30,6 +39,10 @@ PairsInText.prototype.getCountAndIndex = function (text, length) {
   });
 };
 
+/**
+ *   This function gets new SPAN text by applying the required SPANS for the
+ * given text using the object above.
+ */
 PairsInText.prototype.getNewSpanText = function (newText, length) {
   let _this = this;
   let newSpanText = "<span class='note__text'>";

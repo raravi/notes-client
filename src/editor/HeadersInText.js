@@ -1,3 +1,8 @@
+/**
+ * HeadersInText Class: For Dealing with Header maintenance.
+ * It is used to maintain the style information for the
+ * Header texts in NOTE DOM element.
+ */
 function HeadersInText() {
   this.characterCodeOfHeaders = [ "#",
                                   "##",
@@ -21,6 +26,10 @@ function HeadersInText() {
                           "note__orderedlist"];
 }
 
+/**
+ *   This function sets the appropriate Header class for the
+ * given text using the object above.
+ */
 HeadersInText.prototype.setHeader = function (parentNode, strings, isOrderedList) {
   if (strings.length > 1 && this.characterCodeOfHeaders.indexOf(strings[0]) !== -1) {
     let indexOfHeader = this.characterCodeOfHeaders.indexOf(strings[0]);

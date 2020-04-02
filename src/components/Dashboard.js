@@ -13,6 +13,9 @@ import {  faPlus,
 
 axios.defaults.withCredentials = true  // enable axios post cookie, default false
 
+/**
+ *   Dashboard React Component: This component is for the logged-in state.
+ */
 export const Dashboard = (props) => {
   let [ currentNoteId, setCurrentNoteId ] = useState(null);
   let [ currentNoteContent, setCurrentNoteContent ] = useState("");
@@ -28,7 +31,7 @@ export const Dashboard = (props) => {
   });
 
   /**
-   * POST the user request to the API endpoint '/save'.
+   * POST the user request to the API endpoint '/sync'.
    */
   function syncNote() {
     if (currentNoteId) {
@@ -73,6 +76,9 @@ export const Dashboard = (props) => {
     }
   }
 
+  /**
+   * POST the user request to the API endpoint '/sendall'.
+   */
   function syncAll() {
     axios.post('http://localhost:8000/api/users/sendall', {
       userid: props.userId
@@ -100,6 +106,9 @@ export const Dashboard = (props) => {
     .catch(error => console.log(error));
   }
 
+  /**
+   * This function sets the content of the HELP page.
+   */
   function onHelp() {
     syncNote();
     loadNoteInEditor(helpNote, "true");
@@ -107,6 +116,10 @@ export const Dashboard = (props) => {
     setCurrentNoteContent("");
   }
 
+  /**
+   * This function logs off the user,
+   * POST the user request to the API endpoint '/logout'.
+   */
   function onLogout() {
     axios.post('http://localhost:8000/api/users/logout', {
       userid: props.userId
@@ -123,6 +136,9 @@ export const Dashboard = (props) => {
     props.setUserLoggedIn(null);
   }
 
+  /**
+   * This function loads the contents of the note that was clicked.
+   */
   function onClickNoteInSidebar(e) {
     let currentNoteInSidebar = e.target;
     if (currentNoteInSidebar.nodeName === "P")
@@ -136,6 +152,10 @@ export const Dashboard = (props) => {
     setCurrentNoteContent(getTextFromEditor());
   }
 
+  /**
+   * This function create a new note, and loads the contents of the new note.
+   * POST the user request to the API endpoint '/new'.
+   */
   function onClickNewNoteInSidebar(e) {
     syncNote();
     setCurrentNoteId(null);
@@ -163,6 +183,10 @@ export const Dashboard = (props) => {
     .catch(error => console.log(error));
   }
 
+  /**
+   * This function deletes the note, and loads the contents of the welcome note.
+   * POST the user request to the API endpoint '/delete'.
+   */
   function onClickDeleteNote(e) {
     let noteId = e.target.parentNode.dataset.id;
     e.stopPropagation();
@@ -192,6 +216,10 @@ export const Dashboard = (props) => {
     .catch(error => console.log(error));
   }
 
+  /**
+   * This function gets the part of the Title that is
+   * to be displayed in the sidebar.
+   */
   function getTitleSlug(note) {
     let firstLine = note.split("\n")[0];
     if (firstLine.length > 30)
@@ -199,6 +227,9 @@ export const Dashboard = (props) => {
     return firstLine;
   }
 
+  /**
+   * This function handles the keypress event in the note element.
+   */
   function onKeyDownInEditor(e) {
     keyPressedInEditor(e, window.getSelection());
   }
@@ -270,20 +301,3 @@ export const Dashboard = (props) => {
     </div>
   )
 }
-
-/*
-# How to write a blog post!
-1. *Come up with an interesting topic*: This can be anything. But it should be something that you're good at. Only then will you be able to write about it in detail.
-2. *Research on it*: Do your bit before you start to write. Make a habit of researching about the topic, and check all available literature on it. So that you get an idea of how things stand now.
-3. *A broad outline*: Break down the topic into sub-topics so that you can structure your post in a meaningful way.
-4. *Write write write*: Just start typing, that's all there is to it. Just keep typing out the thoughts that come randomly into your head. Get everything out.
-5. *Edit it*: Once you have typed out everything in your head, then it's time to start structuring it into the outline you had come up with earlier. It's okay if the outline changes, as long as it makes sense!
-## Why should I write a blog post?
-Writing is a form of expression. We humans have an innate need to express ourselves and be heard. We want to see and wish to be seen. And writing is one of the mediums for doing so. It also helps us become better at thinking objectively and form opinions based on research in a coherent manner.
-## How to build an audience
-In order to build a loyal following of readers willing to go through what you put up, you need to write good content consistently. And make sure to keep an eye on quality. Follow these guidelines:
-* Write every day
-* Never compromise on quality.
-* Always think about the people who will read your content
-* Are you saying something different than others?
-*/

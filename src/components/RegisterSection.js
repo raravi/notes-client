@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * RegisterSection component
+ * RegisterSection React Component: This component
  * contains the Register 'page'.
  */
 export const RegisterSection = (props) => {

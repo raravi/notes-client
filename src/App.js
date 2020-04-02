@@ -3,6 +3,10 @@ import { Dashboard } from './components/Dashboard';
 import { Login } from './components/Login';
 import './App.css';
 
+/**
+ * The main App component.
+ * Routes to Login / Dashboard React Components based upon the LOGIN state. 
+ */
 function App() {
   let [ userLoggedIn, setUserLoggedIn ] = useState(null);
   let [ notes, setNotes ] = useState([]);

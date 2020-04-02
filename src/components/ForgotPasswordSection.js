@@ -1,7 +1,7 @@
 import React from 'react';
 
 /**
- * ForgotPassword component
+ * ForgotPassword React Component: This component
  * contains the Forgot Password 'page'.
  */
 export const ForgotPasswordSection = (props) => {
