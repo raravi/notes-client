@@ -2,7 +2,7 @@
 
 A Markdown Editor in React!
 
-![version](https://img.shields.io/github/package-json/v/raravi/notes-client)&nbsp;&nbsp;![coverage](https://img.shields.io/codecov/c/gh/raravi/notes-client)&nbsp;&nbsp;![dependencies](https://img.shields.io/depfu/raravi/notes-client)&nbsp;&nbsp;![last-commit](https://img.shields.io/github/last-commit/raravi/notes-client)
+![license](https://img.shields.io/github/license/raravi/notes-client)&nbsp;&nbsp;![version](https://img.shields.io/github/package-json/v/raravi/notes-client)&nbsp;&nbsp;![coverage](https://img.shields.io/codecov/c/gh/raravi/notes-client)&nbsp;&nbsp;![dependencies](https://img.shields.io/depfu/raravi/notes-client)&nbsp;&nbsp;![last-commit](https://img.shields.io/github/last-commit/raravi/notes-client)
 
 notes is a Markdown web editor that syncs all your notes in realtime and allows you to access them from any browser. This page is intended as a quick reference and showcase.
 
