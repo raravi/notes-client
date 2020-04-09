@@ -208,11 +208,6 @@ afterEach(() => {
 
 afterEach(cleanup);
 
-it('should take a snapshot', () => {
-  const { asFragment } = render(<App />);
-  expect(asFragment(<App />)).toMatchSnapshot();
-});
-
 /**
  * LOGIN page
  */
