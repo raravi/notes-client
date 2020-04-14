@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import {
+  Switch,
+  Route
+} from "react-router-dom";
 import { LoginSection } from './LoginSection';
 import { RegisterSection } from './RegisterSection';
 import { ForgotPasswordSection } from './ForgotPasswordSection';
@@ -8,12 +12,10 @@ import jwtDecode from 'jwt-decode';
 axios.defaults.withCredentials = true  // enable axios post cookie, default false
 
 /**
- * Login React Component: This component contains all the 
+ * Login React Component: This component contains all the
  * Login components - (LoginSection, RegisterSection & ForgotPassword).
  */
 export const Login = (props) => {
-  let [ forgotPassword, setForgotPassword ] = useState(false);
-  let [ newUser, setNewUser ] = useState(false);
   let [ loginEmailError, setLoginEmailError ] = useState('');
   let [ loginPasswordError, setLoginPasswordError ] = useState('');
   let [ registerUsernameError, setRegisterUsernameError ] = useState('');
@@ -23,16 +25,6 @@ export const Login = (props) => {
   let [ registerSuccess, setRegisterSuccess ] = useState('');
   let [ forgotPasswordEmailError, setForgotPasswordEmailError ] = useState('');
   let [ forgotPasswordEmailSuccess, setForgotPasswordEmailSuccess ] = useState('');
-
-  /**
-   * These functions toggle/set state variables.
-   */
-  function toggleNewUser() {
-    setNewUser(!newUser);
-  }
-  function onClickForgotPassword() {
-    setForgotPassword(true);
-  }
 
   /**
    * Try to login the user, send the details to the server
@@ -162,33 +154,32 @@ export const Login = (props) => {
       <header className="login-header">
         <h1 className="login-header__title">notes</h1>
       </header>
-      { !forgotPassword && !newUser &&
-        <LoginSection
-          toggleNewUser={toggleNewUser}
-          loginEmailError={loginEmailError}
-          loginPasswordError={loginPasswordError}
-          login={login}
-          onClickForgotPassword={onClickForgotPassword}
-        />
-      }
-      { !forgotPassword && newUser &&
-        <RegisterSection
-          toggleNewUser={toggleNewUser}
-          registerUsernameError={registerUsernameError}
-          registerEmailError={registerEmailError}
-          registerPasswordError={registerPasswordError}
-          registerPassword2Error={registerPassword2Error}
-          registerSuccess={registerSuccess}
-          register={register}
-        />
-      }
-      { forgotPassword &&
-        <ForgotPasswordSection
-          forgotPasswordEmailError={forgotPasswordEmailError}
-          forgotPasswordEmailSuccess={forgotPasswordEmailSuccess}
-          sendForPasswordReset={sendForPasswordReset}
-        />
-      }
+      <Switch>
+        <Route path="/register">
+          <RegisterSection
+            registerUsernameError={registerUsernameError}
+            registerEmailError={registerEmailError}
+            registerPasswordError={registerPasswordError}
+            registerPassword2Error={registerPassword2Error}
+            registerSuccess={registerSuccess}
+            register={register}
+          />
+        </Route>
+        <Route path="/forgot-password">
+          <ForgotPasswordSection
+            forgotPasswordEmailError={forgotPasswordEmailError}
+            forgotPasswordEmailSuccess={forgotPasswordEmailSuccess}
+            sendForPasswordReset={sendForPasswordReset}
+          />
+        </Route>
+        <Route path="/">
+          <LoginSection
+            loginEmailError={loginEmailError}
+            loginPasswordError={loginPasswordError}
+            login={login}
+          />
+        </Route>
+      </Switch>
       <footer className="login-footer">
         <p>&#169; 2020 Amith Raravi - source code on <a href="https://github.com/raravi/notes-client">Github</a></p>
       </footer>
