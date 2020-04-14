@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import {
-  BrowserRouter as Router,
   Switch,
   Route,
   Redirect
@@ -18,26 +17,24 @@ function App() {
   let [ notes, setNotes ] = useState([]);
 
   return (
-    <Router>
-      <Switch>
-        <Route path="/dashboard">
-          { userLoggedIn
-            ? <Dashboard  setUserLoggedIn={setUserLoggedIn}
-                          notes={notes}
-                          setNotes={setNotes}
-                          user={userLoggedIn} />
-            : <Redirect to="/" />
-          }
-        </Route>
-        <Route path="/">
-          { userLoggedIn
-            ? <Redirect to="/dashboard" />
-            : <Login  setUserLoggedIn={setUserLoggedIn}
-                      setNotes={setNotes} />
-          }
-        </Route>
-      </Switch>
-    </Router>
+    <Switch>
+      <Route path="/dashboard">
+        { userLoggedIn
+          ? <Dashboard  setUserLoggedIn={setUserLoggedIn}
+                        notes={notes}
+                        setNotes={setNotes}
+                        user={userLoggedIn} />
+          : <Redirect to="/" />
+        }
+      </Route>
+      <Route path="/">
+        { userLoggedIn
+          ? <Redirect to="/dashboard" />
+          : <Login  setUserLoggedIn={setUserLoggedIn}
+                    setNotes={setNotes} />
+        }
+      </Route>
+    </Switch>
   );
 }
 
