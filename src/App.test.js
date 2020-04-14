@@ -16,6 +16,15 @@ jest.mock('jwt-decode');
 jest.useFakeTimers();
 console.error = jest.fn();
 
+function renderWithRouter(ui) {
+  const Wrapper = ({ children }) => (
+    <MemoryRouter>{children}</MemoryRouter>
+  );
+  return {
+    ...render(ui, { wrapper: Wrapper })
+  };
+}
+
 /**
  *   Stubs / Mocks.
  */
@@ -214,7 +223,7 @@ afterEach(cleanup);
  */
 describe('Login Page', () => {
   it('submit button is present', () => {
-    const { getByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId } = renderWithRouter(<App />);
 
     expect(getByTestId('login-button')).toBeInTheDocument();
   });
@@ -223,7 +232,7 @@ describe('Login Page', () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     axiosMock.post.mockResolvedValueOnce(responseLoginSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
@@ -235,7 +244,7 @@ describe('Login Page', () => {
   it('login is successful: no token', async () => {
     responseLoginSuccess.data.token = null;
     axiosMock.post.mockResolvedValueOnce(responseLoginSuccess);
-    const { getByTestId, findByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
@@ -248,7 +257,7 @@ describe('Login Page', () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     axiosMock.post.mockResolvedValueOnce(responseLoginSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedError);
-    const { getByTestId, findByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
@@ -261,7 +270,7 @@ describe('Login Page', () => {
     responseLoginError.response.data.email = responseLoginEmailError;
     responseLoginError.response.data.password = responseLoginPasswordError;
     axiosMock.post.mockImplementation(() => Promise.reject(responseLoginError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
@@ -273,7 +282,7 @@ describe('Login Page', () => {
 
   it('login error occured: no parameter', async () => {
     axiosMock.post.mockImplementation(() => Promise.reject(responseLoginError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
@@ -284,7 +293,7 @@ describe('Login Page', () => {
   it('login error occured: no response', async () => {
     responseLoginError.response = null;
     axiosMock.post.mockImplementation(() => Promise.reject(responseLoginError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
@@ -296,7 +305,7 @@ describe('Login Page', () => {
   it('login error occured: no response.data', async () => {
     responseLoginError.response.data = null;
     axiosMock.post.mockImplementation(() => Promise.reject(responseLoginError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
@@ -306,7 +315,7 @@ describe('Login Page', () => {
   });
 
   it('Register link is clicked', () => {
-    const { getByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-register'));
 
@@ -314,7 +323,7 @@ describe('Login Page', () => {
   });
 
   it('Forgot Password is clicked', () => {
-    const { getByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-forgotpassword'));
 
@@ -327,7 +336,7 @@ describe('Login Page', () => {
  */
 describe('Register Page', () => {
   it('submit button is present', () => {
-    const { getByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-register'));
 
@@ -337,7 +346,7 @@ describe('Register Page', () => {
   it('Register is successful', async () => {
     responseRegisterSuccess.data.createduser = responseRegisterSuccessCreatedUser;
     axiosMock.post.mockResolvedValueOnce(responseRegisterSuccess);
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -351,7 +360,7 @@ describe('Register Page', () => {
   it('Register is successful: no response.data.createduser', async () => {
     responseRegisterSuccess.data.createduser = null;
     axiosMock.post.mockResolvedValueOnce(responseRegisterSuccess);
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -367,7 +376,7 @@ describe('Register Page', () => {
     responseRegisterError.response.data.password = responseRegisterErrorPassword;
     responseRegisterError.response.data.password2 = responseRegisterErrorPassword2;
     axiosMock.post.mockImplementation(() => Promise.reject(responseRegisterError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -383,7 +392,7 @@ describe('Register Page', () => {
 
   it('Register error occured: no parameters', async () => {
     axiosMock.post.mockImplementation(() => Promise.reject(responseRegisterError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -396,7 +405,7 @@ describe('Register Page', () => {
   it('Register error occured: no error.response', async () => {
     responseRegisterError.response = null;
     axiosMock.post.mockImplementation(() => Promise.reject(responseRegisterError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -409,7 +418,7 @@ describe('Register Page', () => {
   it('Register error occured: no error.response.data', async () => {
     responseRegisterError.response.data = null;
     axiosMock.post.mockImplementation(() => Promise.reject(responseRegisterError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -420,7 +429,7 @@ describe('Register Page', () => {
   });
 
   it('Login link is clicked', () => {
-    const { getByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -435,7 +444,7 @@ describe('Register Page', () => {
  */
 describe('Forgot Password Page', () => {
   it('submit button is present', () => {
-    const { getByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-forgotpassword'));
 
@@ -445,7 +454,7 @@ describe('Forgot Password Page', () => {
   it('Forgot Password is successful', async () => {
     responseForgotPasswordSuccess.data.emailsent = responseForgotPasswordSuccessEmailSent;
     axiosMock.post.mockResolvedValueOnce(responseForgotPasswordSuccess);
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-forgotpassword'));
     expect(getByTestId('forgotpassword-button')).toBeInTheDocument();
 
@@ -459,7 +468,7 @@ describe('Forgot Password Page', () => {
   it('Forgot Password is successful: no response.data.emailsent', async () => {
     responseForgotPasswordSuccess.data.emailsent = null;
     axiosMock.post.mockResolvedValueOnce(responseForgotPasswordSuccess);
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-forgotpassword'));
     expect(getByTestId('forgotpassword-button')).toBeInTheDocument();
 
@@ -472,7 +481,7 @@ describe('Forgot Password Page', () => {
   it('Forgot Password error occured', async () => {
     responseForgotPasswordError.response.data.email = responseForgotPasswordErrorEmail;
     axiosMock.post.mockImplementation(() => Promise.reject(responseForgotPasswordError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-forgotpassword'));
     expect(getByTestId('forgotpassword-button')).toBeInTheDocument();
 
@@ -486,7 +495,7 @@ describe('Forgot Password Page', () => {
   it('Forgot Password error occured: no error.response', async () => {
     responseForgotPasswordError.response = null;
     axiosMock.post.mockImplementation(() => Promise.reject(responseForgotPasswordError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-forgotpassword'));
     expect(getByTestId('forgotpassword-button')).toBeInTheDocument();
 
@@ -500,7 +509,7 @@ describe('Forgot Password Page', () => {
   it('Forgot Password error occured: no error.response.data', async () => {
     responseForgotPasswordError.response.data = null;
     axiosMock.post.mockImplementation(() => Promise.reject(responseForgotPasswordError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-forgotpassword'));
     expect(getByTestId('forgotpassword-button')).toBeInTheDocument();
 
@@ -514,7 +523,7 @@ describe('Forgot Password Page', () => {
   it('Forgot Password error occured: no error.response.data.email', async () => {
     responseForgotPasswordError.response.data.email = null;
     axiosMock.post.mockImplementation(() => Promise.reject(responseForgotPasswordError));
-    const { getByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-forgotpassword'));
     expect(getByTestId('forgotpassword-button')).toBeInTheDocument();
 
@@ -534,7 +543,7 @@ describe('Dashboard Page', () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     axiosMock.post.mockResolvedValueOnce(responseLoginSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
@@ -545,7 +554,7 @@ describe('Dashboard Page', () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     axiosMock.post.mockResolvedValueOnce(responseLoginSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
@@ -559,7 +568,7 @@ describe('Dashboard Page', () => {
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
     fireEvent.click(document.querySelector(".sidebar__note"));
@@ -600,7 +609,7 @@ describe('Dashboard Page', () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     axiosMock.post.mockResolvedValueOnce(responseLoginSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -616,7 +625,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseSyncNoteNoChanges);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -635,7 +644,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockImplementation(() => Promise.reject(responseSyncNoteError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -654,7 +663,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseSyncNoteNoChanges);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -673,7 +682,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseSyncNoteUpdated);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -693,7 +702,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseSyncNoteUpdatedError);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -713,7 +722,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseSyncNoteModified);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -731,7 +740,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseLogoutSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -746,7 +755,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockImplementation(() => Promise.reject(responseLogoutError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -761,7 +770,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseNewNoteSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findAllByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, findAllByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -776,7 +785,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(null);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findAllByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, findAllByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -789,7 +798,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockImplementation(() => Promise.reject(responseNewNoteError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findAllByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, findAllByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -802,7 +811,7 @@ describe('Dashboard Page', () => {
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -817,7 +826,7 @@ describe('Dashboard Page', () => {
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -832,7 +841,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseDeleteSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -846,7 +855,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(null);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -860,7 +869,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseDeleteSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -876,7 +885,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockImplementation(() => Promise.reject(responseDeleteError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -890,7 +899,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseSyncAllSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findAllByTestId } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, findAllByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
     const notesInSidebar = await findAllByTestId("sidebar-note");
@@ -907,7 +916,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseSyncNoteNoChanges)
       .mockResolvedValueOnce(responseSyncAllSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findAllByTestId, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, findAllByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
     fireEvent.click(document.querySelector(".sidebar__note"));
@@ -924,7 +933,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseSyncNoteNoChanges)
       .mockResolvedValueOnce(responseSyncAllSuccessNoteDeleted);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
     fireEvent.click(document.querySelector(".sidebar__note"));
@@ -940,7 +949,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(null);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
@@ -954,7 +963,7 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockImplementation(() => Promise.reject(responseSyncAllError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = render(<MemoryRouter><App /></MemoryRouter>);
+    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
     const dashboardNoteElement = await findByTestId('dashboard-note');
 
