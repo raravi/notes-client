@@ -39,13 +39,13 @@ export const Dashboard = (props) => {
       let options;
       if (currentNoteContent !== textContent) {
         options = {
-          userid: props.userId,
+          userid: props.user.id,
           noteid: currentNoteId,
           notetext: textContent
         };
       } else {
         options = {
-          userid: props.userId,
+          userid: props.user.id,
           noteid: currentNoteId
         };
       }
@@ -81,7 +81,7 @@ export const Dashboard = (props) => {
    */
   function syncAll() {
     axios.post('http://localhost:8000/api/users/sendall', {
-      userid: props.userId
+      userid: props.user.id
     },
     {
       headers: {
@@ -122,7 +122,7 @@ export const Dashboard = (props) => {
    */
   function onLogout() {
     axios.post('http://localhost:8000/api/users/logout', {
-      userid: props.userId
+      userid: props.user.id
     },
     {
       headers: {
@@ -160,7 +160,7 @@ export const Dashboard = (props) => {
     syncNote();
     setCurrentNoteId(null);
     axios.post('http://localhost:8000/api/users/new', {
-      userid: props.userId
+      userid: props.user.id
     },
     {
       headers: {
@@ -192,7 +192,7 @@ export const Dashboard = (props) => {
     e.stopPropagation();
 
     axios.post('http://localhost:8000/api/users/delete', {
-      userid: props.userId,
+      userid: props.user.id,
       noteid: noteId
     },
     {
