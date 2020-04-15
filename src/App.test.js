@@ -14,7 +14,7 @@ import {
 import {
   loginReducer,
   registerReducer,
-  forgotPasswordReducer } from './components/Reducers';
+  forgotPasswordReducer } from './reducers';
 
 jest.mock('axios');
 jest.mock('jwt-decode');

@@ -10,7 +10,7 @@ import {
   loginReducer,
   registerReducer,
   forgotPasswordReducer
-} from './Reducers';
+} from '../reducers';
 import axios from 'axios';
 import jwtDecode from 'jwt-decode';
 
