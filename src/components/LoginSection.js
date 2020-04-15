@@ -21,10 +21,10 @@ export const LoginSection = (props) => {
       <input type="email" name="email" className="login__email" placeholder="Email" /><br />
       <label  className="login__email-error"
               data-testid="login-email-error">
-        {props.loginEmailError}
+        {props.loginState.emailError}
       </label>
       <input type="password" name="password" className="login__password" placeholder="Password"/>
-      <label className="login__password-error">{props.loginPasswordError}</label><br />
+      <label className="login__password-error">{props.loginState.passwordError}</label><br />
       <button type="button"
               className="login__submit"
               onClick={props.login}
