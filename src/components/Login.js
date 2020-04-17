@@ -1,5 +1,4 @@
 import React from 'react';
-// import { LoginPage } from './LoginPage';
 import LoginComponent from '@bit/raravi.react.login';
 
 /**
