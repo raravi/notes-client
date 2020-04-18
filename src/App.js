@@ -6,6 +6,7 @@ import {
 } from "react-router-dom";
 import { Dashboard } from './components/Dashboard';
 import { Login } from './components/Login';
+import jwtDecode from 'jwt-decode';
 import './App.css';
 
 /**
@@ -15,6 +16,28 @@ import './App.css';
 function App() {
   let [ userLoggedIn, setUserLoggedIn ] = useState(null);
   let [ notes, setNotes ] = useState([]);
+
+  const apiDetails = {
+    url: 'http://localhost:8000',
+    endpoints: {
+      login: '/api/users/login',
+      register: '/api/users/register',
+      forgotPassword: '/api/users/forgotpassword'
+    }
+  };
+
+  function onSuccessfulLogin(response) {
+    if (response && response.data && response.data.token) {
+      let tokenDecoded = jwtDecode(response.data.token);
+      if(tokenDecoded) {
+        sessionStorage.setItem("token", response.data.token);
+        setNotes(response.data.notes);
+        setUserLoggedIn({id: tokenDecoded.id, name: tokenDecoded.name});
+      }/* else {
+        loginDispatch({ type: 'email-error', text: "An error occured..." });
+      }*/
+    }
+  }
 
   return (
     <Switch>
@@ -30,8 +53,9 @@ function App() {
       <Route path="/">
         { userLoggedIn
           ? <Redirect to="/dashboard" />
-          : <Login  setUserLoggedIn={setUserLoggedIn}
-                    setNotes={setNotes} />
+          : <Login
+              loginSuccessCallback={onSuccessfulLogin}
+              apiDetails={apiDetails} />
         }
       </Route>
     </Switch>
