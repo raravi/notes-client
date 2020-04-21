@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import {
   Switch,
   Route,
@@ -31,8 +32,22 @@ function App() {
       let tokenDecoded = jwtDecode(response.data.token);
       if(tokenDecoded) {
         sessionStorage.setItem("token", response.data.token);
-        setNotes(response.data.notes);
-        setUserLoggedIn({id: tokenDecoded.id, name: tokenDecoded.name});
+
+        axios.post('http://localhost:8000/api/users/initialsync', {
+          userid: tokenDecoded.id
+        },
+        {
+          headers: {
+            Authorization: sessionStorage.getItem("token")
+          }
+        })
+        .then(responseSync => {
+          if (responseSync && responseSync.data && responseSync.data.success) {
+            setNotes(responseSync.data.notes);
+            setUserLoggedIn({id: tokenDecoded.id, name: tokenDecoded.name});
+          }
+        })
+        .catch(error => console.log(error));
       }/* else {
         loginDispatch({ type: 'email-error', text: "An error occured..." });
       }*/

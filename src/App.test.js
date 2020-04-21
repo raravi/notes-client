@@ -45,6 +45,20 @@ let tokenDecodedSuccess = {
     responseLoginPasswordError = "Password incorrect",
     responseLoginError,
 
+    initialSyncURL = 'http://localhost:8000/api/users/initialsync',
+    initialSyncOptions = {
+      userId: {
+        "userid": "5e5edca43aa9dc587503e1b4"
+      },
+      header: {
+        "headers": {
+          "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNWVkY2E0M2FhOWRjNTg3NTAzZTFiNCIsIm5hbWUiOiJBbWl0aCBSYXJhdmkiLCJpYXQiOjE1ODQ0MDQxNzQsImV4cCI6MTYxNTk2MTEwMH0.qLqhN_1CHbQLOCXzOyxRZS9K42AsoHtQbF-qL8vgn0o"
+        }
+      }
+    },
+    responseInitialSyncSuccess,
+    responseInitialSyncError,
+
     registerURL = "http://localhost:8000/api/users/register",
     registerOptions = {"name": "", "email": "", "password": "", "password2": ""},
     responseRegisterSuccessCreatedUser = "New user registered successfully!",
@@ -181,6 +195,18 @@ beforeEach(() => {
       }
     }
   };
+  responseInitialSyncSuccess = {
+    data: {
+      success: true,
+      notes: []
+    }
+  };
+  responseInitialSyncError = {
+    response: {
+      status: 404,
+      data: {}
+    }
+  };
   responseRegisterSuccess = {
     data: {
       createduser: ""//"New user registered successfully!"
@@ -229,17 +255,20 @@ describe('Login Page', () => {
     expect(getByTestId('login-button')).toBeInTheDocument();
   });
 
-  it.skip('login is successful', async () => {
+  it('login is successful', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    axiosMock.post.mockResolvedValueOnce(responseLoginSuccess);
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
     const dashboardNoteElement = await findByTestId('dashboard-note');
-    expect(axiosMock.post).toHaveBeenCalledTimes(1);
-    expect(axiosMock.post).toHaveBeenCalledWith(loginURL, loginOptions);
+    expect(axiosMock.post).toHaveBeenCalledTimes(2);
+    expect(axiosMock.post).toHaveBeenNthCalledWith(1, loginURL, loginOptions);
+    expect(axiosMock.post).toHaveBeenNthCalledWith(2, initialSyncURL, initialSyncOptions.userId, initialSyncOptions.header);
   });
 
   it('login is successful: no token', async () => {
@@ -265,6 +294,37 @@ describe('Login Page', () => {
     const loginButtonElement = await findByTestId('login-button');
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(loginURL, loginOptions);
+  });
+
+  it('login error occured: initialsync no response', async () => {
+    responseLoginSuccess.data.token = responseLoginSuccessToken;
+    responseInitialSyncSuccess = null;
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess);
+    jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
+
+    await fireEvent.click(getByTestId('login-button'));
+
+    expect(axiosMock.post).toHaveBeenCalledTimes(2);
+    expect(axiosMock.post).toHaveBeenNthCalledWith(1, loginURL, loginOptions);
+    expect(axiosMock.post).toHaveBeenNthCalledWith(2, initialSyncURL, initialSyncOptions.userId, initialSyncOptions.header);
+  });
+
+  it('login error occured: initialsync error', async () => {
+    responseLoginSuccess.data.token = responseLoginSuccessToken;
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockRejectedValueOnce(responseInitialSyncError);
+    jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
+
+    await fireEvent.click(getByTestId('login-button'));
+
+    expect(axiosMock.post).toHaveBeenCalledTimes(2);
+    expect(axiosMock.post).toHaveBeenNthCalledWith(1, loginURL, loginOptions);
+    expect(axiosMock.post).toHaveBeenNthCalledWith(2, initialSyncURL, initialSyncOptions.userId, initialSyncOptions.header);
   });
 
   it.skip('login error occured', async () => {
@@ -542,7 +602,9 @@ describe.skip('Forgot Password Page', () => {
 describe('Dashboard Page', () => {
   it('dashboard note is present', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    axiosMock.post.mockResolvedValueOnce(responseLoginSuccess);
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId } = renderWithRouter(<App />);
 
@@ -553,7 +615,9 @@ describe('Dashboard Page', () => {
 
   it('Welcome note is present', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    axiosMock.post.mockResolvedValueOnce(responseLoginSuccess);
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
 
@@ -565,9 +629,10 @@ describe('Dashboard Page', () => {
 
   it('note edited', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
-      .mockResolvedValueOnce(responseLoginSuccess);
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
@@ -608,7 +673,9 @@ describe('Dashboard Page', () => {
 
   it('help button is clicked: no note loaded', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    axiosMock.post.mockResolvedValueOnce(responseLoginSuccess);
+    axiosMock.post
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
@@ -621,9 +688,10 @@ describe('Dashboard Page', () => {
 
   it('help button is clicked: note loaded', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteNoChanges);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -640,9 +708,10 @@ describe('Dashboard Page', () => {
 
   it('help button is clicked: note loaded (sync error)', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockImplementation(() => Promise.reject(responseSyncNoteError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -659,9 +728,10 @@ describe('Dashboard Page', () => {
 
   it('help button is clicked: long note loaded', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(noteLong);
+    responseInitialSyncSuccess.data.notes.push(noteLong);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteNoChanges);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -678,9 +748,10 @@ describe('Dashboard Page', () => {
 
   it('help button is clicked: note loaded and edited', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteUpdated);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -698,9 +769,10 @@ describe('Dashboard Page', () => {
 
   it('help button is clicked: note loaded and edited (no modifieddate)', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteUpdatedError);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -718,9 +790,10 @@ describe('Dashboard Page', () => {
 
   it('help button is clicked: note loaded and modified', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteModified);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -739,6 +812,7 @@ describe('Dashboard Page', () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseLogoutSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
@@ -754,6 +828,7 @@ describe('Dashboard Page', () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockImplementation(() => Promise.reject(responseLogoutError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
@@ -769,6 +844,7 @@ describe('Dashboard Page', () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseNewNoteSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findAllByText } = renderWithRouter(<App />);
@@ -784,6 +860,7 @@ describe('Dashboard Page', () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(null);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findAllByText } = renderWithRouter(<App />);
@@ -797,6 +874,7 @@ describe('Dashboard Page', () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockImplementation(() => Promise.reject(responseNewNoteError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findAllByText } = renderWithRouter(<App />);
@@ -808,9 +886,10 @@ describe('Dashboard Page', () => {
 
   it('note button is clicked', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
-      .mockResolvedValueOnce(responseLoginSuccess);
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
@@ -823,9 +902,10 @@ describe('Dashboard Page', () => {
 
   it('note button (paragraph) is clicked', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
-      .mockResolvedValueOnce(responseLoginSuccess);
+      .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
@@ -837,9 +917,10 @@ describe('Dashboard Page', () => {
 
   it('delete button is clicked: success', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseDeleteSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -851,9 +932,10 @@ describe('Dashboard Page', () => {
 
   it('delete button is clicked: no response', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(null);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -865,9 +947,10 @@ describe('Dashboard Page', () => {
 
   it('delete button is clicked: note loaded', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseDeleteSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -881,9 +964,10 @@ describe('Dashboard Page', () => {
 
   it('delete button is clicked: error', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockImplementation(() => Promise.reject(responseDeleteError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -895,9 +979,10 @@ describe('Dashboard Page', () => {
 
   it('syncAll: success', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncAllSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findAllByTestId } = renderWithRouter(<App />);
@@ -911,9 +996,10 @@ describe('Dashboard Page', () => {
 
   it('syncAll: note loaded', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteNoChanges)
       .mockResolvedValueOnce(responseSyncAllSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
@@ -928,9 +1014,10 @@ describe('Dashboard Page', () => {
 
   it('syncAll: note deleted', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteNoChanges)
       .mockResolvedValueOnce(responseSyncAllSuccessNoteDeleted);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
@@ -945,9 +1032,10 @@ describe('Dashboard Page', () => {
 
   it('syncAll: no response', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(null);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
@@ -959,9 +1047,10 @@ describe('Dashboard Page', () => {
 
   it('syncAll: error', async () => {
     responseLoginSuccess.data.token = responseLoginSuccessToken;
-    responseLoginSuccess.data.notes.push(note);
+    responseInitialSyncSuccess.data.notes.push(note);
     axiosMock.post
       .mockResolvedValueOnce(responseLoginSuccess)
+      .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockImplementation(() => Promise.reject(responseSyncAllError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
