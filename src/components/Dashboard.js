@@ -10,6 +10,7 @@ import {  faPlus,
           faLayerGroup,
           faQuestion,
           faPowerOff } from '@fortawesome/free-solid-svg-icons';
+import { appApiDetails } from '../config/apiDetails';
 
 axios.defaults.withCredentials = true  // enable axios post cookie, default false
 
@@ -50,7 +51,7 @@ export const Dashboard = (props) => {
         };
       }
 
-      axios.post('http://localhost:8000/api/users/sync', options,
+      axios.post(appApiDetails.url + appApiDetails.endpoints.sync, options,
       {
         headers: {
           Authorization: sessionStorage.getItem("token")
@@ -80,7 +81,7 @@ export const Dashboard = (props) => {
    * POST the user request to the API endpoint '/sendall'.
    */
   function syncAll() {
-    axios.post('http://localhost:8000/api/users/sendall', {
+    axios.post(appApiDetails.url + appApiDetails.endpoints.sendAll, {
       userid: props.user.id
     },
     {
@@ -121,7 +122,7 @@ export const Dashboard = (props) => {
    * POST the user request to the API endpoint '/logout'.
    */
   function onLogout() {
-    axios.post('http://localhost:8000/api/users/logout', {
+    axios.post(appApiDetails.url + appApiDetails.endpoints.logout, {
       userid: props.user.id
     },
     {
@@ -159,7 +160,7 @@ export const Dashboard = (props) => {
   function onClickNewNoteInSidebar(e) {
     syncNote();
     setCurrentNoteId(null);
-    axios.post('http://localhost:8000/api/users/new', {
+    axios.post(appApiDetails.url + appApiDetails.endpoints.newNote, {
       userid: props.user.id
     },
     {
@@ -191,7 +192,7 @@ export const Dashboard = (props) => {
     let noteId = e.target.parentNode.dataset.id;
     e.stopPropagation();
 
-    axios.post('http://localhost:8000/api/users/delete', {
+    axios.post(appApiDetails.url + appApiDetails.endpoints.deleteNote, {
       userid: props.user.id,
       noteid: noteId
     },

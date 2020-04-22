@@ -6,6 +6,7 @@ import '@testing-library/jest-dom/extend-expect';
 import axiosMock from 'axios';
 import jwtDecodeMock from 'jwt-decode';
 import App from './App';
+import { loginApiDetails, appApiDetails } from './config/apiDetails';
 import {
   keyPressedInEditor,
   onClickInEditor,
@@ -37,7 +38,7 @@ let tokenDecodedSuccess = {
     },
     tokenDecodedError,
 
-    loginURL = 'http://localhost:8000/api/users/login',
+    loginURL = loginApiDetails.url + loginApiDetails.endpoints.login,
     loginOptions = {"email": "", "password": ""},
     responseLoginSuccessToken = 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNWVkY2E0M2FhOWRjNTg3NTAzZTFiNCIsIm5hbWUiOiJBbWl0aCBSYXJhdmkiLCJpYXQiOjE1ODQ0MDQxNzQsImV4cCI6MTYxNTk2MTEwMH0.qLqhN_1CHbQLOCXzOyxRZS9K42AsoHtQbF-qL8vgn0o',
     responseLoginSuccess,
@@ -45,7 +46,7 @@ let tokenDecodedSuccess = {
     responseLoginPasswordError = "Password incorrect",
     responseLoginError,
 
-    initialSyncURL = 'http://localhost:8000/api/users/initialsync',
+    initialSyncURL = appApiDetails.url + appApiDetails.endpoints.initialSync,
     initialSyncOptions = {
       userId: {
         "userid": "5e5edca43aa9dc587503e1b4"
@@ -59,7 +60,7 @@ let tokenDecodedSuccess = {
     responseInitialSyncSuccess,
     responseInitialSyncError,
 
-    registerURL = "http://localhost:8000/api/users/register",
+    registerURL = loginApiDetails.url + loginApiDetails.endpoints.register,
     registerOptions = {"name": "", "email": "", "password": "", "password2": ""},
     responseRegisterSuccessCreatedUser = "New user registered successfully!",
     responseRegisterSuccess,
@@ -69,7 +70,7 @@ let tokenDecodedSuccess = {
     responseRegisterErrorPassword2 = "Passwords must match",
     responseRegisterError,
 
-    forgotPasswordURL = "http://localhost:8000/api/users/forgotpassword",
+    forgotPasswordURL = loginApiDetails.url + loginApiDetails.endpoints.forgotPassword,
     forgotPasswordOptions = {"email": ""},
     responseForgotPasswordSuccessEmailSent = 'The reset email has been sent, please check your inbox!',
     responseForgotPasswordSuccess,
