@@ -8,7 +8,7 @@ const loginApiDetails = {
 };
 
 const appApiDetails = {
-  url: 'http://localhost:8000',
+  url: 'https://mysterious-forest-21747.herokuapp.com',
   endpoints: {
     initialSync: '/api/users/initialsync',
     sync: '/api/users/sync',
