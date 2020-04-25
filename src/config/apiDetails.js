@@ -1,5 +1,6 @@
 const loginApiDetails = {
   url: 'https://mtkrd60335.execute-api.eu-central-1.amazonaws.com/dev',
+  // url: 'http://localhost:4000/dev',
   endpoints: {
     login: '/api/users/login',
     register: '/api/users/register',
@@ -10,6 +11,7 @@ const loginApiDetails = {
 
 const appApiDetails = {
   url: 'https://mysterious-forest-21747.herokuapp.com',
+  // url: 'http://localhost:8000',
   endpoints: {
     initialSync: '/api/users/initialsync',
     sync: '/api/users/sync',
