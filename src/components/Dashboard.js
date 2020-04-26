@@ -12,7 +12,7 @@ import {  faPlus,
           faPowerOff } from '@fortawesome/free-solid-svg-icons';
 import { appApiDetails } from '../config/apiDetails';
 
-axios.defaults.withCredentials = true  // enable axios post cookie, default false
+// axios.defaults.withCredentials = true  // enable axios post cookie, default false
 
 /**
  *   Dashboard React Component: This component is for the logged-in state.
@@ -53,6 +53,7 @@ export const Dashboard = (props) => {
 
       axios.post(appApiDetails.url + appApiDetails.endpoints.sync, options,
       {
+        withCredentials: true,
         headers: {
           Authorization: sessionStorage.getItem("token")
         }
@@ -85,6 +86,7 @@ export const Dashboard = (props) => {
       userid: props.user.id
     },
     {
+      withCredentials: true,
       headers: {
         Authorization: sessionStorage.getItem("token")
       }
@@ -126,6 +128,7 @@ export const Dashboard = (props) => {
       userid: props.user.id
     },
     {
+      withCredentials: true,
       headers: {
         Authorization: sessionStorage.getItem("token")
       }
@@ -164,6 +167,7 @@ export const Dashboard = (props) => {
       userid: props.user.id
     },
     {
+      withCredentials: true,
       headers: {
         Authorization: sessionStorage.getItem("token")
       }
@@ -197,6 +201,7 @@ export const Dashboard = (props) => {
       noteid: noteId
     },
     {
+      withCredentials: true,
       headers: {
         Authorization: sessionStorage.getItem("token")
       }
