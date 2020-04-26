@@ -12,8 +12,6 @@ import {  faPlus,
           faPowerOff } from '@fortawesome/free-solid-svg-icons';
 import { appApiDetails } from '../config/apiDetails';
 
-// axios.defaults.withCredentials = true  // enable axios post cookie, default false
-
 /**
  *   Dashboard React Component: This component is for the logged-in state.
  */
