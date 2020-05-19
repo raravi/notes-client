@@ -9,6 +9,7 @@
 /coverage
 /src/__snapshots__
 /src/components/__snapshots__
+codecov.yml
 
 # production
 /build
