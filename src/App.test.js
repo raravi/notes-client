@@ -1,4 +1,4 @@
-import React, { useReducer } from 'react';
+import React from 'react';
 import { MemoryRouter } from "react-router-dom";
 import { render, cleanup, fireEvent } from '@testing-library/react';
 import ReactTestUtils from 'react-dom/test-utils';
@@ -7,11 +7,7 @@ import axiosMock from 'axios';
 import jwtDecodeMock from 'jwt-decode';
 import App from './App';
 import { loginApiDetails, appApiDetails } from './config/apiDetails';
-import {
-  keyPressedInEditor,
-  onClickInEditor,
-  loadNoteInEditor,
-  getTextFromEditor } from './editor/Editor';
+import { loadNoteInEditor } from './editor/Editor';
 
 jest.mock('axios');
 jest.mock('jwt-decode');
@@ -54,7 +50,8 @@ let tokenDecodedSuccess = {
       header: {
         "headers": {
           "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVlNWVkY2E0M2FhOWRjNTg3NTAzZTFiNCIsIm5hbWUiOiJBbWl0aCBSYXJhdmkiLCJpYXQiOjE1ODQ0MDQxNzQsImV4cCI6MTYxNTk2MTEwMH0.qLqhN_1CHbQLOCXzOyxRZS9K42AsoHtQbF-qL8vgn0o"
-        }
+        },
+        "withCredentials": true
       }
     },
     responseInitialSyncSuccess,
@@ -266,7 +263,7 @@ describe('Login Page', () => {
 
     fireEvent.click(getByTestId('login-button'));
 
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
     expect(axiosMock.post).toHaveBeenCalledTimes(2);
     expect(axiosMock.post).toHaveBeenNthCalledWith(1, loginURL, loginOptions);
     expect(axiosMock.post).toHaveBeenNthCalledWith(2, initialSyncURL, initialSyncOptions.userId, initialSyncOptions.header);
@@ -279,7 +276,7 @@ describe('Login Page', () => {
 
     fireEvent.click(getByTestId('login-button'));
 
-    const dashboardNoteElement = await findByTestId('login-button');
+    await findByTestId('login-button');
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(loginURL, loginOptions);
   });
@@ -292,7 +289,7 @@ describe('Login Page', () => {
 
     fireEvent.click(getByTestId('login-button'));
 
-    const loginButtonElement = await findByTestId('login-button');
+    await findByTestId('login-button');
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(loginURL, loginOptions);
   });
@@ -304,7 +301,7 @@ describe('Login Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId } = renderWithRouter(<App />);
+    const { getByTestId } = renderWithRouter(<App />);
 
     await fireEvent.click(getByTestId('login-button'));
 
@@ -319,7 +316,7 @@ describe('Login Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockRejectedValueOnce(responseInitialSyncError);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId } = renderWithRouter(<App />);
+    const { getByTestId } = renderWithRouter(<App />);
 
     await fireEvent.click(getByTestId('login-button'));
 
@@ -336,15 +333,15 @@ describe('Login Page', () => {
 
     fireEvent.click(getByTestId('login-button'));
 
-    const emailErrorElement = await findByText(responseLoginError.response.data.email);
-    const passwordErrorElement = await findByText(responseLoginError.response.data.password);
+    await findByText(responseLoginError.response.data.email);
+    await findByText(responseLoginError.response.data.password);
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(loginURL, loginOptions);
   });
 
   it.skip('login error occured: no parameter', async () => {
     axiosMock.post.mockImplementation(() => Promise.reject(responseLoginError));
-    const { getByTestId, findByText } = renderWithRouter(<App />);
+    const { getByTestId } = renderWithRouter(<App />);
 
     fireEvent.click(getByTestId('login-button'));
 
@@ -359,7 +356,7 @@ describe('Login Page', () => {
 
     fireEvent.click(getByTestId('login-button'));
 
-    const emailErrorElement = await findByText("Unable to reach server...");
+    await findByText("Unable to reach server...");
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(loginURL, loginOptions);
   });
@@ -371,7 +368,7 @@ describe('Login Page', () => {
 
     fireEvent.click(getByTestId('login-button'));
 
-    const emailErrorElement = await findByText("Unable to reach server...");
+    await findByText("Unable to reach server...");
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(loginURL, loginOptions);
   });
@@ -414,7 +411,7 @@ describe.skip('Register Page', () => {
 
     fireEvent.click(getByTestId('register-button'));
 
-    const registerSuccessElement = await findByText(responseRegisterSuccess.data.createduser);
+    await findByText(responseRegisterSuccess.data.createduser);
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(registerURL, registerOptions);
   });
@@ -422,7 +419,7 @@ describe.skip('Register Page', () => {
   it('Register is successful: no response.data.createduser', async () => {
     responseRegisterSuccess.data.createduser = null;
     axiosMock.post.mockResolvedValueOnce(responseRegisterSuccess);
-    const { getByTestId, findByText } = renderWithRouter(<App />);
+    const { getByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -444,17 +441,17 @@ describe.skip('Register Page', () => {
 
     fireEvent.click(getByTestId('register-button'));
 
-    const nameErrorElement = await findByText(responseRegisterError.response.data.name);
-    const emailErrorElement = await findByText(responseRegisterError.response.data.email);
-    const passwordErrorElement = await findByText(responseRegisterError.response.data.password);
-    const password2ErrorElement = await findByText(responseRegisterError.response.data.password2);
+    await findByText(responseRegisterError.response.data.name);
+    await findByText(responseRegisterError.response.data.email);
+    await findByText(responseRegisterError.response.data.password);
+    await findByText(responseRegisterError.response.data.password2);
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(registerURL, registerOptions);
   });
 
   it('Register error occured: no parameters', async () => {
     axiosMock.post.mockImplementation(() => Promise.reject(responseRegisterError));
-    const { getByTestId, findByText } = renderWithRouter(<App />);
+    const { getByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -467,7 +464,7 @@ describe.skip('Register Page', () => {
   it('Register error occured: no error.response', async () => {
     responseRegisterError.response = null;
     axiosMock.post.mockImplementation(() => Promise.reject(responseRegisterError));
-    const { getByTestId, findByText } = renderWithRouter(<App />);
+    const { getByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -480,7 +477,7 @@ describe.skip('Register Page', () => {
   it('Register error occured: no error.response.data', async () => {
     responseRegisterError.response.data = null;
     axiosMock.post.mockImplementation(() => Promise.reject(responseRegisterError));
-    const { getByTestId, findByText } = renderWithRouter(<App />);
+    const { getByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-register'));
     expect(getByTestId('register-button')).toBeInTheDocument();
 
@@ -522,7 +519,7 @@ describe.skip('Forgot Password Page', () => {
 
     fireEvent.click(getByTestId('forgotpassword-button'));
 
-    const forgotPasswordSuccessElement = await findByText(responseForgotPasswordSuccess.data.emailsent);
+    await findByText(responseForgotPasswordSuccess.data.emailsent);
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(forgotPasswordURL, forgotPasswordOptions);
   });
@@ -530,7 +527,7 @@ describe.skip('Forgot Password Page', () => {
   it('Forgot Password is successful: no response.data.emailsent', async () => {
     responseForgotPasswordSuccess.data.emailsent = null;
     axiosMock.post.mockResolvedValueOnce(responseForgotPasswordSuccess);
-    const { getByTestId, findByText } = renderWithRouter(<App />);
+    const { getByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-forgotpassword'));
     expect(getByTestId('forgotpassword-button')).toBeInTheDocument();
 
@@ -549,7 +546,7 @@ describe.skip('Forgot Password Page', () => {
 
     fireEvent.click(getByTestId('forgotpassword-button'));
 
-    const forgotPasswordErrorElement = await findByText(responseForgotPasswordError.response.data.email);
+    await findByText(responseForgotPasswordError.response.data.email);
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(forgotPasswordURL, forgotPasswordOptions);
   });
@@ -563,7 +560,7 @@ describe.skip('Forgot Password Page', () => {
 
     fireEvent.click(getByTestId('forgotpassword-button'));
 
-    const forgotPasswordErrorElement = await findByText("Unable to reach server...");
+    await findByText("Unable to reach server...");
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(forgotPasswordURL, forgotPasswordOptions);
   });
@@ -577,7 +574,7 @@ describe.skip('Forgot Password Page', () => {
 
     fireEvent.click(getByTestId('forgotpassword-button'));
 
-    const forgotPasswordErrorElement = await findByText("Unable to reach server...");
+    await findByText("Unable to reach server...");
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(forgotPasswordURL, forgotPasswordOptions);
   });
@@ -591,7 +588,7 @@ describe.skip('Forgot Password Page', () => {
 
     fireEvent.click(getByTestId('forgotpassword-button'));
 
-    const forgotPasswordErrorElement = await findByText("Unable to reach server...");
+    await findByText("Unable to reach server...");
     expect(axiosMock.post).toHaveBeenCalledTimes(1);
     expect(axiosMock.post).toHaveBeenCalledWith(forgotPasswordURL, forgotPasswordOptions);
   });
@@ -611,7 +608,7 @@ describe('Dashboard Page', () => {
 
     fireEvent.click(getByTestId('login-button'));
 
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
   });
 
   it('Welcome note is present', async () => {
@@ -624,8 +621,8 @@ describe('Dashboard Page', () => {
 
     fireEvent.click(getByTestId('login-button'));
 
-    const dashboardNoteElement = await findByTestId('dashboard-note');
-    const welcomeNoteElement = await findByText(/Welcome to notes/);
+    await findByTestId('dashboard-note');
+    await findByText(/Welcome to notes/);
   });
 
   it('note edited', async () => {
@@ -635,9 +632,9 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
     fireEvent.click(document.querySelector(".sidebar__note"));
     const loadedNoteElement = await findByText(/Come up with an interesting topic/);
 
@@ -680,11 +677,11 @@ describe('Dashboard Page', () => {
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(getByTestId('dashboard-help'));
 
-    const helpNoteElement = await findByText(/This is notes/);
+    await findByText(/This is notes/);
   });
 
   it('help button is clicked: note loaded', async () => {
@@ -695,16 +692,16 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteNoChanges);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    await findByText(/Come up with an interesting topic/);
 
     fireEvent.click(getByTestId('dashboard-help'));
 
-    const helpNoteElement = await findByText(/This is notes/);
+    await findByText(/This is notes/);
   });
 
   it('help button is clicked: note loaded (sync error)', async () => {
@@ -715,16 +712,16 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockImplementation(() => Promise.reject(responseSyncNoteError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    await findByText(/Come up with an interesting topic/);
 
     fireEvent.click(getByTestId('dashboard-help'));
 
-    const helpNoteElement = await findByText(/This is notes/);
+    await findByText(/This is notes/);
   });
 
   it('help button is clicked: long note loaded', async () => {
@@ -735,16 +732,16 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteNoChanges);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with interesting topics/);
+    await findByText(/Come up with interesting topics/);
 
     fireEvent.click(getByTestId('dashboard-help'));
 
-    const helpNoteElement = await findByText(/This is notes/);
+    await findByText(/This is notes/);
   });
 
   it('help button is clicked: note loaded and edited', async () => {
@@ -755,17 +752,17 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteUpdated);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    await findByText(/Come up with an interesting topic/);
 
     loadNoteInEditor(note.note + "random", "true");
     fireEvent.click(getByTestId('dashboard-help'));
 
-    const helpNoteElement = await findByText(/This is notes/);
+    await findByText(/This is notes/);
   });
 
   it('help button is clicked: note loaded and edited (no modifieddate)', async () => {
@@ -776,17 +773,17 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteUpdatedError);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    await findByText(/Come up with an interesting topic/);
 
     loadNoteInEditor(note.note + "random", "true");
     fireEvent.click(getByTestId('dashboard-help'));
 
-    const helpNoteElement = await findByText(/This is notes/);
+    await findByText(/This is notes/);
   });
 
   it('help button is clicked: note loaded and modified', async () => {
@@ -797,16 +794,16 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseSyncNoteModified);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    await findByText(/Come up with an interesting topic/);
 
     fireEvent.click(getByTestId('dashboard-help'));
 
-    const helpNoteElement = await findByText(/This is notes/);
+    await findByText(/This is notes/);
   });
 
   it('logout button is clicked: success', async () => {
@@ -816,13 +813,13 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseLogoutSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(getByTestId('dashboard-logout'));
 
-    const loginButtonElement = await findByTestId('login-button');
+    await findByTestId('login-button');
   });
 
   it('logout button is clicked: error', async () => {
@@ -832,13 +829,13 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockImplementation(() => Promise.reject(responseLogoutError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(getByTestId('dashboard-logout'));
 
-    const loginButtonElement = await findByTestId('login-button');
+    await findByTestId('login-button');
   });
 
   it('new note button is clicked: success', async () => {
@@ -850,11 +847,11 @@ describe('Dashboard Page', () => {
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findAllByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(getByTestId('dashboard-newnote'));
 
-    const loginButtonElement = await findAllByText(/An awesome new note/);
+    await findAllByText(/An awesome new note/);
   });
 
   it('new note button is clicked: no response', async () => {
@@ -864,9 +861,9 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(null);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findAllByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(getByTestId('dashboard-newnote'));
   });
@@ -878,9 +875,9 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockImplementation(() => Promise.reject(responseNewNoteError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findAllByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(getByTestId('dashboard-newnote'));
   });
@@ -892,12 +889,12 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    await findByText(/Come up with an interesting topic/);
     fireEvent.click(document.querySelector(".sidebar__note"));
   });
 
@@ -908,12 +905,12 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseLoginSuccess)
       .mockResolvedValueOnce(responseInitialSyncSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note").firstChild);
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    await findByText(/Come up with an interesting topic/);
   });
 
   it('delete button is clicked: success', async () => {
@@ -924,9 +921,9 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseDeleteSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note-close"));
   });
@@ -939,9 +936,9 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(null);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note-close"));
   });
@@ -954,12 +951,12 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(responseDeleteSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    await findByText(/Come up with an interesting topic/);
     fireEvent.click(document.querySelector(".sidebar__note-close"));
   });
 
@@ -971,9 +968,9 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockImplementation(() => Promise.reject(responseDeleteError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     fireEvent.click(document.querySelector(".sidebar__note-close"));
   });
@@ -988,7 +985,7 @@ describe('Dashboard Page', () => {
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
     const { getByTestId, findByTestId, findAllByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
     const notesInSidebar = await findAllByTestId("sidebar-note");
     expect(notesInSidebar.length).toBe(1);
 
@@ -1004,11 +1001,11 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseSyncNoteNoChanges)
       .mockResolvedValueOnce(responseSyncAllSuccess);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, findAllByTestId, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    await findByText(/Come up with an interesting topic/);
 
     jest.runOnlyPendingTimers();
   });
@@ -1022,11 +1019,11 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseSyncNoteNoChanges)
       .mockResolvedValueOnce(responseSyncAllSuccessNoteDeleted);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId, findByText } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
     fireEvent.click(document.querySelector(".sidebar__note"));
-    const loadedNoteElement = await findByText(/Come up with an interesting topic/);
+    await findByText(/Come up with an interesting topic/);
 
     jest.runOnlyPendingTimers();
   });
@@ -1039,9 +1036,9 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockResolvedValueOnce(null);
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     jest.runOnlyPendingTimers();
   });
@@ -1054,9 +1051,9 @@ describe('Dashboard Page', () => {
       .mockResolvedValueOnce(responseInitialSyncSuccess)
       .mockImplementation(() => Promise.reject(responseSyncAllError));
     jwtDecodeMock.mockImplementation(() => tokenDecodedSuccess);
-    const { getByTestId, findByTestId, getByText, findByText } = renderWithRouter(<App />);
+    const { getByTestId, findByTestId } = renderWithRouter(<App />);
     fireEvent.click(getByTestId('login-button'));
-    const dashboardNoteElement = await findByTestId('dashboard-note');
+    await findByTestId('dashboard-note');
 
     jest.runOnlyPendingTimers();
   });
