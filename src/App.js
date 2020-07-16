@@ -29,6 +29,7 @@ function App() {
           userid: tokenDecoded.id
         },
         {
+          withCredentials: true,
           headers: {
             Authorization: sessionStorage.getItem("token")
           }
