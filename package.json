@@ -9,7 +9,7 @@
     "@fortawesome/react-fontawesome": "^0.1.11",
     "@testing-library/jest-dom": "^5.11.1",
     "@testing-library/react": "^10.4.7",
-    "@testing-library/user-event": "^12.0.11",
+    "@testing-library/user-event": "^12.0.15",
     "axios": "^0.19.2",
     "dompurify": "^2.0.12",
     "jwt-decode": "^2.2.0",
@@ -50,7 +50,7 @@
     ]
   },
   "devDependencies": {
-    "codecov": "^3.7.1",
+    "codecov": "^3.7.2",
     "jest-environment-jsdom-sixteen": "^1.0.3"
   }
 }
