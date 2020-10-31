@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, cleanup, fireEvent } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import {  keyPressedInEditor,
           onClickInEditor,
@@ -269,7 +269,7 @@ describe('keyPressedInEditor', () => {
     selection.anchorOffset = 100;
 
     const executed = keyPressedInEditor(event, selection);
-    const textAfterEnter = getTextFromEditor();
+    // const textAfterEnter = getTextFromEditor();
 
     expect(executed).toBe(false);
   });
@@ -1472,7 +1472,7 @@ describe('keyPressedInEditor', () => {
  */
 describe('onClickInEditor', () => {
   it('click in editor', () => {
-    let spanElementList = document.querySelectorAll('.note__text');
+    // let spanElementList = document.querySelectorAll('.note__text');
     let event = mockEvent();
 
     onClickInEditor(event);
