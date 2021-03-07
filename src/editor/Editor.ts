@@ -13,11 +13,11 @@ const purify = createDOMPurify(window);
  *   This function sets the CARET position to the specified
  * offset in the specified DOM node.
  */
-function setCaretPositionToOffset(el, offset) {
+function setCaretPositionToOffset(el: HTMLElement, offset: number) {
   el.focus();
   let range = document.createRange();
-  let sel = window.getSelection();
-  range.setStart(el.firstChild, offset);
+  let sel = window.getSelection() as Selection;
+  range.setStart(el.firstChild as HTMLElement, offset);
   range.collapse(true);
   sel.removeAllRanges();
   sel.addRange(range);
@@ -27,15 +27,17 @@ function setCaretPositionToOffset(el, offset) {
  *   This function sets the CARET position to the specified
  * parent offset in the specified parent DOM node.
  */
-function setCaretPositionInChildNode(node, offset) {
+function setCaretPositionInChildNode(node: HTMLElement, offset: number) {
   let offsetLeft = offset;
   let children = node.childNodes;
   for (let i = 0; i < children.length; i++) {
-    if (offsetLeft <= children[i].textContent.length) {
-      setCaretPositionToOffset(children[i], offsetLeft);
+    const childNode = children[i] as HTMLElement;
+    const textContent = childNode.textContent as string;
+    if (offsetLeft <= textContent.length) {
+      setCaretPositionToOffset(childNode, offsetLeft);
       return;
     } else {
-      offsetLeft -= children[i].textContent.length;
+      offsetLeft -= textContent.length;
     }
   }
 }
@@ -44,12 +46,12 @@ function setCaretPositionInChildNode(node, offset) {
  *   This function gets the current NODE from the
  * provided selectionNode.
  */
-function getNodeFromSelection(selectionNode) {
+function getNodeFromSelection(selectionNode: HTMLElement) {
   let node = selectionNode;
   if (node.nodeType === 3 || node.nodeName === "BR") {
-    node = node.parentNode;
+    node = node.parentNode as HTMLElement;
   } else if(node.nodeName === "P") {
-    node = node.firstChild;
+    node = node.firstChild as HTMLElement;
   }
   return node;
 }
@@ -58,15 +60,16 @@ function getNodeFromSelection(selectionNode) {
  *   This function gets the parent offset from the
  * specified DOM node and the specified offset.
  */
-function getParentOffset(node, offset) {
+function getParentOffset(node: HTMLElement, offset: number) {
   let parentOffset = 0;
-  let children = node.parentNode.childNodes;
+  let children = node?.parentNode?.childNodes as NodeListOf<HTMLElement>;
   for (let i = 0; i < children.length; i++) {
     if (children[i] === node) {
       parentOffset += offset;
       break;
     } else {
-      parentOffset += children[i].textContent.length;
+      const textContent = children[i].textContent as string;
+      parentOffset += textContent.length;
     }
   }
   return parentOffset;
@@ -76,7 +79,7 @@ function getParentOffset(node, offset) {
  *   This function creates a new DIV element for the
  * given text and returns it.
  */
-function createNewDivForText(text) {
+function createNewDivForText(text: string) {
   // Create new DIV with an 'empty' SPAN inside it
   let spanElement = document.createElement('span');
   spanElement.setAttribute("class", "note__text");
@@ -101,7 +104,7 @@ function createNewDivForText(text) {
  *   This function replaces all NBSPs with BLANKSPACE
  * in the specified text.
  */
-function replaceNbspWithBlankspace(currentText) {
+function replaceNbspWithBlankspace(currentText: string) {
   let newText = currentText.replace(/\xa0/g, ' ');
   newText = newText.replace(/&nbsp;/g, ' ');
 
@@ -112,7 +115,7 @@ function replaceNbspWithBlankspace(currentText) {
  *   This function checks if the given text is
  * an Ordered List.
  */
-function checkIfOrderedList (string) {
+function checkIfOrderedList (string: string) {
   let regexForOrderedList = new RegExp('^\\d+\\.$');
   return regexForOrderedList.test(string);
 }
@@ -121,10 +124,10 @@ function checkIfOrderedList (string) {
  *   This function checks if the Previous Node is
  * an Ordered List.
  */
-function checkPreviousNodeIsOrderedList(el, newText) {
-  let previousDivNode = el.parentNode.parentNode.previousSibling;
+function checkPreviousNodeIsOrderedList(el: HTMLElement, newText: string) {
+  let previousDivNode = el?.parentNode?.parentNode?.previousSibling as HTMLElement;
   if (previousDivNode && previousDivNode.getAttribute("class") === "note__line") {
-    let previousText = replaceNbspWithBlankspace(previousDivNode.firstChild.textContent);
+    let previousText = replaceNbspWithBlankspace(previousDivNode?.firstChild?.textContent as string);
     let strings = previousText.split(" ");
     let isOrderedList = checkIfOrderedList(strings[0]);
     if (isOrderedList) {
@@ -142,19 +145,20 @@ function checkPreviousNodeIsOrderedList(el, newText) {
  *   This function checks if the next items in the
  * Ordered List need to fixed.
  */
-function fixNextItemsInOrderedList(el, currentText) {
-  let nextDivNode = el.parentNode.parentNode.nextSibling;
+function fixNextItemsInOrderedList(el: HTMLElement, currentText: string) {
+  const grandParentNode = el?.parentNode?.parentNode as HTMLElement;
+  let nextDivNode = grandParentNode.nextSibling as HTMLElement | null;
   let strings = replaceNbspWithBlankspace(currentText).split(" ");
   while(nextDivNode && nextDivNode.getAttribute("class") === "note__line") {
-    let nextText = replaceNbspWithBlankspace(nextDivNode.firstChild.textContent);
+    let nextText = replaceNbspWithBlankspace(nextDivNode?.firstChild?.textContent as string);
     let nextTextStrings = nextText.split(" ");
     let isOrderedList = checkIfOrderedList(nextTextStrings[0]);
     if (isOrderedList) {
       nextText = nextText.replace ( nextTextStrings[0].slice(0, -1),
                                   (Number(strings[0].slice(0, -1))+1).toString());
-      checkForPairs(nextDivNode.firstChild, nextText, nextTextStrings[0].length);
+      checkForPairs(nextDivNode.firstChild as HTMLElement, nextText, nextTextStrings[0].length, undefined, undefined);
 
-      nextDivNode = nextDivNode.nextSibling;
+      nextDivNode = nextDivNode.nextSibling as HTMLElement;
       strings = replaceNbspWithBlankspace(nextText).split(" ");
     } else {
       nextDivNode = null;
@@ -166,7 +170,7 @@ function fixNextItemsInOrderedList(el, currentText) {
 /**
  *   This function checks for Pairs in a give NODE DOM element.
  */
-function checkForPairs(parentNode, newText, length, offset, e) {
+function checkForPairs(parentNode: HTMLElement, newText: string, length: number, offset: number | undefined, e: React.KeyboardEvent | undefined) {
   let pairsInText = new PairsInText();
   let text = newText.slice(length);
   pairsInText.getCountAndIndex(text, length);
@@ -183,20 +187,21 @@ function checkForPairs(parentNode, newText, length, offset, e) {
  *   This function gets the text from the
  * specified fromNode / ToNode DOM elements.
  */
-function getTextFromNodes(fromNode, fromNodeOffset, toNode, toNodeOffset) {
+function getTextFromNodes(fromNode: HTMLElement, fromNodeOffset: number, toNode: HTMLElement, toNodeOffset: number) {
   let text = "";
-  let currentDivNode = fromNode;
+  let currentDivNode: HTMLElement | null = fromNode;
   while (currentDivNode) {
+    const textContent = currentDivNode?.firstChild?.textContent as string;
     if (currentDivNode === fromNode) { // first node
-      text += currentDivNode.firstChild.textContent.slice(fromNodeOffset) + "\n";
-      currentDivNode = currentDivNode.nextSibling;
+      text += textContent.slice(fromNodeOffset) + "\n";
+      currentDivNode = currentDivNode.nextSibling as HTMLElement;
     } else if (currentDivNode === toNode) { // last node
-      text += currentDivNode.firstChild.textContent.slice(0, toNodeOffset);
+      text += textContent.slice(0, toNodeOffset);
       // processing done
       currentDivNode = null;
     } else { // middle node(s)
-      text += currentDivNode.firstChild.textContent.slice() + "\n";
-      currentDivNode = currentDivNode.nextSibling;
+      text += textContent.slice() + "\n";
+      currentDivNode = currentDivNode.nextSibling as HTMLElement;
     }
   }
   return text;
@@ -206,7 +211,7 @@ function getTextFromNodes(fromNode, fromNodeOffset, toNode, toNodeOffset) {
  *   This function checks if the Focus Node comes
  * before / after the Anchor Node.
  */
-function getFocusNodeComesAfter(anchorNode, focusNode) {
+function getFocusNodeComesAfter(anchorNode: HTMLElement, focusNode: HTMLElement) {
   let focusNodeComesAfter = true;
   let currentNode = anchorNode;
   while (currentNode.previousSibling) {
@@ -214,7 +219,7 @@ function getFocusNodeComesAfter(anchorNode, focusNode) {
       focusNodeComesAfter = false;
       break;
     }
-    currentNode = currentNode.previousSibling;
+    currentNode = currentNode.previousSibling as HTMLElement;
   }
   return focusNodeComesAfter;
 }
@@ -222,14 +227,15 @@ function getFocusNodeComesAfter(anchorNode, focusNode) {
 /**
  *   This function cuts the text from the same SPAN DOM element.
  */
-function cutTextInSameSpan(node, fromOffset, toOffset) {
-  let remainingText = node.textContent.slice(0, fromOffset) + node.textContent.slice(toOffset);
+function cutTextInSameSpan(node: HTMLElement, fromOffset: number, toOffset: number) {
+  const textContent = node.textContent as string;
+  const parentNode = node.parentNode as HTMLElement;
+  let remainingText = textContent.slice(0, fromOffset) + textContent.slice(toOffset);
   if (remainingText === "") {
-    if (node.parentNode.childNodes.length === 1) {
+    if (parentNode.childNodes.length === 1) {
       node.innerHTML = "<br>";
       setCaretPositionToOffset(node, 0);
     } else {
-      let parentNode = node.parentNode;
       let parentOffset = getParentOffset(node, fromOffset);
       node.remove();
       setCaretPositionInChildNode(parentNode, parentOffset);
@@ -243,51 +249,56 @@ function cutTextInSameSpan(node, fromOffset, toOffset) {
 /**
  *   This function cuts the text from the same DIV DOM element.
  */
-function cutTextInSameDiv(parentNode, fromOffset, toOffset) {
-  let remainingText = parentNode.textContent.slice(0, fromOffset) + parentNode.textContent.slice(toOffset);
+function cutTextInSameDiv(parentNode: HTMLElement, fromOffset: number, toOffset: number) {
+  const textContent = parentNode.textContent as string;
+  let remainingText = textContent.slice(0, fromOffset) + textContent.slice(toOffset);
   if (remainingText === "") {
     parentNode.setAttribute("class", "note__paragraph");
     parentNode.innerHTML = "<span class='note__text'><br></span>";
-    setCaretPositionToOffset(parentNode.firstChild, 0);
+    setCaretPositionToOffset(parentNode.firstChild as HTMLElement, 0);
   } else {
     parentNode.textContent = remainingText;
-    checkHeader(parentNode.firstChild, parentNode.textContent, fromOffset);
+    checkHeader(parentNode.firstChild as HTMLElement, parentNode.textContent, fromOffset, undefined);
   }
 }
 
 /**
  *   This function cuts the text from different DIV DOM elements.
  */
-function cutTextInDifferentDivs(fromNode, fromOffset, toNode, toOffset) {
-  let fromDivNode = fromNode.parentNode.parentNode;
-  let toDivNode = toNode.parentNode.parentNode;
+function cutTextInDifferentDivs(fromNode: HTMLElement, fromOffset: number, toNode: HTMLElement, toOffset: number) {
+  let fromDivNode = fromNode?.parentNode?.parentNode;
+  let toDivNode = toNode?.parentNode?.parentNode;
   let fromParentOffset = getParentOffset(fromNode, fromOffset);
   let toParentOffset = getParentOffset(toNode, toOffset);
-  let currentDivNode = fromDivNode;
+  let currentDivNode = fromDivNode as HTMLElement | null;
+  const fromChild = fromDivNode?.firstChild as HTMLElement;
+  const toChild = toDivNode?.firstChild as HTMLElement;
+  const fromChildString = fromChild.textContent as string;
+  const toChildString = toChild.textContent as string;
 
-  let remainingText = fromDivNode.firstChild.textContent.slice(0, fromParentOffset) + toDivNode.firstChild.textContent.slice(toParentOffset);
+  let remainingText = fromChildString.slice(0, fromParentOffset) + toChildString.slice(toParentOffset);
 
   while (currentDivNode) {
     if (currentDivNode === fromDivNode) {
-      currentDivNode = currentDivNode.nextSibling;
+      currentDivNode = currentDivNode.nextSibling as HTMLElement;
     } else if (currentDivNode === toDivNode) {
-      let divNodeToDelete = currentDivNode;
+      let divNodeToDelete = currentDivNode as HTMLElement;
       currentDivNode = null;
       divNodeToDelete.remove();
     } else { // middle DIV node(s)
-      let divNodeToDelete = currentDivNode;
-      currentDivNode = currentDivNode.nextSibling;
+      let divNodeToDelete = currentDivNode as HTMLElement;
+      currentDivNode = currentDivNode.nextSibling as HTMLElement;
       divNodeToDelete.remove();
     }
   }
 
   if (remainingText === "") {
-    fromDivNode.firstChild.setAttribute("class", "note__paragraph");
-    fromDivNode.firstChild.innerHTML = "<span class='note__text'><br></span>";
-    setCaretPositionToOffset(fromDivNode.firstChild.firstChild, 0);
+    fromChild.setAttribute("class", "note__paragraph");
+    fromChild.innerHTML = "<span class='note__text'><br></span>";
+    setCaretPositionToOffset(fromChild.firstChild as HTMLElement, 0);
   } else {
-    fromDivNode.firstChild.textContent = remainingText;
-    checkHeader(fromDivNode.firstChild.firstChild, fromDivNode.firstChild.textContent, fromParentOffset);
+    fromChild.textContent = remainingText;
+    checkHeader(fromChild.firstChild as HTMLElement, fromChild.textContent, fromParentOffset, undefined);
   }
 }
 
@@ -295,7 +306,7 @@ function cutTextInDifferentDivs(fromNode, fromOffset, toNode, toOffset) {
  *   This function styles the given text upon each change
  * made to the NOTE.
  */
-function checkHeader(el, currentText, offset, e) {
+function checkHeader(el: HTMLElement, currentText: string, offset: number | null, e: React.KeyboardEvent | undefined) {
   let newText = replaceNbspWithBlankspace(currentText);
 
   let strings = newText.split(" ");
@@ -303,7 +314,7 @@ function checkHeader(el, currentText, offset, e) {
   let previousNode;
 
   let headersInText = new HeadersInText();
-  headersInText.setHeader(el.parentNode, strings, isOrderedList);
+  headersInText.setHeader(el.parentNode as HTMLElement, strings, isOrderedList);
 
   // Handle *word*
   let isHeader = headersInText.characterCodeOfHeaders.indexOf(strings[0]);
@@ -320,10 +331,10 @@ function checkHeader(el, currentText, offset, e) {
       fixNextItemsInOrderedList(el, newText);
     }
     // Not a paragraph
-    checkForPairs(el.parentNode, newText, strings[0].length, offset, e);
+    checkForPairs(el.parentNode as HTMLElement, newText, strings[0].length, offset as number, e);
   } else {
     // Paragraph
-    checkForPairs(el.parentNode, newText, 0, offset, e);
+    checkForPairs(el.parentNode as HTMLElement, newText, 0, offset as number, e);
   }
 }
 
@@ -331,7 +342,7 @@ function checkHeader(el, currentText, offset, e) {
  *   This function gets the text to copy from the
  * specified Anchor Node / Focus Node.
  */
-function getTextToCopy(anchorNode, anchorOffset, focusNode, focusOffset) {
+function getTextToCopy(anchorNode: HTMLElement, anchorOffset: number, focusNode: HTMLElement, focusOffset: number) {
   let text = "";
 
   let anchorParentOffset = getParentOffset(anchorNode, anchorOffset);
@@ -340,13 +351,13 @@ function getTextToCopy(anchorNode, anchorOffset, focusNode, focusOffset) {
   if (anchorNode.parentNode === focusNode.parentNode) {
     // Same Div
     if (anchorParentOffset < focusParentOffset)
-      text = anchorNode.parentNode.textContent.slice(anchorParentOffset, focusParentOffset);
+      text = anchorNode?.parentNode?.textContent?.slice(anchorParentOffset, focusParentOffset) as string;
     else
-      text = anchorNode.parentNode.textContent.slice(focusParentOffset, anchorParentOffset);
+      text = anchorNode?.parentNode?.textContent?.slice(focusParentOffset, anchorParentOffset) as string;
   } else {
     // Different Divs
-    let anchorDivNode = anchorNode.parentNode.parentNode;
-    let focusDivNode = focusNode.parentNode.parentNode;
+    let anchorDivNode = anchorNode?.parentNode?.parentNode as HTMLElement;
+    let focusDivNode = focusNode?.parentNode?.parentNode as HTMLElement;
     let focusNodeComesAfter = getFocusNodeComesAfter(anchorDivNode, focusDivNode);
 
     if (focusNodeComesAfter) {
@@ -381,15 +392,15 @@ function cutNodes(anchorNode: HTMLElement, anchorOffset: number, focusNode: HTML
     let focusNodeComesAfter = getFocusNodeComesAfter(anchorNode, focusNode);
     if (focusNodeComesAfter) {
       // anchor to focus
-      cutTextInSameDiv(anchorNode.parentNode, anchorParentOffset, focusParentOffset);
+      cutTextInSameDiv(anchorNode.parentNode as HTMLElement, anchorParentOffset, focusParentOffset);
     } else {
       // focus to anchor
-      cutTextInSameDiv(anchorNode.parentNode, focusParentOffset, anchorParentOffset);
+      cutTextInSameDiv(anchorNode.parentNode as HTMLElement, focusParentOffset, anchorParentOffset);
     }
   } else {
     // Different Divs
-    let anchorDivNode = anchorNode?.parentNode?.parentNode;
-    let focusDivNode = focusNode?.parentNode?.parentNode;
+    let anchorDivNode = anchorNode?.parentNode?.parentNode as HTMLElement;
+    let focusDivNode = focusNode?.parentNode?.parentNode as HTMLElement;
     let focusNodeComesAfter = getFocusNodeComesAfter(anchorDivNode, focusDivNode);
 
     if (focusNodeComesAfter) {
@@ -406,21 +417,21 @@ function cutNodes(anchorNode: HTMLElement, anchorOffset: number, focusNode: HTML
  *   This function handles kepypress event in the NOTE.
  * It will process each event, and do the required changes to the DOM!
  */
-function keyPressedInEditor(e: React.KeyboardEvent, currentSelection: Selection) {
+function keyPressedInEditor(e: React.KeyboardEvent | undefined, currentSelection: Selection) {
   // Get current SPAN details
   if (e === undefined || currentSelection === undefined)
     return false;
-  let currentNode = getNodeFromSelection(currentSelection.anchorNode);
+  let currentNode = getNodeFromSelection(currentSelection.anchorNode as HTMLElement);
   let currentOffset = currentSelection.anchorOffset;
-  let currentText = currentNode.textContent;
+  let currentText = currentNode.textContent as string;
   let parentOffset = getParentOffset(currentNode, currentOffset);
 
-  if (currentNode.textContent.length < currentOffset)
+  if (currentText.length < currentOffset)
     return false;
 
   let focusNode, focusOffset;
   if (currentSelection.isCollapsed === false) {
-    focusNode = getNodeFromSelection(currentSelection.focusNode);
+    focusNode = getNodeFromSelection(currentSelection.focusNode as HTMLElement);
     focusOffset = currentSelection.focusOffset;
   }
 
@@ -429,7 +440,7 @@ function keyPressedInEditor(e: React.KeyboardEvent, currentSelection: Selection)
     //it was Ctrl + C (Cmd + C)
     e.preventDefault();
     if (currentSelection.isCollapsed === false) {
-      let copiedText = getTextToCopy(currentNode, currentOffset, focusNode, focusOffset);
+      let copiedText = getTextToCopy(currentNode, currentOffset, focusNode as HTMLElement, focusOffset as number);
       localStorage.setItem("text", replaceNbspWithBlankspace(copiedText));
     }
   } else if (e.keyCode === 88 && (e.ctrlKey || e.metaKey)) {
@@ -437,59 +448,63 @@ function keyPressedInEditor(e: React.KeyboardEvent, currentSelection: Selection)
     //it was Ctrl + X (Cmd + X)
     e.preventDefault();
     if (currentSelection.isCollapsed === false) {
-      let copiedText = getTextToCopy(currentNode, currentOffset, focusNode, focusOffset);
+      let copiedText = getTextToCopy(currentNode, currentOffset, focusNode as HTMLElement, focusOffset as number);
       localStorage.setItem("text", replaceNbspWithBlankspace(copiedText));
 
-      cutNodes(currentNode, currentOffset, focusNode, focusOffset);
+      cutNodes(currentNode, currentOffset, focusNode as HTMLElement, focusOffset as number);
     }
   } else if (e.keyCode === 86 && (e.ctrlKey || e.metaKey)) {
     console.log("In CMD + V", e.keyCode, e.ctrlKey, e.metaKey);
     //it was Ctrl + V (Cmd + V)
     e.preventDefault();
     if (currentSelection.isCollapsed === false) {
-      cutNodes(currentNode, currentOffset, focusNode, focusOffset);
+      cutNodes(currentNode, currentOffset, focusNode as HTMLElement, focusOffset as number);
 
       currentSelection = window.getSelection() as Selection;
-      currentNode = getNodeFromSelection(currentSelection.anchorNode);
+      currentNode = getNodeFromSelection(currentSelection.anchorNode as HTMLElement);
       currentOffset = currentSelection.anchorOffset;
       parentOffset = getParentOffset(currentNode, currentOffset);
     }
     let textToCopy = localStorage.getItem("text");
     if (textToCopy && textToCopy.length > 0) {
       let textLines = textToCopy.split("\n");
+      let parentNode = currentNode.parentNode as HTMLElement;
 
-      let stringBeforeCaret = currentNode.parentNode.textContent.slice(0, parentOffset);
-      let stringAfterCaret = currentNode.parentNode.textContent.slice(parentOffset);
+      let stringBeforeCaret = parentNode?.textContent?.slice(0, parentOffset);
+      let stringAfterCaret = parentNode?.textContent?.slice(parentOffset);
 
-      if (currentNode.innerHTML === "<br>") {
+      if ((currentNode as HTMLElement).innerHTML === "<br>") {
         stringBeforeCaret = "";
         stringAfterCaret = "";
       }
 
       if (textLines.length === 1) {
         // Same Div
-        let currentPNode = currentNode.parentNode;
-        currentNode.parentNode.textContent = stringBeforeCaret + textLines[0] + stringAfterCaret;
-        checkHeader(currentPNode.firstChild, currentPNode.textContent, parentOffset + textLines[0].length);
+        let currentPNode = currentNode.parentNode as HTMLElement;
+        currentPNode.textContent = stringBeforeCaret + textLines[0] + stringAfterCaret;
+        checkHeader(currentPNode.firstChild as HTMLElement, currentPNode.textContent, parentOffset + textLines[0].length, undefined);
       } else {
         // Multiple Divs
-        let currentDivNode = currentNode.parentNode.parentNode;
+        let currentDivNode = currentNode?.parentNode?.parentNode as HTMLElement;
         let nextDivNode = currentDivNode.nextSibling;
         textLines.forEach((line, index, array) => {
           if (index === 0) {
             // First Line
-            currentDivNode.firstChild.textContent = stringBeforeCaret + line;
-            checkHeader(currentDivNode.firstChild.firstChild, currentDivNode.firstChild.textContent);
+            const firstChild = currentDivNode.firstChild as HTMLElement;
+            firstChild.textContent = stringBeforeCaret + line;
+            checkHeader(firstChild.firstChild as HTMLElement, firstChild.textContent, null, undefined);
           } else if (index === array.length-1) {
             // Last line
             let divElement = createNewDivForText(line + stringAfterCaret);
-            currentDivNode.parentNode.insertBefore(divElement, nextDivNode);
-            checkHeader(divElement.firstChild.firstChild, divElement.firstChild.textContent, line.length);
+            const parentNode = currentDivNode.parentNode as HTMLElement;
+            parentNode.insertBefore(divElement, nextDivNode);
+            checkHeader(divElement?.firstChild?.firstChild as HTMLElement, divElement?.firstChild?.textContent as string, line.length, undefined);
           } else {
             // Middle Lines
             let divElement = createNewDivForText(line);
-            currentDivNode.parentNode.insertBefore(divElement, nextDivNode);
-            checkHeader(divElement.firstChild.firstChild, divElement.firstChild.textContent);
+            const parentNode = currentDivNode.parentNode as HTMLElement;
+            parentNode.insertBefore(divElement, nextDivNode);
+            checkHeader(divElement?.firstChild?.firstChild as HTMLElement, divElement?.firstChild?.textContent as string, null, undefined);
           }
         });
       }
@@ -503,10 +518,10 @@ function keyPressedInEditor(e: React.KeyboardEvent, currentSelection: Selection)
 
     if (currentSelection.isCollapsed === false) {
       // Selection to be deleted, and then Enter to be processed
-      cutNodes(currentNode, currentOffset, focusNode, focusOffset);
+      cutNodes(currentNode, currentOffset, focusNode as HTMLElement, focusOffset as number);
 
       currentSelection = window.getSelection() as Selection;
-      currentNode = getNodeFromSelection(currentSelection.anchorNode);
+      currentNode = getNodeFromSelection(currentSelection.anchorNode as HTMLElement);
       currentOffset = currentSelection.anchorOffset;
       parentOffset = getParentOffset(currentNode, currentOffset);
     }
@@ -524,42 +539,46 @@ function keyPressedInEditor(e: React.KeyboardEvent, currentSelection: Selection)
     divElement.appendChild(spanElement);
 
     // Check for conditions to edit DIVs
+    const parentNode = currentNode.parentNode as HTMLElement;
+    const grandParentNode = parentNode.parentNode as HTMLElement;
+    const greatGrandParentNode = grandParentNode.parentNode as HTMLElement;
     if (parentOffset === 0) {
-      currentNode.parentNode.parentNode.parentNode.insertBefore(divElement, currentNode.parentNode.parentNode);
+      greatGrandParentNode.insertBefore(divElement, grandParentNode);
       // Set the Cursor position
-      setCaretPositionToOffset(currentNode, 0);
-    } else if (parentOffset === currentNode.parentNode.textContent.length) {
+      setCaretPositionToOffset(currentNode as HTMLElement, 0);
+    } else if (parentOffset === parentNode?.textContent?.length) {
       // Insert new DIV after updating it above
-      currentNode.parentNode.parentNode.parentNode.insertBefore(divElement, currentNode.parentNode.parentNode.nextSibling);
+      greatGrandParentNode.insertBefore(divElement, grandParentNode.nextSibling);
       // Set the Cursor position
       setCaretPositionToOffset(innerSpanElement, 0);
     } else {
       let indexOfSpan = -1, haveToBreakSpan, breakAtOffset = -1;
       let offsetLeft = parentOffset;
-      let children = currentNode.parentNode.childNodes;
+      let children = parentNode.childNodes as NodeListOf<HTMLElement>;
       for (let i = 0; i < children.length; i++) {
-        if (offsetLeft < children[i].textContent.length) {
+        const textContent = children[i].textContent as string;
+        if (offsetLeft < textContent.length) {
           // Have to break current SPAN
           indexOfSpan = i;
           haveToBreakSpan = true;
           breakAtOffset = offsetLeft;
           break;
-        } else if (offsetLeft === children[i].textContent.length) {
+        } else if (offsetLeft === textContent.length) {
           indexOfSpan = i;
           haveToBreakSpan = false;
           break;
         } else {
-          offsetLeft -= children[i].textContent.length;
+          offsetLeft -= textContent.length;
         }
       }
       let tempNodes = [];
       for (let i = 0; i < children.length; i++) {
         if (i === indexOfSpan && haveToBreakSpan) {
-          let tempText = children[i].textContent;
+          let tempText = children[i].textContent as string;
           children[i].textContent = tempText.slice(0, breakAtOffset);
 
           let textElement = document.createElement('span');
-          textElement.setAttribute("class", children[i].getAttribute("class"));
+          textElement.setAttribute("class", children[i].getAttribute("class") as string);
           textElement.textContent = tempText.slice(breakAtOffset);
           tempNodes.push(textElement);
         }
@@ -572,12 +591,12 @@ function keyPressedInEditor(e: React.KeyboardEvent, currentSelection: Selection)
         childNode.remove();
         spanElement.appendChild(childNode);
       });
-      currentNode.parentNode.parentNode.parentNode.insertBefore(divElement, currentNode.parentNode.parentNode.nextSibling);
+      greatGrandParentNode.insertBefore(divElement, grandParentNode.nextSibling);
       // Check if Header or Paragraph
-      checkHeader(currentNode, currentNode.parentNode.textContent, parentOffset, e);
-      checkHeader(spanElement.firstChild, spanElement.textContent, parentOffset, e);
+      checkHeader(currentNode as HTMLElement, parentNode.textContent as string, parentOffset, e);
+      checkHeader(spanElement.firstChild as HTMLElement, spanElement.textContent as string, parentOffset, e);
       // Set the Cursor position
-      setCaretPositionToOffset(spanElement.firstChild, 0);
+      setCaretPositionToOffset(spanElement.firstChild as HTMLElement, 0);
     }
 
   } else if (e.key.length === 1) {
@@ -585,16 +604,17 @@ function keyPressedInEditor(e: React.KeyboardEvent, currentSelection: Selection)
     console.log("In length=1", e.key, e.keyCode);
     if (currentSelection.isCollapsed === false) {
       // Selection to be deleted, and then character to be processed
-      cutNodes(currentNode, currentOffset, focusNode, focusOffset);
+      cutNodes(currentNode, currentOffset, focusNode as HTMLElement, focusOffset as number);
 
       currentSelection = window.getSelection() as Selection;
-      currentNode = getNodeFromSelection(currentSelection.anchorNode);
+      currentNode = getNodeFromSelection(currentSelection.anchorNode as HTMLElement);
       currentOffset = currentSelection.anchorOffset;
       parentOffset = getParentOffset(currentNode, currentOffset);
     }
     // Calculate new Text after addition of character from 'e.key'
-    let stringBeforeCaret = currentNode.parentNode.textContent.slice(0, parentOffset);
-    let stringAfterCaret = currentNode.parentNode.textContent.slice(parentOffset);
+    const textContent = currentNode?.parentNode?.textContent as string;
+    let stringBeforeCaret = textContent.slice(0, parentOffset);
+    let stringAfterCaret = textContent.slice(parentOffset);
     currentText = "" + stringBeforeCaret + e.key + stringAfterCaret;
 
     // This screws up text while editing!!!
@@ -606,7 +626,7 @@ function keyPressedInEditor(e: React.KeyboardEvent, currentSelection: Selection)
     // }
 
     // Check if Header or Paragraph
-    checkHeader(currentNode, currentText, stringBeforeCaret.length+1, e);
+    checkHeader(currentNode as HTMLElement, currentText, stringBeforeCaret.length+1, e);
 
   } else if (e.key === "Backspace") {
     console.log("In Backspace", e.key, e.keyCode);
@@ -614,51 +634,54 @@ function keyPressedInEditor(e: React.KeyboardEvent, currentSelection: Selection)
     if (currentSelection.isCollapsed === false) {
       e.preventDefault();
       // Selection to be deleted, and then Backspace to be processed
-      cutNodes(currentNode, currentOffset, focusNode, focusOffset);
+      cutNodes(currentNode, currentOffset, focusNode as HTMLElement, focusOffset as number);
 
       currentSelection = window.getSelection() as Selection;
-      currentNode = getNodeFromSelection(currentSelection.anchorNode);
+      currentNode = getNodeFromSelection(currentSelection.anchorNode as HTMLElement);
       currentOffset = currentSelection.anchorOffset;
     } else {
-      if (parentOffset === 1 && currentNode.parentNode.textContent.length === 1) {
+      const parentNode = currentNode.parentNode as HTMLElement;
+      const grandParentNode = parentNode.parentNode as HTMLElement;
+      if (parentOffset === 1 && parentNode?.textContent?.length === 1) {
         e.preventDefault();
-        let parentNode = currentNode.parentNode;
         parentNode.innerHTML = "<span class='node__text'><br></span>";
-        setCaretPositionToOffset(parentNode.firstChild, 0);
+        setCaretPositionToOffset(parentNode.firstChild as HTMLElement, 0);
       } else if (parentOffset === 0) {
-        let previousDivNode = currentNode.parentNode.parentNode.previousSibling;
+        let previousDivNode = grandParentNode.previousSibling as HTMLElement;
 
         if (previousDivNode && previousDivNode.getAttribute("class") === "note__line") {
           e.preventDefault(); // Prevent move to last cursor position.
-          let previousOffset = previousDivNode.firstChild.textContent.length;
+          let previousOffset = previousDivNode?.firstChild?.textContent?.length;
+          const firstChild = previousDivNode.firstChild as HTMLElement;
+          const firstGrandChild = firstChild.firstChild as HTMLElement;
 
-          if (previousDivNode.firstChild.textContent === "" && currentNode.parentNode.textContent === "") {
+          if (previousDivNode?.firstChild?.textContent === "" && currentNode?.parentNode?.textContent === "") {
             previousDivNode.innerHTML = "<p class='note__paragraph'><span class='node__text'><br></span></p>";
-            setCaretPositionToOffset(previousDivNode.firstChild.firstChild, 0);
-            currentNode.parentNode.parentNode.remove();
-          } else if (previousDivNode.firstChild.textContent === "") {
-            previousDivNode.innerHTML = currentNode.parentNode.parentNode.innerHTML;
-            setCaretPositionToOffset(previousDivNode.firstChild.firstChild, 0);
-            currentNode.parentNode.parentNode.remove();
-          } else if (currentNode.parentNode.textContent === "") {
-            setCaretPositionInChildNode(previousDivNode.firstChild, previousOffset);
-            currentNode.parentNode.parentNode.remove();
-            checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.textContent, previousOffset);
+            setCaretPositionToOffset(firstGrandChild, 0);
+            grandParentNode.remove();
+          } else if (firstChild.textContent === "") {
+            previousDivNode.innerHTML = grandParentNode.innerHTML;
+            setCaretPositionToOffset(firstGrandChild, 0);
+            grandParentNode.remove();
+          } else if (parentNode.textContent === "") {
+            setCaretPositionInChildNode(firstChild, previousOffset as number);
+            grandParentNode.remove();
+            checkHeader(firstGrandChild, firstChild.textContent as string, previousOffset as number, undefined);
           } else {
-            previousDivNode.firstChild.innerHTML += currentNode.parentNode.innerHTML;
-            setCaretPositionInChildNode(previousDivNode.firstChild, previousOffset);
-            currentNode.parentNode.parentNode.remove();
-            checkHeader(previousDivNode.firstChild.firstChild, previousDivNode.firstChild.textContent, previousOffset, e);
+            firstChild.innerHTML += parentNode.innerHTML;
+            setCaretPositionInChildNode(firstChild, previousOffset as number);
+            grandParentNode.remove();
+            checkHeader(firstGrandChild, firstChild.textContent as string, previousOffset as number, e);
           }
         } else {
           e.preventDefault();
         }
       } else {
-        let stringBeforeCaret = currentNode.parentNode.textContent.slice(0, parentOffset);
-        let stringAfterCaret = currentNode.parentNode.textContent.slice(parentOffset);
+        let stringBeforeCaret = parentNode?.textContent?.slice(0, parentOffset) as string;
+        let stringAfterCaret = parentNode?.textContent?.slice(parentOffset) as string;
         currentText = "" + stringBeforeCaret.slice(0, -1) + stringAfterCaret;
 
-        checkHeader(currentNode, currentText, stringBeforeCaret.length-1, e);
+        checkHeader(currentNode as HTMLElement, currentText, stringBeforeCaret.length-1, e);
       }
     }
   } else if (e.key === "ArrowRight") {
@@ -701,7 +724,7 @@ function loadNoteInEditor(noteContent: string, editable: string) {
     let divElement = createNewDivForText(line);
     editor.appendChild(divElement);
     if (line !== "") {
-      checkHeader(divElement.firstChild.firstChild, divElement.firstChild.textContent);
+      checkHeader(divElement?.firstChild?.firstChild as HTMLElement, divElement?.firstChild?.textContent as string, null, undefined);
     }
   });
 }

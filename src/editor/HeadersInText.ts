@@ -1,9 +1,22 @@
+type HeadersInTextType = {
+  characterCodeOfHeaders: string[];
+  classOfHeaders: string[];
+};
+
+declare class HeadersInText {
+  constructor();
+  characterCodeOfHeaders: string[];
+  classOfHeaders: string[];
+  setHeader(parentNode: HTMLElement, strings: string[], isOrderedList: boolean): void;
+}
+
 /**
  * HeadersInText Class: For Dealing with Header maintenance.
  * It is used to maintain the style information for the
  * Header texts in NOTE DOM element.
  */
-function HeadersInText() {
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+function HeadersInText(this: HeadersInTextType) {
   this.characterCodeOfHeaders = [ "#",
                                   "##",
                                   "###",
@@ -24,13 +37,13 @@ function HeadersInText() {
                           "note__blockquote",
                           "note__blockquote",
                           "note__orderedlist"];
-}
+};
 
 /**
  *   This function sets the appropriate Header class for the
  * given text using the object above.
  */
-HeadersInText.prototype.setHeader = function (parentNode, strings, isOrderedList) {
+HeadersInText.prototype.setHeader = function (parentNode: HTMLElement, strings: string[], isOrderedList: boolean) {
   if (strings.length > 1 && this.characterCodeOfHeaders.indexOf(strings[0]) !== -1) {
     let indexOfHeader = this.characterCodeOfHeaders.indexOf(strings[0]);
     parentNode.setAttribute("class", this.classOfHeaders[indexOfHeader]);
