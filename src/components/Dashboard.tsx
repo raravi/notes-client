@@ -241,7 +241,7 @@ export const Dashboard = (props: DashboardComponentProps) => {
    * This function handles the keypress event in the note element.
    */
   function onKeyDownInEditor(e: React.KeyboardEvent) {
-    keyPressedInEditor(e, window.getSelection());
+    keyPressedInEditor(e, window.getSelection() as Selection);
   }
 
   return (
