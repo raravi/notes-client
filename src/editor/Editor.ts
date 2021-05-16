@@ -147,7 +147,7 @@ function checkPreviousNodeIsOrderedList(el: HTMLElement, newText: string) {
  */
 function fixNextItemsInOrderedList(el: HTMLElement, currentText: string) {
   const grandParentNode = el?.parentNode?.parentNode as HTMLElement;
-  let nextDivNode = grandParentNode.nextSibling as HTMLElement | null;
+  let nextDivNode = grandParentNode?.nextSibling as HTMLElement | null;
   let strings = replaceNbspWithBlankspace(currentText).split(" ");
   while(nextDivNode && nextDivNode.getAttribute("class") === "note__line") {
     let nextText = replaceNbspWithBlankspace(nextDivNode?.firstChild?.textContent as string);
@@ -174,8 +174,9 @@ function checkForPairs(parentNode: HTMLElement, newText: string, length: number,
   let pairsInText = new PairsInText();
   let text = newText.slice(length);
   pairsInText.getCountAndIndex(text, length);
-  parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
-  if (offset !== undefined) {
+  if (parentNode)
+    parentNode.innerHTML = pairsInText.getNewSpanText(newText, length);
+  if (parentNode && offset !== undefined) {
     setCaretPositionInChildNode(parentNode, offset);
   }
   if (e !== undefined) {
@@ -314,7 +315,9 @@ function checkHeader(el: HTMLElement, currentText: string, offset: number | null
   let previousNode;
 
   let headersInText = new HeadersInText();
-  headersInText.setHeader(el.parentNode as HTMLElement, strings, isOrderedList);
+
+  if (el.parentNode)
+    headersInText.setHeader(el.parentNode as HTMLElement, strings, isOrderedList);
 
   // Handle *word*
   let isHeader = headersInText.characterCodeOfHeaders.indexOf(strings[0]);
