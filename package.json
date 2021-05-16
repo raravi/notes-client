@@ -3,27 +3,27 @@
   "version": "3.1.0",
   "private": true,
   "dependencies": {
-    "@bit/raravi.react.login": "^1.6.5",
-    "@fortawesome/fontawesome-svg-core": "^1.2.34",
-    "@fortawesome/free-solid-svg-icons": "^5.15.2",
+    "@bit/raravi.react.login": "1.6.5",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
+    "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
-    "@testing-library/jest-dom": "^5.11.9",
-    "@testing-library/react": "^11.2.5",
-    "@testing-library/user-event": "^12.7.0",
+    "@testing-library/jest-dom": "^5.12.0",
+    "@testing-library/react": "^11.2.7",
+    "@testing-library/user-event": "^13.1.9",
     "axios": "^0.21.1",
-    "dompurify": "^2.2.6",
+    "dompurify": "^2.2.8",
     "jwt-decode": "^3.1.2",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.1",
+    "react-scripts": "^4.0.3",
     "typescript": "^4.2.2"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --coverage --watchAll --env=jest-environment-jsdom-sixteen",
-    "testwithexit": "react-scripts test --coverage --watchAll=false --env=jest-environment-jsdom-sixteen",
+    "test": "react-scripts test --coverage --watchAll",
+    "testwithexit": "react-scripts test --coverage --watchAll=false",
     "eject": "react-scripts eject"
   },
   "author": "Amith Raravi <amith.raravi@gmail.com>",
@@ -54,7 +54,6 @@
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.1",
     "@types/react-router-dom": "^5.1.7",
-    "codecov": "^3.8.1",
-    "jest-environment-jsdom-sixteen": "^1.0.3"
+    "codecov": "^3.8.2"
   }
 }
