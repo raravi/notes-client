@@ -1,12 +1,12 @@
 /**
  *   The content for the WELCOME / HELP pages.
  */
-const welcomeNote = "# Welcome to notes!\n" +
+const welcomeNote: string = "# Welcome to notes!\n" +
                   "\n" +
                   "To edit, please click on your saved notes in the sidebar.\n" +
                   "Or open a new note!";
 
-const helpNote = "# This is notes!\n" +
+const helpNote: string = "# This is notes!\n" +
                 "notes is a Markdown web editor that syncs all your notes in realtime and allows you to access them from any browser. This page is intended as a quick reference and showcase.\n" +
                 "## Headers\n" +
                 "Headings are determined by the number of hash(#) at the beginning of the line. Headings from 1 to 6 are allowed. These should be sufficient for all your notes to be organized into different sub-headings.\n" +

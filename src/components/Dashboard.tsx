@@ -15,8 +15,8 @@ import { appApiDetails } from '../config/apiDetails';
 /**
  *   Dashboard React Component: This component is for the logged-in state.
  */
-export const Dashboard = (props) => {
-  let [ currentNoteId, setCurrentNoteId ] = useState(null);
+export const Dashboard = (props: DashboardComponentProps) => {
+  let [ currentNoteId, setCurrentNoteId ] = useState<string | null>(null);
   let [ currentNoteContent, setCurrentNoteContent ] = useState("");
 
   useEffect(() => {
@@ -64,9 +64,11 @@ export const Dashboard = (props) => {
         if (currentNoteContent !== textContent) {
           let notes = props.notes.slice();
           let note = notes.find(note => note.id === currentNoteId);
-          note.note = textContent;
-          if (response.data.modifieddate)
-            note.modifieddate = response.data.modifieddate;
+          if (note) {
+            note.note = textContent;
+            if (response.data.modifieddate)
+              note.modifieddate = response.data.modifieddate;
+          }
           props.setNotes(notes);
 
           setCurrentNoteContent(textContent);
@@ -93,7 +95,7 @@ export const Dashboard = (props) => {
       if (response && response.data && response.data.success) {
         if (currentNoteId) {
           let propNote = props.notes.find(note => note.id === currentNoteId);
-          let responseNote = response.data.notes.find(note => note.id === currentNoteId);
+          let responseNote = response.data.notes.find((note: Note) => note.id === currentNoteId);
           if (propNote && !responseNote) {
             loadNoteInEditor(welcomeNote, "false");
             setCurrentNoteId(null);
@@ -141,16 +143,18 @@ export const Dashboard = (props) => {
   /**
    * This function loads the contents of the note that was clicked.
    */
-  function onClickNoteInSidebar(e) {
-    let currentNoteInSidebar = e.target;
+  function onClickNoteInSidebar(e: React.MouseEvent) {
+    let currentNoteInSidebar = e.target as HTMLElement;
     if (currentNoteInSidebar.nodeName === "P")
-      currentNoteInSidebar = currentNoteInSidebar.parentNode;
+      currentNoteInSidebar = currentNoteInSidebar.parentNode as HTMLElement;
     if (currentNoteInSidebar.getAttribute("class") === "sidebar__note sidebar__note--active")
       return;
     let note = props.notes.find(note => note.id === currentNoteInSidebar.dataset.id);
     syncNote();
-    loadNoteInEditor(note.note, "true");
-    setCurrentNoteId(note.id);
+    if (note) {
+      loadNoteInEditor(note.note, "true");
+      setCurrentNoteId(note.id);
+    }
     setCurrentNoteContent(getTextFromEditor());
   }
 
@@ -158,7 +162,7 @@ export const Dashboard = (props) => {
    * This function create a new note, and loads the contents of the new note.
    * POST the user request to the API endpoint '/new'.
    */
-  function onClickNewNoteInSidebar(e) {
+  function onClickNewNoteInSidebar(e: React.MouseEvent) {
     syncNote();
     setCurrentNoteId(null);
     axios.post(appApiDetails.url + appApiDetails.endpoints.newNote, {
@@ -190,8 +194,10 @@ export const Dashboard = (props) => {
    * This function deletes the note, and loads the contents of the welcome note.
    * POST the user request to the API endpoint '/delete'.
    */
-  function onClickDeleteNote(e) {
-    let noteId = e.target.parentNode.dataset.id;
+  function onClickDeleteNote(e: React.MouseEvent) {
+    let target = e.target as HTMLElement;
+    let parentNode = target.parentNode as HTMLElement;
+    let noteId = parentNode.dataset.id;
     e.stopPropagation();
 
     axios.post(appApiDetails.url + appApiDetails.endpoints.deleteNote, {
@@ -224,7 +230,7 @@ export const Dashboard = (props) => {
    * This function gets the part of the Title that is
    * to be displayed in the sidebar.
    */
-  function getTitleSlug(note) {
+  function getTitleSlug(note: string) {
     let firstLine = note.split("\n")[0];
     if (firstLine.length > 30)
       return firstLine.slice(0, 30) + "...";
@@ -234,8 +240,8 @@ export const Dashboard = (props) => {
   /**
    * This function handles the keypress event in the note element.
    */
-  function onKeyDownInEditor(e) {
-    keyPressedInEditor(e, window.getSelection());
+  function onKeyDownInEditor(e: React.KeyboardEvent) {
+    keyPressedInEditor(e, window.getSelection() as Selection);
   }
 
   return (

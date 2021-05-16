@@ -5,7 +5,7 @@ import LoginComponent from '@bit/raravi.react.login';
  * Login React Component: This component contains all the
  * Login components - (LoginSection, RegisterSection & ForgotPassword).
  */
-export const Login = (props) => {
+export const Login = (props: LoginComponentProps) => {
   return (
     <div className="login-container">
       <header className="login-header">

@@ -1,4 +1,4 @@
-const loginApiDetails = {
+const loginApiDetails: LoginApiDetails = {
   url: 'https://mtkrd60335.execute-api.eu-central-1.amazonaws.com/dev',
   // url: 'http://localhost:4000/dev',
   endpoints: {
@@ -10,7 +10,7 @@ const loginApiDetails = {
   }
 };
 
-const appApiDetails = {
+const appApiDetails: AppApiDetails = {
   url: 'https://mysterious-forest-21747.herokuapp.com',
   // url: 'http://localhost:8000',
   endpoints: {

@@ -11,17 +11,28 @@ import jwtDecode from 'jwt-decode';
 import { loginApiDetails, appApiDetails } from './config/apiDetails';
 import './App.css';
 
+type Response = {
+  data : {
+    token: string;
+  }
+};
+
+type TokenDecoded = {
+  id: string,
+  name: string,
+};
+
 /**
  * The main App component.
  * Routes to Login / Dashboard React Components based upon the LOGIN state.
  */
 function App() {
-  let [ userLoggedIn, setUserLoggedIn ] = useState(null);
-  let [ notes, setNotes ] = useState([]);
+  let [ userLoggedIn, setUserLoggedIn ] = useState<TokenDecoded | null>(null);
+  let [ notes, setNotes ] = useState<Note[]>([]);
 
-  function onSuccessfulLogin(response) {
+  function onSuccessfulLogin(response: Response) {
     if (response && response.data && response.data.token) {
-      let tokenDecoded = jwtDecode(response.data.token);
+      let tokenDecoded : TokenDecoded = jwtDecode(response.data.token);
       if(tokenDecoded) {
         sessionStorage.setItem("token", response.data.token);
 

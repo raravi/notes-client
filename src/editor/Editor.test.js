@@ -4,7 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import {  keyPressedInEditor,
           onClickInEditor,
           loadNoteInEditor,
-          getTextFromEditor } from './Editor.js';
+          getTextFromEditor } from './Editor.ts';
 
 console.error = jest.fn();
 
