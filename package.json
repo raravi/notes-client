@@ -21,8 +21,8 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --coverage --watchAll --env=jest-environment-jsdom-sixteen",
-    "testwithexit": "react-scripts test --coverage --watchAll=false --env=jest-environment-jsdom-sixteen",
+    "test": "react-scripts test --coverage --watchAll",
+    "testwithexit": "react-scripts test --coverage --watchAll=false",
     "eject": "react-scripts eject"
   },
   "author": "Amith Raravi <amith.raravi@gmail.com>",
@@ -50,7 +50,6 @@
     ]
   },
   "devDependencies": {
-    "codecov": "^3.8.2",
-    "jest-environment-jsdom-sixteen": "^2.0.0"
+    "codecov": "^3.8.2"
   }
 }
