@@ -11,7 +11,7 @@ import { loadNoteInEditor } from './editor/Editor';
 
 jest.mock('axios');
 jest.mock('jwt-decode');
-jest.useFakeTimers();
+jest.useFakeTimers('modern');
 console.error = jest.fn();
 
 function renderWithRouter(ui) {
